@@ -12,6 +12,7 @@ import { remarkMermaidSSR, mermaidTitleFix } from 'astro-mermaid-renderer-cli-sm
 
 export default defineConfig({
   site: 'https://lambdalatitudinarians.org',
+  base: '/docs',
   integrations: [
     mdx({
       syntaxHighlight: false,
