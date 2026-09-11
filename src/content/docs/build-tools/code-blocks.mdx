@@ -1,0 +1,82 @@
+---
+title: astro-better-code-blocks
+description: Remark/rehype plugins for enhanced code blocks with copy button and shell session formatting.
+order: 1
+---
+
+import { Steps } from 'astro-better-steps';
+
+# astro-better-code-blocks
+
+Remark and rehype plugins that enhance code blocks in Astro MDX files.
+Adds a copy-to-clipboard button to all code blocks, and formats shell session
+blocks (lines starting with `$` or `#`) with distinct styling.
+
+<p class="pkg-meta">Current version: <strong>0.1.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-code-blocks" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-code-blocks @astrojs/prism prismjs
+```
+
+Import the CSS in your global stylesheet:
+
+```css
+@import "astro-better-code-blocks/style.css";
+```
+
+## Setup
+
+<Steps>
+
+### Configure the plugins
+
+In `astro.config.ts`:
+
+```ts
+import { rehypeCodeBlocks, remarkShellSession } from 'astro-better-code-blocks';
+
+export default defineConfig({
+  markdown: {
+    remarkPlugins: [remarkShellSession],
+    rehypePlugins: [rehypeCodeBlocks],
+  },
+});
+```
+
+### Add the copy button component (optional)
+
+If you want to customize the copy button, import and use `CopyCodeButton.astro` in your layout.
+By default, the rehype plugin injects buttons automatically.
+
+</Steps>
+
+## Plugins
+
+### rehypeCodeBlocks
+
+A rehype plugin that:
+- Wraps every `<pre><code>` block in a container div with a copy button
+- Sets the language class for Prism syntax highlighting
+- Adds a filename label if the code block has a `title` attribute
+
+### remarkShellSession
+
+A remark plugin that parses shell session blocks. Lines starting with `$` are styled
+as commands; other lines are styled as output. The `$` prompt character gets a distinct color.
+
+## Shell session example
+
+```shell-session
+$ npm install astro-better-code-blocks
+added 3 packages in 0.5s
+$ npx astro dev
+  🚀  astro  v7.0.0 ready in 412ms
+```
+
+## CopyCodeButton props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `class` | `string` | -- | Additional CSS classes |

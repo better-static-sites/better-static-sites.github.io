@@ -1,0 +1,108 @@
+---
+title: astro-better-steps
+description: Numbered step sequences with CSS counters and a connecting vertical line.
+order: 2
+---
+
+import { Steps } from 'astro-better-steps';
+
+# astro-better-steps
+
+A container component for numbered step-by-step sequences. Uses CSS counters and a connecting
+vertical line to visually group ordered steps. Works in MDX files.
+
+<p class="pkg-meta">Current version: <strong>0.1.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-steps" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-steps
+```
+
+Import the CSS in your global stylesheet:
+
+```css
+@import "astro-better-steps/style.css";
+```
+
+## Usage
+
+Wrap an ordered list in `<Steps>`. Each list item becomes a numbered step with a circle and connecting line:
+
+````mdx
+import { Steps } from 'astro-better-steps';
+
+<Steps>
+1. **First step**
+
+   Body content for the first step goes here.
+
+2. **Second step**
+
+   More content.
+</Steps>
+````
+
+## Live example
+
+<Steps>
+
+1. **Install the package**
+
+   Run the install command for whichever package you want to use:
+
+   ```shell-session
+   npm install astro-better-steps
+   ```
+
+2. **Import the CSS**
+
+   Add the stylesheet import to your global CSS file:
+
+   ```css
+   @import "astro-better-steps/style.css";
+   ```
+
+3. **Use the component**
+
+   Import `Steps` in your MDX file and wrap a numbered list with it.
+
+</Steps>
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `class` | `string` | -- | Additional CSS classes for the container |
+
+## Styling
+
+The component uses CSS counters on `ol > li` elements and exposes four CSS custom properties
+for independent light and dark mode theming. Set them on the `.steps-container` element or any ancestor:
+
+| Property | Controls |
+|----------|----------|
+| `--steps-circle-bg` | number circle background fill |
+| `--steps-circle-border` | number circle border |
+| `--steps-circle-color` | number text inside the circle |
+| `--steps-line-color` | connecting vertical line |
+
+Example -- override just the accent colors to match your brand:
+
+```css
+/* light mode */
+.steps-container {
+  --steps-circle-bg: #f0fdf4;
+  --steps-circle-border: #86efac;
+  --steps-circle-color: #14532d;
+  --steps-line-color: #86efac;
+}
+
+/* dark mode */
+.dark .steps-container {
+  --steps-circle-bg: #14532d;
+  --steps-circle-border: #166534;
+  --steps-circle-color: #dcfce7;
+  --steps-line-color: #166534;
+}
+```

@@ -1,0 +1,140 @@
+---
+title: astro-better-tabs
+description: CSS-first tabbed content panels with JavaScript progressive enhancement.
+order: 3
+---
+
+import Tabs from 'astro-better-tabs/Tabs.astro';
+import TabItem from 'astro-better-tabs/TabItem.astro';
+
+# astro-better-tabs
+
+Tabbed content panels for MDX pages. Renders without JavaScript (CSS-only fallback),
+then enhances with a small script to handle tab switching without page reloads.
+
+<p class="pkg-meta">Current version: <strong>0.3.2</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-tabs" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-tabs
+```
+
+Import the CSS in your global stylesheet:
+
+```css
+@import "astro-better-tabs/style.css";
+```
+
+## Usage
+
+````mdx
+import Tabs from 'astro-better-tabs/Tabs.astro';
+import TabItem from 'astro-better-tabs/TabItem.astro';
+
+<Tabs>
+  <TabItem label="npm">
+    ```shell-session
+    npm install my-package
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```shell-session
+    yarn add my-package
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```shell-session
+    pnpm add my-package
+    ```
+  </TabItem>
+</Tabs>
+````
+
+## Live example
+
+<Tabs>
+  <TabItem label="npm">
+    ```shell-session
+    npm install astro-better-tabs
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```shell-session
+    yarn add astro-better-tabs
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```shell-session
+    pnpm add astro-better-tabs
+    ```
+  </TabItem>
+</Tabs>
+
+## Tabs props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `syncKey` | `string` | -- | Share tab state across multiple `<Tabs>` groups with the same key |
+
+## TabItem props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `label` | `string` | (required) | Tab button text |
+
+## Synchronized tabs
+
+Set the same `syncKey` on multiple `<Tabs>` groups to synchronize them.
+Selecting "yarn" in one group automatically selects "yarn" in all others.
+
+```mdx
+<Tabs syncKey="pkg-manager">
+  <TabItem label="npm">npm install foo</TabItem>
+  <TabItem label="yarn">yarn add foo</TabItem>
+</Tabs>
+
+<Tabs syncKey="pkg-manager">
+  <TabItem label="npm">npm install bar</TabItem>
+  <TabItem label="yarn">yarn add bar</TabItem>
+</Tabs>
+```
+
+## CSS-only fallback
+
+Without JavaScript, only the first tab's content is visible via `:checked + .tab-label + .tab-panel { display: block }`.
+JavaScript reorganizes the DOM on load to properly show the selected tab.
+
+## Styling
+
+The component exposes CSS custom properties on `.tabs-group` for independent light and dark mode theming:
+
+| Property | Controls |
+|----------|----------|
+| `--tabs-bg` | tab bar background |
+| `--tabs-border` | container border |
+| `--tabs-panel-bg` | content panel background |
+| `--tabs-panel-border` | content panel top border |
+| `--tabs-active-bg` | active tab label background |
+| `--tabs-active-color` | active tab label text color |
+
+Override to match your brand:
+
+```css
+/* light mode */
+.tabs-group {
+  --tabs-border:       #e5e7eb;
+  --tabs-bg:           #f9fafb;
+  --tabs-active-bg:    #ffffff;
+  --tabs-active-color: #7c3aed;
+}
+
+/* dark mode */
+.dark .tabs-group {
+  --tabs-border:       #1c0e00;
+  --tabs-bg:           #111111;
+  --tabs-panel-bg:     #080808;
+  --tabs-active-bg:    #080808;
+  --tabs-active-color: #fb923c;
+}
+```

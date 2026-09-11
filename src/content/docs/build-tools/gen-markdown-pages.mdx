@@ -1,0 +1,80 @@
+---
+title: astro-gen-markdown-pages
+description: Generates .md companion files and llms.txt from built HTML pages at build time.
+order: 5
+---
+
+
+# astro-gen-markdown-pages
+
+An Astro integration that generates `.md` companion files and an `llms.txt` index
+from your built HTML pages. The `.md` files are clean Markdown versions of your HTML
+content, suitable for consumption by LLMs or static site search tools.
+
+<p class="pkg-meta">Current version: <strong>1.0.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-gen-markdown-pages" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-gen-markdown-pages
+```
+
+## Setup
+
+In `astro.config.ts`:
+
+```ts
+import genMarkdownPages from 'astro-gen-markdown-pages';
+
+export default defineConfig({
+  integrations: [
+    genMarkdownPages({
+      llmsTxtTitle: 'My Site Documentation',
+      llmsTxtDescription: 'Complete docs for My Site.',
+      trimTitleSuffix: ' | My Site',
+    }),
+  ],
+});
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `llmsTxtTitle` | `string` | `'Documentation'` | Title in the generated `llms.txt` |
+| `llmsTxtDescription` | `string` | `''` | Description in the generated `llms.txt` |
+| `llmsTxtPath` | `string` | `'llms.txt'` | Output path for `llms.txt` |
+| `trimTitleSuffix` | `string` | `''` | Strip this suffix from page titles in the index |
+| `pageFilter` | `(path) => boolean` | `null` | Filter which pages get `.md` files |
+| `indexFilter` | `(path) => boolean` | `() => true` | Filter which pages appear in `llms.txt` |
+| `categorize` | `(path) => string` | first path segment | Group pages in `llms.txt` by category |
+| `docsIndexUrl` | `string` | `''` | URL to add as the docs index reference in `llms.txt` |
+
+## Output
+
+After `astro build`:
+- Each HTML page gets a sibling `.md` file at the same path (e.g., `/docs/intro.md`)
+- A top-level `llms.txt` index lists all pages grouped by category
+
+### llms.txt format
+
+```
+# My Site Documentation
+
+> Complete docs for My Site.
+
+## Getting Started
+
+- [Introduction](/docs/intro.md): The basics.
+- [Installation](/docs/install.md): How to install.
+
+## Reference
+
+- [API Reference](/docs/api.md): Full API docs.
+```
+
+## How it works
+
+The integration hooks into `astro:build:done`. For each `.html` file in the output,
+it runs a Turndown-based HTML-to-Markdown conversion, then writes the `.md` file.
+The `llms.txt` is generated from the collected titles and paths.

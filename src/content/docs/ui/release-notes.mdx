@@ -1,0 +1,99 @@
+---
+title: astro-better-release-notes
+description: Versioned changelogs with category filtering and version dropdown navigation.
+order: 7
+---
+
+
+# astro-better-release-notes
+
+A set of components for rendering versioned changelogs with category filtering
+and a sticky version selector. Designed for docs sites with frequent releases.
+
+<p class="pkg-meta">Current version: <strong>0.2.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-release-notes" target="_blank" rel="noopener">npm</a></p>
+
+## Live example
+
+See the [release notes page](/release-notes) for a live example of how `ReleaseNotes` renders a versioned changelog.
+
+## Installation
+
+```shell-session
+npm install astro-better-release-notes
+```
+
+Import the CSS in your global stylesheet:
+
+```css
+@import "astro-better-release-notes/style.css";
+```
+
+## Components
+
+### ReleaseNotes
+
+The outer container. Wraps all releases and provides the sticky header with
+version selector and category filter chips.
+
+### ReleaseNotesItem
+
+One release entry. The `id` must match the version string for anchor navigation.
+
+### ReleaseNotesSelector
+
+The version dropdown and category filters. Usually used inside `ReleaseNotes`
+automatically, but can be rendered independently.
+
+## Usage
+
+```astro
+---
+import { ReleaseNotes, ReleaseNotesItem } from 'astro-better-release-notes';
+
+const releases = await getCollection('releases');
+---
+<ReleaseNotes>
+  {releases.map(release => (
+    <ReleaseNotesItem
+      id={release.data.version}
+      version={release.data.version}
+      date={release.data.date}
+      categories={release.data.categories}
+    >
+      <release.render />
+    </ReleaseNotesItem>
+  ))}
+</ReleaseNotes>
+```
+
+## ReleaseNotesItem props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `id` | `string` | Anchor ID (typically the version string) |
+| `version` | `string` | Version label shown in the heading |
+| `date` | `string` | Release date string |
+| `categories` | `string[]` | Category tags used by the filter chips |
+
+## Category filtering
+
+The filter chips are automatically generated from all unique `categories` values
+across all `ReleaseNotesItem` entries on the page. Clicking a chip hides entries
+that do not include that category. The filter is pure CSS with no JavaScript required.
+
+## Scroll behavior
+
+The `scroll-margin-top` on each `ReleaseNotesItem` is set by the
+`--release-notes-scroll-margin` CSS custom property (default: `5rem` mobile, `12rem` desktop).
+Set this in your stylesheet to match your sticky header height.
+
+```css
+html:has(.release-container) {
+  --release-notes-scroll-margin: 5rem;
+}
+@media (min-width: 1024px) {
+  html:has(.release-container) {
+    --release-notes-scroll-margin: 12rem;
+  }
+}
+```

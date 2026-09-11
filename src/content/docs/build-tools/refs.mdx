@@ -1,0 +1,105 @@
+---
+title: astro-refs
+description: Sphinx-style named anchors that survive content moves.
+order: 4
+---
+
+import { Admonition } from 'astro-better-admonitions';
+import { Steps } from 'astro-better-steps';
+
+# astro-refs
+
+Named cross-references for Astro. Declare an anchor anywhere in your content,
+link to it by name from anywhere else in the site. Links stay valid even when content
+moves, because the name travels with the content.
+
+<p class="pkg-meta">Current version: <strong>0.1.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-refs" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-refs
+```
+
+## Setup
+
+<Steps>
+
+### Register the integration
+
+In `astro.config.ts`:
+
+```ts
+import astroRefs from 'astro-refs';
+
+export default defineConfig({
+  integrations: [
+    astroRefs({
+      collections: [
+        { src: 'src/content/docs', base: '/docs' },
+      ],
+    }),
+  ],
+});
+```
+
+### Declare refs in your content
+
+Three ways to declare a ref:
+
+**1. Frontmatter**
+```yaml
+---
+ref: my-page-name
+---
+```
+
+**2. Section heading suffix**
+```md
+## Potatoes {potato-section}
+```
+The `{potato-section}` suffix is stripped from the rendered heading.
+
+**3. `<Ref>` component**
+```mdx
+import Ref from 'astro-refs/Ref.astro';
+<Ref id="my-anchor" />
+```
+
+### Link by name
+
+Use the `ref:` URL scheme anywhere you write a link:
+
+```md
+[See the potato section](ref:potato-section)
+```
+
+</Steps>
+
+## Integration options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `collections` | `{src, base}[]` | Content directories to scan for ref declarations |
+
+## `Ref` component props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `id` | `string` | The ref name to declare at this location |
+
+## Build-time validation
+
+At build time, `astro-refs` warns about any `ref:` links that point to undeclared ref names.
+This catches broken cross-references before they reach production.
+
+<Admonition type="tip" title="Multiple aliases">
+  A page can declare multiple ref names in frontmatter:
+  ```yaml
+  ---
+  refs:
+    - my-page-name
+    - legacy-name
+  ---
+  ```
+</Admonition>

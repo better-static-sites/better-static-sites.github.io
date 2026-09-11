@@ -1,0 +1,88 @@
+---
+title: astro-mermaid-renderer-cli-smol
+description: Server-side Mermaid diagram rendering to inline SVG at build time.
+order: 3
+---
+
+
+# astro-mermaid-renderer-cli-smol
+
+An Astro integration that pre-renders Mermaid diagrams to inline SVG at build time.
+No client-side JavaScript is shipped -- diagrams are static SVG in the output HTML.
+
+<p class="pkg-meta">Current version: <strong>0.1.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-mermaid-renderer-cli-smol" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-mermaid-renderer-cli-smol mermaid
+```
+
+## Setup
+
+In `astro.config.ts`:
+
+```ts
+import mermaidSSR from 'astro-mermaid-renderer-cli-smol';
+
+export default defineConfig({
+  integrations: [
+    mermaidSSR({
+      theme: 'default',
+    }),
+  ],
+});
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `theme` | `string` | `'default'` | Mermaid theme: `default`, `dark`, `neutral`, `forest` |
+| `titleFix` | `boolean` | `true` | Strip title from rendered SVG (prevents duplicate headings) |
+| `injectCSS` | `boolean` | `true` | Auto-inject default styles |
+| `securityLevel` | `string` | `'loose'` | Mermaid `securityLevel` setting |
+
+## Usage in MDX
+
+Write standard Mermaid fences in your MDX files:
+
+````md
+```mermaid
+graph TD
+  A[Start] --> B{Decision}
+  B -->|Yes| C[Do thing]
+  B -->|No| D[Don't do thing]
+  C --> E[End]
+  D --> E
+```
+````
+
+## Live example
+
+```mermaid
+graph LR
+  nav-bar --> theme-selector
+  docs-sidebar --> sidebar-item
+  toc-smol --> scroll-spy
+  code-blocks --> copy-button
+  code-blocks --> shell-session
+```
+
+## How it works
+
+The integration registers a remark plugin (`remarkMermaidSSR`) that transforms
+` ```mermaid ` fences into inline SVG during the Astro build. It uses `svgdom`
+to render Mermaid server-side without a headless browser.
+
+To use the remark plugin directly without the integration:
+
+```ts
+import { remarkMermaidSSR } from 'astro-mermaid-renderer-cli-smol';
+
+export default defineConfig({
+  markdown: {
+    remarkPlugins: [[remarkMermaidSSR, { theme: 'neutral' }]],
+  },
+});
+```

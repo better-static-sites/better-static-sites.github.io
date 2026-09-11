@@ -1,0 +1,101 @@
+---
+title: astro-better-cards
+description: Link cards, child-page grids, and prev/next page navigation.
+order: 4
+---
+
+import Card from 'astro-better-cards/Card.astro';
+
+# astro-better-cards
+
+Three components for navigational content: `Card` (a standalone link card),
+`ChildCards` (a grid of cards auto-generated from sibling pages), and `PageNav`
+(previous/next page navigation for sequential docs).
+
+<p class="pkg-meta">Current version: <strong>0.2.2</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-cards" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-cards
+```
+
+## Live example
+
+<Card
+  href="/docs"
+  title="Getting Started"
+  description="Install your first astro-better-* package and have something on the page in five minutes."
+  label="docs"
+/>
+
+## Card
+
+A single link card with optional icon, title, description, and label.
+
+```mdx
+import Card from 'astro-better-cards/Card.astro';
+
+<Card
+  href="/docs"
+  title="Getting Started"
+  description="Set up your first project in five minutes."
+/>
+```
+
+### Card props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `href` | `string` | (required) | Destination URL |
+| `title` | `string` | -- | Card heading |
+| `description` | `string` | -- | Card body text |
+| `icon` | `string` | -- | Icon image URL (light mode) |
+| `darkIcon` | `string` | -- | Icon image URL (dark mode) |
+| `cardImage` | `string` | -- | Full-width image at top of card |
+| `label` | `string` | -- | Badge label in the top corner |
+| `labelFirst` | `boolean` | `false` | Show label before title |
+| `variant` | `'full' \| 'compact'` | `'full'` | Card layout variant |
+| `comingSoon` | `boolean` | `false` | Grays out and disables click |
+
+## ChildCards
+
+Generates a card grid from pages in the same content collection directory.
+
+```mdx
+import ChildCards from 'astro-better-cards/ChildCards.astro';
+
+<ChildCards
+  basePath="/docs"
+  currentPath="/docs/ui"
+  collection={docsCollection}
+/>
+```
+
+### ChildCards props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `basePath` | `string` | Root path of the collection |
+| `currentPath` | `string` | Current page path (to determine children) |
+| `collection` | `CollectionEntry[]` | The full Astro content collection array |
+
+## PageNav
+
+Previous/next navigation at the bottom of a page.
+
+```mdx
+import PageNav from 'astro-better-cards/PageNav.astro';
+
+<PageNav
+  prev={{ title: 'Installation', href: '/docs/install' }}
+  next={{ title: 'Configuration', href: '/docs/config' }}
+/>
+```
+
+### PageNav props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `prev` | `{title, href}` | Previous page link |
+| `next` | `{title, href}` | Next page link |

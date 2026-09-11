@@ -1,0 +1,97 @@
+---
+title: astro-better-code-snippet-extractor
+description: Load Bluehawk-annotated code snippets and local source files into Astro pages.
+order: 2
+---
+
+import { Admonition } from 'astro-better-admonitions';
+import { Steps } from 'astro-better-steps';
+
+# astro-better-code-snippet-extractor
+
+An integration and component for loading code snippets into Astro pages.
+Supports Bluehawk-annotated files (with `// :snippet-start:` / `:snippet-end:` markers)
+and plain source file inclusion.
+
+<p class="pkg-meta">Current version: <strong>0.2.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-code-snippet-extractor" target="_blank" rel="noopener">npm</a></p>
+
+<Admonition type="caution" title="Node 22.6+ compatibility">
+  Version `0.2.1` fixes a crash on Node 22.6+ where `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`
+  was thrown when Bluehawk loaded `.d.ts` files from `node_modules`. The fix strips
+  type-stripping flags from `NODE_OPTIONS` before spawning the Bluehawk subprocess.
+</Admonition>
+
+## Installation
+
+```shell-session
+npm install astro-better-code-snippet-extractor @astrojs/prism
+```
+
+## Setup
+
+<Steps>
+
+### Register the integration
+
+In `astro.config.ts`:
+
+```ts
+import { codeSnippetExtractor } from 'astro-better-code-snippet-extractor/integration.js';
+
+export default defineConfig({
+  integrations: [
+    codeSnippetExtractor({
+      sourcePaths: ['../my-app/src'],
+    }),
+  ],
+});
+```
+
+### Use the component in MDX
+
+```mdx
+import ExtractedCode from 'astro-better-code-snippet-extractor/ExtractedCode.astro';
+
+<ExtractedCode
+  path="../my-app/src/auth/login.ts"
+  snippet="loginExample"
+  lang="typescript"
+/>
+```
+
+</Steps>
+
+## Integration options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `sourcePaths` | `string[]` | `[]` | Directories to scan for Bluehawk-annotated files |
+| `outputDir` | `string` | `.astro/snippets` | Where to write extracted snippet files |
+
+## ExtractedCode props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `path` | `string` | (required) | Path to the source file |
+| `snippet` | `string` | -- | Bluehawk snippet ID to extract (omit to include the whole file) |
+| `lang` | `string` | -- | Language for syntax highlighting |
+| `title` | `string` | -- | Filename label shown above the code block |
+
+## Bluehawk annotations
+
+Annotate source files with Bluehawk markers:
+
+```typescript
+// :snippet-start: loginExample
+async function login(username: string, password: string) {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  });
+  return response.json();
+}
+// :snippet-end:
+```
+
+The integration runs Bluehawk at build time to extract annotated regions.
+The `ExtractedCode` component then renders the result with syntax highlighting.

@@ -1,0 +1,22 @@
+---
+import DocLayout from 'src/layouts/DocLayout.astro';
+import { ReleaseNotes } from 'astro-better-release-notes';
+import 'astro-better-release-notes/style.css';
+import { getCollection, render } from 'astro:content';
+
+const rawReleases = await getCollection('releases');
+const sorted = rawReleases.sort((a, b) =>
+  b.data.version.localeCompare(a.data.version, undefined, { numeric: true })
+);
+
+const updates = await Promise.all(
+  sorted.map(async (r) => {
+    const { Content } = await render(r);
+    return { data: r.data, Content };
+  })
+);
+---
+<DocLayout title="Release Notes" description="Changelog for the astro-better-* package family.">
+  <h1>Release Notes</h1>
+  <ReleaseNotes {updates} />
+</DocLayout>

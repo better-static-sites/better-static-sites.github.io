@@ -1,0 +1,63 @@
+---
+// sheepsnake: a long sheep with no legs and a forked tongue
+const { class: className = '', size = 60 } = Astro.props;
+---
+<svg
+  class={className}
+  width={size}
+  height={Math.round(size * 0.45)}
+  viewBox="0 0 320 144"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-label="The sheepsnake mascot"
+  role="img"
+>
+  <!-- wool body puffs (row of overlapping circles) -->
+  <circle cx="88"  cy="68" r="30" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="116" cy="60" r="32" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="146" cy="56" r="33" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="177" cy="55" r="33" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="208" cy="56" r="32" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="237" cy="60" r="30" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="262" cy="67" r="27" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+  <circle cx="283" cy="76" r="22" fill="#f0ece2" stroke="#c9bfad" stroke-width="1.5"/>
+
+  <!-- body underside (solid fill to cover internal circle strokes) -->
+  <rect x="68" y="88" width="222" height="34" rx="17" fill="#f0ece2"/>
+
+  <!-- snake tail tip -->
+  <path d="M 290 95 Q 305 88 312 82 Q 318 76 316 70" stroke="#c9bfad" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- forked tongue -->
+  <path d="M 316 70 Q 320 64 317 58 M 316 70 Q 322 68 322 62"
+        stroke="#e05070" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- head - slightly wider oval -->
+  <ellipse cx="50" cy="90" rx="38" ry="34" fill="#e8e2d4" stroke="#c9bfad" stroke-width="1.5"/>
+
+  <!-- left ear (floppy) -->
+  <ellipse cx="22" cy="64" rx="12" ry="20" fill="#d8d0be" stroke="#c9bfad" stroke-width="1.5" transform="rotate(-20 22 64)"/>
+  <ellipse cx="22" cy="66" rx="6" ry="13" fill="#e8c0b4" transform="rotate(-20 22 64)"/>
+
+  <!-- right ear -->
+  <ellipse cx="78" cy="64" rx="12" ry="20" fill="#d8d0be" stroke="#c9bfad" stroke-width="1.5" transform="rotate(20 78 64)"/>
+  <ellipse cx="78" cy="66" rx="6" ry="13" fill="#e8c0b4" transform="rotate(20 78 64)"/>
+
+  <!-- eyes -->
+  <ellipse cx="38" cy="86" rx="6.5" ry="7" fill="#1c1c1c"/>
+  <ellipse cx="62" cy="86" rx="6.5" ry="7" fill="#1c1c1c"/>
+  <!-- eye shine -->
+  <circle cx="40" cy="83" r="2.2" fill="white"/>
+  <circle cx="64" cy="83" r="2.2" fill="white"/>
+  <!-- pupil slit (snake eyes!) -->
+  <ellipse cx="38" cy="86" rx="2" ry="5" fill="#0a0a0a"/>
+  <ellipse cx="62" cy="86" rx="2" ry="5" fill="#0a0a0a"/>
+
+  <!-- snout -->
+  <ellipse cx="50" cy="103" rx="14" ry="10" fill="#d8cebb" stroke="#c9bfad" stroke-width="1"/>
+  <!-- nostrils -->
+  <ellipse cx="45" cy="103" rx="3" ry="2.5" fill="#b8a898"/>
+  <ellipse cx="55" cy="103" rx="3" ry="2.5" fill="#b8a898"/>
+
+  <!-- tiny smile -->
+  <path d="M 44 110 Q 50 115 56 110" stroke="#a89888" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+</svg>

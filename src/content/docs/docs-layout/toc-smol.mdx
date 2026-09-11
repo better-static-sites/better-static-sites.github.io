@@ -1,0 +1,86 @@
+---
+title: astro-toc-smol
+description: Server-side table of contents with scroll spy, injected at build time.
+order: 2
+---
+
+import { Admonition } from 'astro-better-admonitions';
+import { Steps } from 'astro-better-steps';
+
+# astro-toc-smol
+
+An Astro integration that generates an "On This Page" table of contents by scanning
+the final rendered HTML at build time. Includes a scroll spy script that highlights
+the active section as the user scrolls.
+
+<p class="pkg-meta">Current version: <strong>1.0.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-toc-smol" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-toc-smol
+```
+
+## Setup
+
+<Steps>
+
+### Register the integration
+
+In `astro.config.ts`:
+
+```ts
+import tocSmol from 'astro-toc-smol';
+
+export default defineConfig({
+  integrations: [
+    tocSmol({
+      articleSelector: ['article.prose', 'main'],
+    }),
+  ],
+});
+```
+
+### Place the TOC component
+
+In your layout, add the `<TOC>` component where you want the table of contents to appear.
+Wrap it in a `[data-toc-aside]` element -- the component hides the wrapper when the TOC is empty.
+
+```astro
+---
+import TOC from 'astro-toc-smol/TOC.astro';
+---
+<aside data-toc-aside>
+  <p>On This Page</p>
+  <TOC />
+</aside>
+```
+
+</Steps>
+
+## Integration options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `articleSelector` | `string[]` | `['article', 'main']` | CSS selectors tried in order to find the content area |
+
+## TOC component props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `maxDepth` | `number` | `4` | Maximum heading depth to include (h2=2, h3=3, ...) |
+| `class` | `string` | -- | Additional CSS classes on the TOC container |
+
+## How it works
+
+The integration hooks into `astro:build:done` and walks every `.html` file in the output.
+For each file, it finds the content area matching `articleSelector`, extracts headings,
+and injects a nested `<ol>` into the `[data-server-toc]` element the `<TOC>` component rendered.
+
+The scroll spy script runs in the browser and updates `aria-current="true"` on the active
+TOC link as the user scrolls.
+
+<Admonition type="tip" title="Empty pages">
+  If a page has no headings, the TOC is empty and the `[data-toc-aside]` wrapper is hidden
+  via JavaScript on `DOMContentLoaded`.
+</Admonition>

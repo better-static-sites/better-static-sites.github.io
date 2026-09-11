@@ -1,0 +1,12 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocLayout from 'src/layouts/DocLayout.astro';
+
+const docs = await getCollection('docs');
+const overview = docs.find(d => d.id === 'index.mdx' || d.id === 'index.md');
+if (!overview) return Astro.redirect('/');
+const { Content } = await render(overview);
+---
+<DocLayout title={overview.data.title} description={overview.data.description} entryId={overview.id}>
+  <Content />
+</DocLayout>

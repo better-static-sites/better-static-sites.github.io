@@ -1,0 +1,90 @@
+---
+title: astro-better-tables
+description: RST-style list-table and grid-table components for structured data.
+order: 5
+---
+
+import Table from 'astro-better-tables/Table.astro';
+import Row from 'astro-better-tables/Row.astro';
+import Cell from 'astro-better-tables/Cell.astro';
+
+# astro-better-tables
+
+RST-style table components for Astro MDX. Provides `Table`, `Row`, and `Cell` components
+for building structured data tables with consistent styling.
+
+<p class="pkg-meta">Current version: <strong>0.1.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-tables" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-tables
+```
+
+## Components
+
+### Table
+
+The outer container. Accepts a `headers` array for the column header row.
+
+```mdx
+import Table from 'astro-better-tables/Table.astro';
+import Row from 'astro-better-tables/Row.astro';
+import Cell from 'astro-better-tables/Cell.astro';
+
+<Table headers={['Name', 'Type', 'Description']}>
+  <Row>
+    <Cell>href</Cell>
+    <Cell>string</Cell>
+    <Cell>The destination URL.</Cell>
+  </Row>
+  <Row>
+    <Cell>title</Cell>
+    <Cell>string</Cell>
+    <Cell>Card heading text.</Cell>
+  </Row>
+</Table>
+```
+
+### Live example
+
+<Table headers={['Package', 'Type', 'Version']}>
+  <Row>
+    <Cell>astro-better-nav-bar</Cell>
+    <Cell>component</Cell>
+    <Cell>0.1.1</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-steps</Cell>
+    <Cell>component</Cell>
+    <Cell>0.1.0</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-toc-smol</Cell>
+    <Cell>integration</Cell>
+    <Cell>1.0.0</Cell>
+  </Row>
+</Table>
+
+### Table props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `headers` | `string[]` | `[]` | Column header text |
+| `class` | `string` | -- | Additional CSS classes |
+
+### Row props
+
+`Row` takes no props. It renders a `<tr>` element.
+
+### Cell props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `header` | `boolean` | `false` | Render as `<th>` instead of `<td>` |
+| `class` | `string` | -- | Additional CSS classes |
+
+## TableGrid
+
+The package also exports `TableGrid` for grid-style tables with explicit positioning.
+See the source for advanced usage.

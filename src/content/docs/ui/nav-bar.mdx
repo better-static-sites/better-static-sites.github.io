@@ -1,0 +1,127 @@
+---
+title: astro-better-nav-bar
+description: Configurable top navigation bar with dropdowns, theme selector, search, login link, and CTA button.
+order: 1
+---
+
+import { Admonition } from 'astro-better-admonitions';
+import Tabs from 'astro-better-tabs/Tabs.astro';
+import TabItem from 'astro-better-tabs/TabItem.astro';
+
+# astro-better-nav-bar
+
+A configurable top navigation bar for Astro sites. Supports dropdowns, a dark/light theme selector,
+a search button, login link, and CTA button. Designed for both docs and content sites.
+
+<p class="pkg-meta">Current version: <strong>0.1.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-nav-bar" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-nav-bar
+```
+
+Import the CSS in your global stylesheet:
+
+```css
+@import "astro-better-nav-bar/style.css";
+```
+
+## Basic usage
+
+```astro
+---
+import { NavBar } from 'astro-better-nav-bar';
+---
+<NavBar
+  sectionTitle="My Site"
+  sectionTitleHref="/"
+  showThemeSelector
+  showSearch
+  loginHref="https://example.com/login"
+  ctaHref="/contact"
+  ctaLabel="Get started"
+>
+  <img slot="logo" src="/logo.svg" alt="My Site" class="h-8 w-8" />
+</NavBar>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `logoHref` | `string` | `/` | URL the logo links to |
+| `logoAriaLabel` | `string` | `Home` | aria-label for logo link |
+| `sectionTitle` | `string` | -- | Section label displayed next to logo |
+| `sectionTitleHref` | `string` | -- | URL the section title links to |
+| `dropdowns` | `Dropdown[]` | `[]` | Dropdown menus (see below) |
+| `showThemeSelector` | `boolean` | `false` | Show the light/dark theme toggle |
+| `showSearch` | `boolean` | `false` | Show a search button (opens native browser search) |
+| `loginHref` | `string` | -- | URL for the "Log in" link |
+| `loginLabel` | `string` | `Log in` | Text for the login link |
+| `ctaHref` | `string` | -- | URL for the CTA button |
+| `ctaLabel` | `string` | -- | Text for the CTA button |
+| `breadcrumbs` | `{title, href}[]` | `[]` | Breadcrumb trail displayed below the main bar |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `logo` | Logo element (image, SVG, or Astro component) |
+| `sidebar-toggle` | Mobile sidebar toggle button |
+| `extra-actions` | Additional items in the action area |
+
+## Dropdowns
+
+Each dropdown takes a `label` (the button text) and an `items` array:
+
+```ts
+type DropdownItem = { name: string; href: string };
+type Dropdown = { label: string; items: DropdownItem[] };
+```
+
+```astro
+<NavBar
+  dropdowns={[
+    {
+      label: 'Resources',
+      items: [
+        { name: 'Docs', href: '/docs' },
+        { name: 'Blog', href: '/blog' },
+        { name: 'API', href: '/api' },
+      ],
+    },
+  ]}
+  ...
+/>
+```
+
+## Theme selector
+
+When `showThemeSelector` is true, a theme toggle appears in the nav. It reads and writes
+`localStorage.getItem('theme')` and toggles the `.dark` class on `document.documentElement`.
+
+The desktop nav shows a moon-icon dropdown with three options: Light, Dark, and System.
+Mobile shows a single toggle button.
+
+## CSS customization
+
+Override these CSS custom properties in your stylesheet:
+
+```css
+:root {
+  --nav-bg:           #5E2750;   /* nav bar background */
+  --nav-border:       #4a1f40;   /* nav bottom border */
+  --nav-text:         #f5e6f0;   /* nav text color */
+  --nav-text-muted:   #d4a8c8;   /* muted text (e.g. section title) */
+  --nav-hover:        rgba(255,255,255,0.12); /* hover background */
+  --nav-cta-bg:       #D24D15;   /* CTA button background */
+  --nav-cta-hover-bg: #b83d0e;   /* CTA button hover */
+  --nav-max-width:    1400px;    /* max content width */
+}
+```
+
+<Admonition type="tip" title="Dark mode">
+  The nav bar always uses `--nav-*` variables regardless of dark mode, since the nav typically
+  has its own distinct background color that does not follow the page's light/dark toggle.
+</Admonition>

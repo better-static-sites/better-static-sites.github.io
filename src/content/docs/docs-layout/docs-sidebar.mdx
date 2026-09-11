@@ -1,0 +1,104 @@
+---
+title: astro-better-docs-sidebar
+description: Auto-building docs sidebar from a content collection, with tree expansion and active-page tracking.
+order: 1
+---
+
+import { Admonition } from 'astro-better-admonitions';
+import { Steps } from 'astro-better-steps';
+
+# astro-better-docs-sidebar
+
+Builds a sidebar navigation tree from an Astro content collection. Handles nested directories,
+folder expansion, active-page highlighting, and `order` / `hidden` frontmatter fields.
+
+<p class="pkg-meta">Current version: <strong>0.2.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-docs-sidebar" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-docs-sidebar
+```
+
+## Setup
+
+<Steps>
+
+### Define your content collection
+
+In `src/content/config.ts`, include `order`, `hidden`, and `sidebar` fields:
+
+```ts
+import { defineCollection, z } from 'astro:content';
+
+const docs = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    order: z.number().optional(),
+    hidden: z.boolean().optional(),
+    sidebar: z.object({
+      label: z.string().optional(),
+      folderBehavior: z.enum(['page', 'unclickable', 'overview']).optional(),
+    }).optional(),
+  }),
+});
+
+export const collections = { docs };
+```
+
+### Add the Sidebar to your layout
+
+```astro
+---
+import Sidebar from 'astro-better-docs-sidebar/Sidebar.astro';
+import { getCollection } from 'astro:content';
+
+const docsCollection = await getCollection('docs');
+---
+<Sidebar
+  frontmatter={Astro.props}
+  collection={docsCollection}
+  basePath="/docs"
+/>
+```
+
+### Style the sidebar container
+
+The sidebar requires Tailwind for its internal `<style>` block.
+Wrap it in an `<aside>` with the `aside` class, or let it render inline.
+
+</Steps>
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `frontmatter` | `Record<string, any>` | (required) | Current page frontmatter (used for active detection) |
+| `collection` | `CollectionEntry[]` | (required) | The full content collection array |
+| `basePath` | `string` | (required) | URL prefix for all sidebar links |
+| `folderBehavior` | `'page' \| 'unclickable' \| 'overview'` | `'page'` | How folder nodes behave |
+| `overviewLabel` | `string` | `'Overview'` | Label for the auto-generated overview link when `folderBehavior='overview'` |
+
+## Frontmatter fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | `string` | Item label in the sidebar |
+| `order` | `number` | Sort order (lower numbers first) |
+| `hidden` | `boolean` | Hide this page from the sidebar |
+| `sidebar.label` | `string` | Override the sidebar label (without changing the page title) |
+| `sidebar.folderBehavior` | `string` | Override folder behavior for this specific folder |
+
+## Folder behavior modes
+
+`folderBehavior` controls what happens when a folder has an `index.md(x)` file:
+
+- `page` (default): the folder node links to the index page directly
+- `unclickable`: the folder node is a label with no link; only children are clickable
+- `overview`: an "Overview" link is auto-generated as the first child
+
+<Admonition type="tip" title="Requires Tailwind">
+  The sidebar uses Tailwind `@apply` in its `&lt;style&gt;` block, so Tailwind must be installed
+  in the consuming project. All classes use the `.dark` variant for dark mode.
+</Admonition>

@@ -1,0 +1,80 @@
+---
+title: astro-link-checker
+description: Fast intra-site broken link and image checker that deduplicates destinations.
+order: 6
+---
+
+import { Admonition } from 'astro-better-admonitions';
+
+# astro-link-checker
+
+A post-build integration that checks every internal link and image reference in your
+Astro site for broken destinations. Deduplicates check targets so each unique
+destination is verified exactly once, even if it is linked from hundreds of pages.
+
+<p class="pkg-meta">Current version: <strong>1.0.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-link-checker" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-link-checker
+```
+
+## Setup
+
+In `astro.config.ts`:
+
+```ts
+import linkChecker from 'astro-link-checker';
+
+export default defineConfig({
+  integrations: [
+    linkChecker(),
+  ],
+});
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `failOnBrokenLinks` | `boolean` | `true` | Throw a build error when broken links are found |
+| `excludeSourcePages` | `(string\|RegExp)[]` | `[]` | Skip pages whose URL path matches |
+| `excludeDestinations` | `(string\|RegExp)[]` | `[]` | Skip destinations whose path matches |
+
+## What it checks
+
+- `href` attributes on `<a>` elements
+- `src` attributes on `<img>` elements
+- `srcset` attributes on `<source>` and `<img>` elements
+- Anchor fragments (`/page#section`) against `id` attributes on the target page
+
+External links (http:// and https://) are not checked.
+
+## Algorithm
+
+1. Walk the build output directory and collect all `.html` files
+2. Read all files concurrently; extract links, images, and `id` attributes
+3. Build a deduplicated set of unique destinations
+4. Check all unique paths with `fs.access`
+5. Validate anchor fragments against the `id` cache
+6. Report broken links grouped by destination
+
+<Admonition type="tip" title="Excluding redirects">
+  Use `excludeDestinations` to skip known redirect targets that do not exist as files:
+  ```ts
+  linkChecker({
+    excludeDestinations: ['/old-path', /\/legacy\//],
+  })
+  ```
+</Admonition>
+
+## Output
+
+On a clean build, the checker prints a summary count. If broken links are found,
+it prints each one with the source pages that reference it:
+
+```
+[link-checker] /docs/missing-page
+  referenced by: /docs/index.html, /docs/other.html
+```
