@@ -15,7 +15,7 @@ interface Props {
 const GITHUB_REPO = 'https://github.com/lambdalatitudinarians/bss-docs';
 
 const { title, description, entryId } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
 const editUrl  = entryId ? `${GITHUB_REPO}/edit/main/src/content/docs/${entryId}` : null;

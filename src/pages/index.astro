@@ -2,7 +2,7 @@
 import { NavBar } from 'astro-better-nav-bar';
 import 'src/css/style.css';
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 <!doctype html>
 <html lang="en">
