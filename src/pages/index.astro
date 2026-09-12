@@ -1,8 +1,11 @@
 ---
 import { NavBar } from 'astro-better-nav-bar';
+import Sidebar from 'astro-better-docs-sidebar/Sidebar.astro';
 import 'src/css/style.css';
+import { getCollection } from 'astro:content';
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const docsCollection = await getCollection('docs');
 ---
 <!doctype html>
 <html lang="en">
@@ -21,120 +24,138 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <NavBar
       sectionTitle="Better Static Sites"
       sectionTitleHref={base}
+      logoHref={base}
       showThemeSelector
       showSearch={false}
     >
       <img slot="logo" src={`${base}favicon-32x32.png`} width="32" height="32" alt="" />
     </NavBar>
 
-    <div class="hero-section">
-      <div class="hero-mascot">
-        <img src={`${base}android-chrome-192x192.png`} width="192" height="192" alt="The Better Static Sites mascot, Sean the shnek" title="The Better Static Sites mascot, Sean the shnek, goes bss" />
-      </div>
-      <h1>Better Static Sites</h1>
-      <p>
-        A standard library of common tools and components you might need to build a nice static site.
-        Does this suite contain the <em>best</em> tools around?
-        We can't answer that. But they're certainly <em>better</em> than something.
-      </p>
-    </div>
+    <div class="doc-layout">
+      <aside class="doc-sidebar">
+        <Sidebar
+          frontmatter={{ title: 'Home' }}
+          collection={docsCollection}
+          basePath={base.replace(/\/$/, '')}
+        />
+        <nav class="sidebar-extra-nav">
+          <a href={`${base}release-notes`} class="sidebar-extra-link">
+            Release Notes
+          </a>
+        </nav>
+      </aside>
 
-    <div class="packages-grid">
-      <div class="pkg-group-title">UI Components</div>
+      <main class="doc-main" style="padding-top: 0">
+        <div class="hero-section">
+          <div class="hero-mascot">
+            <img src={`${base}android-chrome-192x192.png`} width="192" height="192" alt="The Better Static Sites mascot, Sean the shnek" title="The Better Static Sites mascot, Sean the shnek, goes bss" />
+          </div>
+          <h1>Better Static Sites</h1>
+          <p>
+            A standard library of common tools and components you might need to build a nice static site.
+            Does this suite contain the <em>best</em> tools around?
+            We can't answer that. But they're certainly <em>better</em> than something.
+          </p>
+        </div>
 
-      <a href={`${base}docs/ui/nav-bar`} class="pkg-card">
-        <div class="pkg-name">astro-better-nav-bar</div>
-        <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">Configurable top navigation bar with dropdowns, theme selector, and slot-based customization.</div>
-      </a>
+        <div class="packages-grid">
+          <div class="pkg-group-title">UI Components</div>
 
-      <a href={`${base}docs/ui/steps`} class="pkg-card">
-        <div class="pkg-name">astro-better-steps</div>
-        <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">Numbered step-by-step sequences with CSS counters and a connecting vertical line.</div>
-      </a>
+          <a href={`${base}ui/nav-bar`} class="pkg-card">
+            <div class="pkg-name">astro-better-nav-bar</div>
+            <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">Configurable top navigation bar with dropdowns, theme selector, and slot-based customization.</div>
+          </a>
 
-      <a href={`${base}docs/ui/tabs`} class="pkg-card">
-        <div class="pkg-name">astro-better-tabs</div>
-        <div class="pkg-version">v0.3.1 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">CSS-first tabbed content panels with JavaScript progressive enhancement.</div>
-      </a>
+          <a href={`${base}ui/steps`} class="pkg-card">
+            <div class="pkg-name">astro-better-steps</div>
+            <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">Numbered step-by-step sequences with CSS counters and a connecting vertical line.</div>
+          </a>
 
-      <a href={`${base}docs/ui/cards`} class="pkg-card">
-        <div class="pkg-name">astro-better-cards</div>
-        <div class="pkg-version">v0.2.2 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">Link cards, child-page grids, and prev/next page navigation components.</div>
-      </a>
+          <a href={`${base}ui/tabs`} class="pkg-card">
+            <div class="pkg-name">astro-better-tabs</div>
+            <div class="pkg-version">v0.3.1 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">CSS-first tabbed content panels with JavaScript progressive enhancement.</div>
+          </a>
 
-      <a href={`${base}docs/ui/tables`} class="pkg-card">
-        <div class="pkg-name">astro-better-tables</div>
-        <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">RST-style list-table and grid-table components for structured data.</div>
-      </a>
+          <a href={`${base}ui/cards`} class="pkg-card">
+            <div class="pkg-name">astro-better-cards</div>
+            <div class="pkg-version">v0.2.2 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">Link cards, child-page grids, and prev/next page navigation components.</div>
+          </a>
 
-      <a href={`${base}docs/ui/admonitions`} class="pkg-card">
-        <div class="pkg-name">astro-better-admonitions</div>
-        <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">Extensible callout boxes (note, tip, caution, warning) and inline badges.</div>
-      </a>
+          <a href={`${base}ui/tables`} class="pkg-card">
+            <div class="pkg-name">astro-better-tables</div>
+            <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">RST-style list-table and grid-table components for structured data.</div>
+          </a>
 
-      <a href={`${base}docs/ui/release-notes`} class="pkg-card">
-        <div class="pkg-name">astro-better-release-notes</div>
-        <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">Release notes with version dropdown navigation and category filtering.</div>
-      </a>
+          <a href={`${base}ui/admonitions`} class="pkg-card">
+            <div class="pkg-name">astro-better-admonitions</div>
+            <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">Extensible callout boxes (note, tip, caution, warning) and inline badges.</div>
+          </a>
 
-      <div class="pkg-group-title">Doc Layout</div>
+          <a href={`${base}ui/release-notes`} class="pkg-card">
+            <div class="pkg-name">astro-better-release-notes</div>
+            <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">Release notes with version dropdown navigation and category filtering.</div>
+          </a>
 
-      <a href={`${base}docs/docs-layout/docs-sidebar`} class="pkg-card">
-        <div class="pkg-name">astro-better-docs-sidebar</div>
-        <div class="pkg-version">v0.2.0 &mdash; <span class="badge badge-component">component</span></div>
-        <div class="pkg-desc">Auto-building docs sidebar from a content collection, with tree expansion and active-page tracking.</div>
-      </a>
+          <div class="pkg-group-title">Doc Layout</div>
 
-      <a href={`${base}docs/docs-layout/toc-smol`} class="pkg-card">
-        <div class="pkg-name">astro-toc-smol</div>
-        <div class="pkg-version">v1.0.0 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Server-side "On This Page" table of contents with scroll spy, injected at build time.</div>
-      </a>
+          <a href={`${base}docs-layout/docs-sidebar`} class="pkg-card">
+            <div class="pkg-name">astro-better-docs-sidebar</div>
+            <div class="pkg-version">v0.2.0 &mdash; <span class="badge badge-component">component</span></div>
+            <div class="pkg-desc">Auto-building docs sidebar from a content collection, with tree expansion and active-page tracking.</div>
+          </a>
 
-      <div class="pkg-group-title">Build Tools</div>
+          <a href={`${base}docs-layout/toc-smol`} class="pkg-card">
+            <div class="pkg-name">astro-toc-smol</div>
+            <div class="pkg-version">v1.0.0 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Server-side "On This Page" table of contents with scroll spy, injected at build time.</div>
+          </a>
 
-      <a href={`${base}docs/build-tools/code-blocks`} class="pkg-card">
-        <div class="pkg-name">astro-better-code-blocks</div>
-        <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Remark/rehype plugins for enhanced code blocks: copy button, shell session formatting.</div>
-      </a>
+          <div class="pkg-group-title">Build Tools</div>
 
-      <a href={`${base}docs/build-tools/code-snippet-extractor`} class="pkg-card">
-        <div class="pkg-name">astro-better-code-snippet-extractor</div>
-        <div class="pkg-version">v0.2.1 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Load Bluehawk-annotated code snippets and local source files into Astro pages.</div>
-      </a>
+          <a href={`${base}build-tools/code-blocks`} class="pkg-card">
+            <div class="pkg-name">astro-better-code-blocks</div>
+            <div class="pkg-version">v0.1.1 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Remark/rehype plugins for enhanced code blocks: copy button, shell session formatting.</div>
+          </a>
 
-      <a href={`${base}docs/build-tools/mermaid`} class="pkg-card">
-        <div class="pkg-name">astro-mermaid-renderer-cli-smol</div>
-        <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Server-side Mermaid diagram rendering to inline SVG. No client JavaScript required.</div>
-      </a>
+          <a href={`${base}build-tools/code-snippet-extractor`} class="pkg-card">
+            <div class="pkg-name">astro-better-code-snippet-extractor</div>
+            <div class="pkg-version">v0.2.1 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Load Bluehawk-annotated code snippets and local source files into Astro pages.</div>
+          </a>
 
-      <a href={`${base}docs/build-tools/refs`} class="pkg-card">
-        <div class="pkg-name">astro-refs</div>
-        <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Sphinx-style named anchors. Declare once, link by name, survive content moves.</div>
-      </a>
+          <a href={`${base}build-tools/mermaid`} class="pkg-card">
+            <div class="pkg-name">astro-mermaid-renderer-cli-smol</div>
+            <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Server-side Mermaid diagram rendering to inline SVG. No client JavaScript required.</div>
+          </a>
 
-      <a href={`${base}docs/build-tools/gen-markdown-pages`} class="pkg-card">
-        <div class="pkg-name">astro-gen-markdown-pages</div>
-        <div class="pkg-version">v1.0.0 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Generates .md companion files and llms.txt from built HTML pages at build time.</div>
-      </a>
+          <a href={`${base}build-tools/refs`} class="pkg-card">
+            <div class="pkg-name">astro-refs</div>
+            <div class="pkg-version">v0.1.0 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Sphinx-style named anchors. Declare once, link by name, survive content moves.</div>
+          </a>
 
-      <a href={`${base}docs/build-tools/link-checker`} class="pkg-card">
-        <div class="pkg-name">astro-link-checker</div>
-        <div class="pkg-version">v1.0.0 &mdash; <span class="badge badge-integration">integration</span></div>
-        <div class="pkg-desc">Fast intra-site broken link and image checker. Deduplicates destinations for efficiency.</div>
-      </a>
+          <a href={`${base}build-tools/gen-markdown-pages`} class="pkg-card">
+            <div class="pkg-name">astro-gen-markdown-pages</div>
+            <div class="pkg-version">v1.0.0 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Generates .md companion files and llms.txt from built HTML pages at build time.</div>
+          </a>
+
+          <a href={`${base}build-tools/link-checker`} class="pkg-card">
+            <div class="pkg-name">astro-link-checker</div>
+            <div class="pkg-version">v1.0.0 &mdash; <span class="badge badge-integration">integration</span></div>
+            <div class="pkg-desc">Fast intra-site broken link and image checker. Deduplicates destinations for efficiency.</div>
+          </a>
+        </div>
+      </main>
     </div>
 
     <footer class="site-footer">

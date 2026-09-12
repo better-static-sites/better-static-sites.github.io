@@ -290,8 +290,6 @@ aside.aside { background: transparent; border-color: transparent; }
 
 /* landing page */
 .hero-section {
-  background: var(--bg-alt);
-  border-bottom: 2px solid var(--border);
   padding: 3.5rem 1.5rem 3rem;
   text-align: center;
 }
@@ -320,8 +318,8 @@ aside.aside { background: transparent; border-color: transparent; }
 }
 
 .packages-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   padding: 2rem 1.5rem;
   max-width: 1400px;
@@ -329,13 +327,14 @@ aside.aside { background: transparent; border-color: transparent; }
 }
 
 .pkg-card {
+  flex: 1 1 280px;
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 1.25rem;
   background: var(--bg-alt);
   text-decoration: none;
   color: var(--text);
-  display: block;
   transition: border-color 0.15s, background 0.15s;
 }
 .pkg-card:hover {
@@ -359,7 +358,7 @@ aside.aside { background: transparent; border-color: transparent; }
   line-height: 1.5;
 }
 .pkg-group-title {
-  grid-column: 1 / -1;
+  flex-basis: 100%;
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;

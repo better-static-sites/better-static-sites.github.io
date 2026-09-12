@@ -19,7 +19,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
 const editUrl  = entryId ? `${GITHUB_REPO}/edit/main/src/content/docs/${entryId}` : null;
-const mdUrl    = slug ? `${base}docs/${slug}.md` : null;
+const mdUrl    = slug ? `${base}${slug}.md` : null;
 
 const docsCollection = await getCollection('docs');
 ---
@@ -40,6 +40,7 @@ const docsCollection = await getCollection('docs');
     <NavBar
       sectionTitle="Better Static Sites"
       sectionTitleHref={base}
+      logoHref={base}
       showThemeSelector
       showSearch={false}
     >
