@@ -12,13 +12,13 @@ interface Props {
   entryId?: string;
 }
 
-const GITHUB_REPO = 'https://github.com/lambdalatitudinarians/bss-docs';
+const GITHUB_REPO = 'https://github.com/better-static-sites/docs';
 
 const { title, description, entryId } = Astro.props;
 const base = '/docs/';
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
-const editUrl  = entryId ? `${GITHUB_REPO}/edit/main/src/content/docs/${entryId}` : null;
+const editUrl  = entryId ? `${GITHUB_REPO}/blob/main/src/content/docs/${entryId}` : null;
 const mdUrl    = slug ? `${base}${slug}.md` : null;
 
 const docsCollection = await getCollection('docs');

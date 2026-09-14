@@ -21,11 +21,22 @@ npm install astro-better-details
 
 ## Usage
 
+Pass the title as a prop for plain text headers:
+
 ````mdx escape
 import Details from 'astro-better-details/Details.astro';
 
 <Details title="Section title">
   Content goes here. Supports **markdown** and MDX components.
+</Details>
+````
+
+Use the `title` slot when the header needs inline markup -- code, links, or other components:
+
+````mdx escape
+<Details>
+  <span slot="title">Why use <code>astro-better-details</code>?</span>
+  Content goes here.
 </Details>
 ````
 
@@ -40,11 +51,16 @@ import Details from 'astro-better-details/Details.astro';
   Pass the `open` prop to render the panel pre-expanded.
 </Details>
 
+<Details>
+  <span slot="title">Title with inline <code>code</code> via the slot</span>
+  Use the `title` slot when the header needs inline markup that a plain string prop can't express.
+</Details>
+
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `title` | `string` | -- | Text shown in the clickable header |
+| `title` | `string` | -- | Plain-text header label; use the `title` slot for inline markup |
 | `open` | `boolean` | `false` | Render the panel pre-expanded |
 | `class` | `string` | -- | Extra class(es) added to the `<details>` element |
 
@@ -52,7 +68,7 @@ import Details from 'astro-better-details/Details.astro';
 
 | Slot | Description |
 |------|-------------|
-| `title` | Rich header content (use in `.astro` files; prefer the `title` prop in MDX) |
+| `title` | Header content with inline markup -- code, links, components; takes precedence over the `title` prop |
 | (default) | Body content revealed when expanded |
 
 ## Theming
