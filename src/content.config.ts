@@ -9,6 +9,9 @@ const docs = defineCollection({
     order: z.number().optional(),
     hidden: z.boolean().optional(),
     route: z.boolean().optional(),
+    version: z.string().optional(),
+    versions: z.record(z.string()).optional(),
+    badges: z.array(z.string()).optional(),
     sidebar: z.object({
       label: z.string().optional(),
       folderBehavior: z.enum(['page', 'unclickable', 'overview']).optional(),

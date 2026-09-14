@@ -2,10 +2,13 @@
 title: astro-toc-smol
 description: Server-side table of contents with scroll spy, injected at build time.
 order: 2
+version: "1.0.0"
+badges: ["integration", "component"]
 ---
 
 import { Admonition } from 'astro-better-admonitions';
 import { Steps } from 'astro-better-steps';
+import PkgMeta from 'src/components/PkgMeta.astro';
 
 # astro-toc-smol
 
@@ -13,7 +16,7 @@ An Astro integration that generates an "On This Page" table of contents by scann
 the final rendered HTML at build time. Includes a scroll spy script that highlights
 the active section as the user scrolls.
 
-<p class="pkg-meta">Current version: <strong>1.0.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-toc-smol" target="_blank" rel="noopener">npm</a></p>
+<PkgMeta pkg="astro-toc-smol" />
 
 ## Installation
 

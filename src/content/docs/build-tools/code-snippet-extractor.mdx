@@ -2,10 +2,13 @@
 title: astro-better-code-snippet-extractor
 description: Load Bluehawk-annotated code snippets and local source files into Astro pages.
 order: 2
+version: "0.2.1"
+badges: ["integration", "component"]
 ---
 
 import { Admonition } from 'astro-better-admonitions';
 import { Steps } from 'astro-better-steps';
+import PkgMeta from 'src/components/PkgMeta.astro';
 
 # astro-better-code-snippet-extractor
 
@@ -13,7 +16,7 @@ An integration and component for loading code snippets into Astro pages.
 Supports Bluehawk-annotated files (with `// :snippet-start:` / `:snippet-end:` markers)
 and plain source file inclusion.
 
-<p class="pkg-meta">Current version: <strong>0.2.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-code-snippet-extractor" target="_blank" rel="noopener">npm</a></p>
+<PkgMeta pkg="astro-better-code-snippet-extractor" />
 
 <Admonition type="caution" title="Node 22.6+ compatibility">
   Version `0.2.1` fixes a crash on Node 22.6+ where `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`

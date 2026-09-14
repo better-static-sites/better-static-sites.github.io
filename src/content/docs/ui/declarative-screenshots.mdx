@@ -2,12 +2,18 @@
 title: astro-better-declarative-screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
+version: "0.4.1"
+versions:
+  astro-better-declarative-screenshots: "0.4.1"
+  generate-declarative-screenshots: "0.4.2"
+badges: ["component", "tool"]
 ---
 
 import { Steps } from 'astro-better-steps';
 import { Admonition } from 'astro-better-admonitions';
 import Screenshot from 'astro-better-declarative-screenshots/Screenshot.astro';
 import Highlight from 'astro-better-declarative-screenshots/Highlight.astro';
+import PkgMeta from 'src/components/PkgMeta.astro';
 
 # astro-better-declarative-screenshots
 
@@ -15,17 +21,17 @@ Declarative screenshots for Astro documentation sites. You define which pages to
 and which elements to highlight directly in your MDX. A separate CLI generates the PNG files
 using Playwright and Docker. Your docs build just renders the committed PNGs as `<img>` tags.
 
-<p class="pkg-meta">Current version: <strong>0.4.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-declarative-screenshots" target="_blank" rel="noopener">npm</a></p>
-
 ## Two packages
 
 **`astro-better-declarative-screenshots`** -- Astro components for your docs site.
 Reads committed PNGs at build time and renders them as `<img>` tags. No Playwright, no Docker,
 no heavy dependencies.
+<PkgMeta pkg="astro-better-declarative-screenshots" />
 
 **`generate-declarative-screenshots`** -- CLI that generates the PNGs. Starts Docker,
 captures pages with Playwright WebKit, injects highlights, and writes PNGs to your output
 directory.
+<PkgMeta pkg="generate-declarative-screenshots" />
 
 The split keeps Playwright's ~250 MB browser binaries out of your docs build. Regular builds
 stay fast; generation runs on a schedule, on demand, or only when content changes.

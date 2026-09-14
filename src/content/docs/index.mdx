@@ -6,59 +6,9 @@ sidebar:
   label: Overview
 ---
 
-import { Admonition } from 'astro-better-admonitions';
+import Hero from 'src/components/Hero.astro';
+import ChildCards from 'astro-better-cards/ChildCards.astro';
 
-# astro-better-*
+<Hero />
 
-The `astro-better-*` packages are a family of Astro integrations and components built for documentation sites.
-They are designed to work together, share a consistent theming approach (`.dark` class, CSS custom properties),
-and require minimal configuration.
-
-<Admonition type="tip" title="Dark mode">
-  All packages use `.dark` class-based dark mode. Toggle it by adding or removing the `dark` class on `<html>`.
-  None of the packages use `prefers-color-scheme` media queries, so your site controls the switch.
-</Admonition>
-
-## Packages
-
-The packages fall into three categories:
-
-### UI Components
-
-Components you drop into MDX pages to add structured content.
-
-- [astro-better-nav-bar](/docs/docs-layout/nav-bar) -- top navigation bar with dropdowns and theme selector
-- [astro-better-steps](/docs/ui/steps) -- numbered step sequences
-- [astro-better-tabs](/docs/ui/tabs) -- tabbed content panels
-- [astro-better-cards](/docs/ui/cards) -- link cards and page navigation
-- [astro-better-tables](/docs/ui/tables) -- structured data tables
-- [astro-better-admonitions](/docs/ui/admonitions) -- callout boxes and badges
-- [astro-better-release-notes](/docs/docs-layout/release-notes) -- versioned changelogs with filtering
-
-### Doc Layout
-
-Integrations that power the docs site layout itself.
-
-- [astro-better-docs-sidebar](/docs/docs-layout/docs-sidebar) -- auto-built sidebar from content collections
-- [astro-toc-smol](/docs/docs-layout/toc-smol) -- server-side TOC with scroll spy
-
-### Build Tools
-
-Integrations that run at build time to enhance content or validate the site.
-
-- [astro-better-code-blocks](/docs/build-tools/code-blocks) -- copy button, shell session formatting
-- [astro-better-code-snippet-extractor](/docs/build-tools/code-snippet-extractor) -- Bluehawk snippets
-- [astro-mermaid-renderer-cli-smol](/docs/build-tools/mermaid) -- server-side diagram rendering
-- [astro-refs](/docs/build-tools/refs) -- Sphinx-style named cross-references
-- [astro-gen-markdown-pages](/docs/build-tools/gen-markdown-pages) -- llms.txt and .md companion files
-- [astro-link-checker](/docs/build-tools/link-checker) -- broken link detection
-
-## Getting started
-
-Install whichever packages you need:
-
-```shell-session
-npm install astro-better-nav-bar astro-better-steps astro-toc-smol
-```
-
-Then follow the individual package docs to configure each one in your `astro.config.ts`.
+<ChildCards depth={2} />

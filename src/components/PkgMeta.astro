@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  pkg: string;
+}
+
+const { pkg } = Astro.props;
+
+const pages = await getCollection('docs');
+const pathname = Astro.url.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
+const entryId = pathname.startsWith('docs/') ? pathname.slice(5) : pathname;
+const entry = pages.find(p => {
+  const cid = p.id.replace(/\.(md|mdx)$/i, '').replace(/\/index$/, '');
+  return cid === entryId;
+});
+
+const version = entry?.data.versions?.[pkg] ?? entry?.data.version;
+---
+{version && (
+  <p class="pkg-meta">
+    Current version: <strong>{version}</strong> --
+    <a href={`https://www.npmjs.com/package/${pkg}`} target="_blank" rel="noopener">npm</a>
+  </p>
+)}

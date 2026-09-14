@@ -350,6 +350,8 @@ aside.aside { background: transparent; border-color: transparent; }
   margin: 0 0 0.75rem;
   color: var(--accent);
   font-family: var(--mono);
+  border-bottom: none;
+  padding-bottom: 0;
 }
 .hero-section p {
   font-size: 1rem;
@@ -437,8 +439,10 @@ aside.aside { background: transparent; border-color: transparent; }
 }
 .badge-component { background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd; }
 .badge-integration { background: #f0fdf4; color: #15803d; border-color: #86efac; }
+.badge-tool { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
 .dark .badge-component { background: #1e0a3c; color: #a78bfa; border-color: #4c1d95; }
 .dark .badge-integration { background: #1c0500; color: #fb923c; border-color: #431407; }
+.dark .badge-tool { background: #0c1a3c; color: #60a5fa; border-color: #1e3a8a; }
 
 footer.site-footer {
   border-top: 1px solid var(--border);

@@ -2,11 +2,14 @@
 title: astro-refs
 description: Sphinx-style named anchors that survive content moves.
 order: 4
+version: "0.1.0"
+badges: ["integration", "component"]
 ---
 
 import { Admonition } from 'astro-better-admonitions';
 import { Steps } from 'astro-better-steps';
 import Ref from 'astro-refs/Ref.astro';
+import PkgMeta from 'src/components/PkgMeta.astro';
 
 # astro-refs
 
@@ -14,7 +17,7 @@ Named cross-references for Astro. Declare an anchor anywhere in your content,
 link to it by name from anywhere else in the site. Links stay valid even when content
 moves, because the name travels with the content.
 
-<p class="pkg-meta">Current version: <strong>0.1.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-refs" target="_blank" rel="noopener">npm</a></p>
+<PkgMeta pkg="astro-refs" />
 
 ## Installation
 
