@@ -6,6 +6,7 @@ order: 4
 
 import { Admonition } from 'astro-better-admonitions';
 import { Steps } from 'astro-better-steps';
+import Ref from 'astro-refs/Ref.astro';
 
 # astro-refs
 
@@ -13,7 +14,7 @@ Named cross-references for Astro. Declare an anchor anywhere in your content,
 link to it by name from anywhere else in the site. Links stay valid even when content
 moves, because the name travels with the content.
 
-<p class="pkg-meta">Current version: <strong>0.1.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-refs" target="_blank" rel="noopener">npm</a></p>
+<p class="pkg-meta">Current version: <strong>0.1.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-refs" target="_blank" rel="noopener">npm</a></p>
 
 ## Installation
 
@@ -45,26 +46,30 @@ export default defineConfig({
 
 ### Declare refs in your content
 
-Three ways to declare a ref:
+You can declare a ref in any of the following ways:
 
-**1. Frontmatter**
-```yaml
----
-ref: my-page-name
----
-```
+* **Frontmatter**
+  ```yaml
+  ---
+  ref: my-page-name
+  ---
+  ```
 
-**2. Section heading suffix**
-```md
-## Potatoes {potato-section}
-```
-The `{potato-section}` suffix is stripped from the rendered heading.
+* <Ref id="section-heading-suffix" />
 
-**3. `<Ref>` component**
-```mdx escape
-import Ref from 'astro-refs/Ref.astro';
-<Ref id="my-anchor" />
-```
+  **Section heading suffix**
+
+  ```md
+  ## Jumbo Potatoes {potato-section}
+  ```
+
+  The `{potato-section}` suffix is stripped from the rendered heading.
+  
+* **`<Ref>` component**
+  ```mdx escape
+  import Ref from 'astro-refs/Ref.astro';
+  <Ref id="my-anchor" />
+  ```
 
 ### Link by name
 
@@ -72,9 +77,20 @@ Use the `ref:` URL scheme anywhere you write a link:
 
 ```md
 [See the potato section](ref:potato-section)
+[Jump to the heading suffix docs](ref:section-heading-suffix)
 ```
 
+Refs work anywhere a Markdown link does -- inside prose, tables, admonitions, or step text.
+The target doesn't have to be a heading; a `<Ref>` placed anywhere in the page works just as well.
+
 </Steps>
+
+## Live example
+
+The following example targets a `<Ref>` component placed just before the "Section heading suffix"
+option in the Setup section, showing how you can link anywhere in your content, not just to headers and pages:
+
+* [`ref:section-heading-suffix`](ref:section-heading-suffix)
 
 ## Integration options
 
@@ -87,11 +103,6 @@ Use the `ref:` URL scheme anywhere you write a link:
 | Prop | Type | Description |
 |------|------|-------------|
 | `id` | `string` | The ref name to declare at this location |
-
-## Build-time validation
-
-At build time, `astro-refs` warns about any `ref:` links that point to undeclared ref names.
-This catches broken cross-references before they reach production.
 
 <Admonition type="tip" title="Multiple aliases">
   A page can declare multiple ref names in frontmatter:
