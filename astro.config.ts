@@ -56,7 +56,7 @@ export default defineConfig({
           return {
             code: code.replace(
               /`\/\${servePath}\/\${name}\.png`/g,
-              '`${import.meta.env.BASE_URL}${servePath}/${name}.png`'
+              '`${import.meta.env.BASE_URL.replace(/\\/$/, "")}/${servePath}/${name}.png`'
             ),
             map: null,
           };
