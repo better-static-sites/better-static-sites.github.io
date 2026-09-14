@@ -39,6 +39,8 @@
     "mermaid": "^11.0.0",
     "node-html-parser": "^6.1.13",
     "prismjs": "^1.30.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
     "svgdom": "^0.1.28",
     "tailwindcss": "^4.3.3",
     "turndown": "^7.2.4",

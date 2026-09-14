@@ -4,11 +4,11 @@ services:
     working_dir: /app
     volumes:
       - ../dist:/app/dist:ro
-    command: sh -c "test -f /app/dist/index.html || { echo 'dist/ not built -- run npm run screenshots from the project root'; exit 1; }; npx --yes serve dist -l 4000 --no-clipboard"
+    command: sh -c "test -f /app/dist/index.html || { echo 'dist/ not built -- run npm run screenshots from the project root'; exit 1; }; mkdir -p /tmp/serve && ln -sf /app/dist /tmp/serve/docs && npx --yes serve /tmp/serve -l 4000 --no-clipboard"
     ports:
       - "4000:4000"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4000/"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/docs/"]
       interval: 3s
       timeout: 5s
       retries: 30

@@ -14,21 +14,21 @@ const docsCollection = await getCollection('docs');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Better Static Sites</title>
     <meta name="description" content="A standard library of common tools and components you might need to build a nice static site." />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href={`${base}apple-touch-icon.png`}>
+    <link rel="icon" type="image/png" sizes="32x32" href={`${base}favicon-32x32.png`}>
+    <link rel="icon" type="image/png" sizes="16x16" href={`${base}favicon-16x16.png`}>
+    <link rel="manifest" href={`${base}site.webmanifest`}>
+    <link rel="shortcut icon" href={`${base}favicon.ico`}>
   </head>
   <body class="page-wrapper">
     <NavBar
       sectionTitle="Better Static Sites"
-      sectionTitleHref="/"
-      logoHref="/"
+      sectionTitleHref={base}
+      logoHref={base}
       showThemeSelector
       showSearch={false}
     >
-      <img slot="logo" src="/favicon-32x32.png" width="32" height="32" alt="" />
+      <img slot="logo" src={`${base}favicon-32x32.png`} width="32" height="32" alt="" />
     </NavBar>
 
     <div class="doc-layout">
@@ -48,7 +48,7 @@ const docsCollection = await getCollection('docs');
       <main class="doc-main" style="padding-top: 0">
         <div class="hero-section">
           <div class="hero-mascot">
-            <img src="/android-chrome-192x192.png" width="192" height="192" alt="The Better Static Sites mascot, Sean the shnek" title="The Better Static Sites mascot, Sean the shnek, goes bss" />
+            <img src={`${base}android-chrome-192x192.png`} width="192" height="192" alt="The Better Static Sites mascot, Sean the shnek" title="The Better Static Sites mascot, Sean the shnek, goes bss" />
           </div>
           <h1>Better Static Sites</h1>
           <p>
