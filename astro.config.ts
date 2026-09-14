@@ -10,16 +10,20 @@ import { rehypeCodeBlocks, remarkShellSession } from 'astro-better-code-blocks';
 import { unified } from '@astrojs/markdown-remark';
 import { remarkMermaidSSR, mermaidTitleFix } from 'astro-mermaid-renderer-cli-smol';
 
+const markdownProcessor = unified({
+  remarkPlugins: [mermaidTitleFix, remarkMermaidSSR, remarkShellSession],
+  rehypePlugins: [[rehypeCodeBlocks, { excludeLangs: ['mermaid'] }]],
+});
+
 export default defineConfig({
   site: 'https://lambdalatitudinarians.org',
-  base: '/docs',
+  markdown: {
+    processor: markdownProcessor,
+  },
   integrations: [
     mdx({
       syntaxHighlight: false,
-      processor: unified({
-        remarkPlugins: [mermaidTitleFix, remarkMermaidSSR, remarkShellSession],
-        rehypePlugins: [[rehypeCodeBlocks, { excludeLangs: ['mermaid'] }]],
-      }),
+      processor: markdownProcessor,
     }),
     tocSmol({ articleSelector: ['article.prose', 'main'] }),
     astroRefs({
@@ -33,7 +37,9 @@ export default defineConfig({
     linkChecker({ failOnBrokenLinks: false }),
   ],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+    ],
     ssr: {
       external: ['svgdom', 'mermaid'],
     },

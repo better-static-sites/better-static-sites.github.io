@@ -7,7 +7,6 @@ export async function getStaticPaths() {
   return docs
     .filter(entry => !/^index(\.(md|mdx))?$/i.test(entry.id))
     .map(entry => {
-      // strip file extension from the id to use as the URL slug
       const slug = entry.id.replace(/\.(md|mdx)$/i, '');
       return {
         params: { slug },
@@ -18,7 +17,9 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+// don't expose the MD button for route:false folder indexes (no companion file is generated)
+const entryId = entry.data.route === false ? undefined : entry.id;
 ---
-<DocLayout title={entry.data.title} description={entry.data.description} entryId={entry.id}>
+<DocLayout title={entry.data.title} description={entry.data.description} entryId={entryId}>
   <Content />
 </DocLayout>

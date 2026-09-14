@@ -37,6 +37,7 @@ const docs = defineCollection({
     title: z.string(),
     order: z.number().optional(),
     hidden: z.boolean().optional(),
+    route: z.boolean().optional(),
     sidebar: z.object({
       label: z.string().optional(),
       folderBehavior: z.enum(['page', 'unclickable', 'overview']).optional(),
@@ -87,6 +88,7 @@ Wrap it in an `<aside>` with the `aside` class, or let it render inline.
 | `title` | `string` | Item label in the sidebar |
 | `order` | `number` | Sort order (lower numbers first) |
 | `hidden` | `boolean` | Hide this page from the sidebar |
+| `route` | `boolean` | Set to `false` on a folder's `index.mdx` to prevent the sidebar from linking to it |
 | `sidebar.label` | `string` | Override the sidebar label (without changing the page title) |
 | `sidebar.folderBehavior` | `string` | Override folder behavior for this specific folder |
 

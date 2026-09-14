@@ -73,6 +73,18 @@ After `astro build`:
 - [API Reference](/docs/api.md): Full API docs.
 ```
 
+## MarkdownOnly component
+
+`MarkdownOnly` renders content that is invisible in the browser but included in the generated `.md` output. Use it to add LLM-facing context without cluttering the visual page.
+
+```mdx
+import MarkdownOnly from 'astro-gen-markdown-pages/MarkdownOnly.astro';
+
+<MarkdownOnly>
+  This text appears only in the generated .md file, not in the browser.
+</MarkdownOnly>
+```
+
 ## How it works
 
 The integration hooks into `astro:build:done`. For each `.html` file in the output,

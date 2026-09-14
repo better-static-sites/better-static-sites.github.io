@@ -1,0 +1,427 @@
+---
+title: astro-better-declarative-screenshots
+description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
+order: 9
+---
+
+import { Steps } from 'astro-better-steps';
+import { Admonition } from 'astro-better-admonitions';
+import Screenshot from 'astro-better-declarative-screenshots/Screenshot.astro';
+import Highlight from 'astro-better-declarative-screenshots/Highlight.astro';
+
+# astro-better-declarative-screenshots
+
+Declarative screenshots for Astro documentation sites. You define which pages to capture
+and which elements to highlight directly in your MDX. A separate CLI generates the PNG files
+using Playwright and Docker. Your docs build just renders the committed PNGs as `<img>` tags.
+
+<p class="pkg-meta">Current version: <strong>0.4.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-declarative-screenshots" target="_blank" rel="noopener">npm</a></p>
+
+## Two packages
+
+**`astro-better-declarative-screenshots`** -- Astro components for your docs site.
+Reads committed PNGs at build time and renders them as `<img>` tags. No Playwright, no Docker,
+no heavy dependencies.
+
+**`generate-declarative-screenshots`** -- CLI that generates the PNGs. Starts Docker,
+captures pages with Playwright WebKit, injects highlights, and writes PNGs to your output
+directory.
+
+The split keeps Playwright's ~250 MB browser binaries out of your docs build. Regular builds
+stay fast; generation runs on a schedule, on demand, or only when content changes.
+
+## Installation
+
+<Steps>
+
+### Install the Astro components
+
+In your Astro project:
+
+```shell-session
+npm install astro-better-declarative-screenshots
+```
+
+### Install the screenshot generator
+
+In a `screenshots/` subdirectory (keeps Playwright out of your main `node_modules`):
+
+```shell-session
+mkdir screenshots && cd screenshots
+npm init -y
+npm install generate-declarative-screenshots
+npx playwright install --with-deps webkit
+```
+
+### Add a convenience script
+
+In your root `package.json`:
+
+```json title="package.json"
+{
+  "scripts": {
+    "screenshots": "screenshots/node_modules/.bin/take-screenshots",
+    "check-screenshots": "screenshots/node_modules/.bin/check-screenshots"
+  }
+}
+```
+
+</Steps>
+
+## Docker setup
+
+The generator starts a Docker container of your site before capturing pages.
+For bss-docs -- a static Astro site -- the simplest approach is to build first,
+then serve the `dist/` directory with a lightweight static file server.
+
+```yaml title="screenshots/docker-compose.yml"
+services:
+  bss-docs:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ../dist:/app/dist:ro
+    command: npx --yes serve dist -l 4000 --no-clipboard
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/docs"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+```
+
+Add the build step to the `screenshots` script so one command does everything:
+
+```json title="package.json"
+{
+  "scripts": {
+    "screenshots": "npm run build && screenshots/node_modules/.bin/take-screenshots"
+  }
+}
+```
+
+Then just:
+
+```shell-session
+npm run screenshots
+```
+
+## Configuration
+
+Create `screenshot.config.mjs` at the project root:
+
+```js title="screenshot.config.mjs"
+export default {
+  baseUrl: 'http://localhost:4000',
+  outputDir: 'public/img/screenshots',
+
+  window: { width: 1200, height: 800 },
+
+  chrome: {
+    style:    'golden-gate',
+    renderIn: 'css',
+    showUrl:  true,
+    theme:    'light',
+    // replace localhost:4000 with the real domain in the URL bar
+    baseUrl:  'https://better-static-sites.github.io',
+  },
+
+  docker: {
+    compose: 'screenshots/docker-compose.yml',
+    service: 'bss-docs',
+    healthcheck: {
+      url:      'http://localhost:4000/docs',
+      timeout:  60000,
+      interval: 3000,
+    },
+  },
+};
+```
+
+The `chrome.baseUrl` substitution makes the URL bar show `better-static-sites.github.io/docs/...`
+instead of `localhost:4000/docs/...` in the rendered screenshot.
+
+## Declaring screenshots in MDX
+
+Import the components at the top of any `.mdx` file:
+
+````mdx escape
+import Screenshot from 'astro-better-declarative-screenshots/Screenshot.astro';
+import Highlight from 'astro-better-declarative-screenshots/Highlight.astro';
+````
+
+### Basic screenshot
+
+Place the `Screenshot` component where the image should appear:
+
+````mdx escape
+<Screenshot
+  url="/docs/ui/details"
+  alt="The Details component documentation page."
+/>
+````
+
+<Screenshot
+  url="/docs/ui/details"
+  alt="The Details component documentation page."
+/>
+
+### Full-page capture
+
+Capture the full scrollable height of a page with `fullPage`:
+
+````mdx escape
+<Screenshot
+  url="/docs/build-tools/code-blocks"
+  alt="The code blocks documentation page showing all meta string features."
+  fullPage={true}
+/>
+````
+
+<Screenshot
+  url="/docs/build-tools/code-blocks"
+  alt="The code blocks documentation page showing all meta string features."
+  fullPage={true}
+/>
+
+### Highlight an element
+
+Nest a `Highlight` component inside `Screenshot` to call out a specific element.
+The highlight is injected onto the live page before the screenshot is taken.
+
+````mdx escape
+<Screenshot
+  url="/docs/ui/tables"
+  alt="The tables page with the TableGrid live example highlighted."
+>
+  <Highlight
+    selector=".abt-grid-table"
+    label="TableGrid"
+    color="#6366f1"
+  />
+</Screenshot>
+````
+
+<Screenshot
+  url="/docs/ui/tables"
+  alt="The tables page with the TableGrid live example highlighted."
+>
+  <Highlight
+    selector=".abt-grid-table"
+    label="TableGrid"
+    color="#6366f1"
+  />
+</Screenshot>
+
+### Arrow style
+
+Use `style="arrow"` to point at an element instead of boxing it:
+
+````mdx escape
+<Screenshot
+  url="/docs/build-tools/code-blocks"
+  alt="The code blocks page with the diff example called out."
+>
+  <Highlight
+    selector=".code-figure"
+    style="arrow"
+    label="title tab"
+    color="#e74c3c"
+  />
+</Screenshot>
+````
+
+<Screenshot
+  url="/docs/build-tools/code-blocks"
+  alt="The code blocks page with the diff example called out."
+>
+  <Highlight
+    selector=".code-figure"
+    style="arrow"
+    label="title tab"
+    color="#e74c3c"
+  />
+</Screenshot>
+
+### Multiple highlights
+
+Chain multiple `<Highlight>` children to annotate several elements at once:
+
+````mdx escape
+<Screenshot
+  url="/docs/ui/tables"
+  alt="The tables page with both complex TableGrid examples annotated."
+  fullPage={true}
+>
+  <Highlight selector=".abt-grid-table:first-of-type" label="basic" />
+  <Highlight selector=".abt-grid-table:last-of-type" label="rowspan" color="#059669" />
+</Screenshot>
+````
+
+<Screenshot
+  url="/docs/ui/tables"
+  alt="The tables page with both complex TableGrid examples annotated."
+  fullPage={true}
+>
+  <Highlight selector=".abt-grid-table:first-of-type" label="basic" />
+  <Highlight selector=".abt-grid-table:last-of-type" label="rowspan" color="#059669" />
+</Screenshot>
+
+## Generating screenshots
+
+From the project root:
+
+```shell-session
+npm run screenshots
+```
+
+The script builds the site first, then starts Docker, waits for the health check to pass,
+captures every `<Screenshot>` found in your source, and writes PNGs to `outputDir`.
+
+To regenerate only screenshots whose name or URL contains a given string:
+
+```shell-session
+npm run screenshots -- --filter tables
+```
+
+Commit the generated PNGs alongside your source. Subsequent docs builds read them
+from disk -- no Playwright or Docker involved.
+
+## CI: checking for drift
+
+`check-screenshots` recaptures all screenshots and diffs them against the committed
+references. Use it in a scheduled CI job to catch visual regressions.
+
+```shell-session
+npm run check-screenshots -- --threshold 0.002 --diff-dir .screenshot-diffs
+```
+
+- `--threshold` -- fraction of pixels that may differ before failure (default `0.001`)
+- `--diff-dir` -- where to write diff images (default `.screenshot-diffs`)
+- `--fail-on-missing` -- exit non-zero if any reference PNG is missing
+- `--filter` -- check only screenshots whose name or URL matches this string
+
+### Automated weekly refresh
+
+The recommended pattern: a scheduled GitHub Action builds the site, runs the
+generator, and opens a PR if any PNGs changed. This separates "something drifted"
+from "the drift was intentional."
+
+```yaml title=".github/workflows/update-screenshots.yml"
+name: Update screenshots
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # every Monday
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            screenshots/package-lock.json
+
+      - name: Install site modules
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Install screenshots CLI
+        run: npm ci
+        working-directory: ./screenshots
+
+      - name: Install Playwright webkit
+        run: npx playwright install webkit --with-deps
+        working-directory: ./screenshots
+
+      - name: Delete cached screenshots
+        run: rm -f public/img/screenshots/*.png
+
+      - name: Generate screenshots
+        run: npm run screenshots
+
+      - name: Check for changes and open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add public/img/screenshots/
+          if git diff --cached --quiet; then
+            echo "All screenshots match -- no PR needed."
+          else
+            BRANCH="screenshots/auto-update-$(date +%Y-%m-%d)"
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout -b "$BRANCH"
+            git commit -m "chore: update screenshots $(date +%Y-%m-%d)"
+            git push origin "$BRANCH"
+            gh pr create --title "chore: update screenshots $(date +%Y-%m-%d)" \
+              --body "Weekly automated screenshot refresh. Review the diff before merging." \
+              --label "screenshots" --base main
+          fi
+```
+
+## Screenshot props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `url` | `string` | required | URL path to capture (relative to `baseUrl`, or a full URL) |
+| `alt` | `string` | derived from filename | Alt text for the `<img>` |
+| `id` | `string` | auto-derived | Override the output filename (without `.png`) |
+| `width` | `number` | `window.width` from config | Viewport width for this screenshot |
+| `height` | `number` | `window.height` from config | Viewport height for this screenshot |
+| `fullPage` | `boolean` | `false` | Capture the full scrollable page height |
+
+Filenames are derived from the URL path and highlight selectors. `/docs/ui/tables` with a
+`.abt-grid-table` highlight becomes `docs-ui-tables-abt-grid-table.png`. Pass an explicit
+`id` when the same URL appears more than once on a page.
+
+## Highlight props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `selector` | `string` | required | CSS selector for the element to highlight |
+| `style` | `'border' \| 'arrow' \| 'both'` | `'border'` | Visual treatment |
+| `color` | `string` | `'#f60'` | Highlight color (any CSS color) |
+| `label` | `string` | `''` | Short text badge drawn above the element |
+| `borderWidth` | `number` | `3` | Border thickness in pixels (`border` style only) |
+
+Elements with zero dimensions (hidden inputs, `display:none` elements) are skipped automatically.
+
+## Window chrome styles
+
+The `chrome.style` option in `screenshot.config.mjs` controls the window frame rendered around each screenshot. All styles support `theme: 'light'` and `theme: 'dark'`.
+
+| Style | Description |
+|-------|-------------|
+| `golden-gate` | macOS 26 Liquid Glass-inspired style |
+| `safari-macos` | Classic macOS Safari toolbar |
+| `linux` | GNOME-style titlebar |
+| `windows` | Windows 11 flat titlebar with rectangular controls |
+| `none` | No chrome; image rendered directly |
+
+<Admonition type="tip" title="renderIn: css vs png">
+  `renderIn: 'css'` renders the window chrome as HTML/CSS in the `Screenshot` component -- no
+  image processing needed and the chrome adapts to dark mode automatically. `renderIn: 'png'`
+  composites the chrome into the PNG at capture time (legacy). Use `css` for new projects.
+</Admonition>
+
+## Strict mode
+
+By default, `<Screenshot>` renders a placeholder when the PNG is missing.
+Set `strict: true` in `screenshot.config.mjs` or `SCREENSHOTS_STRICT=true` in your
+environment to throw at build time instead. This is useful in CI to catch references
+to PNGs that were never generated.

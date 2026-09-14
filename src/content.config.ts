@@ -8,6 +8,7 @@ const docs = defineCollection({
     description: z.string().optional(),
     order: z.number().optional(),
     hidden: z.boolean().optional(),
+    route: z.boolean().optional(),
     sidebar: z.object({
       label: z.string().optional(),
       folderBehavior: z.enum(['page', 'unclickable', 'overview']).optional(),

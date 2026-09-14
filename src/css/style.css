@@ -580,6 +580,13 @@ pre[class*="language-"], code[class*="language-"] {
   --rn-chip-border: #3a3a3a;
 }
 
+/* details theme -- map site CSS vars to astro-better-details custom properties */
+.abt-details {
+  --abt-details-border:     var(--border);
+  --abt-details-summary-bg: var(--bg-alt);
+  --abt-details-chevron:    var(--text-muted);
+}
+
 /* Card: no link underline/colors; use theme vars for bg, border, hover */
 .prose a.group.rounded-lg {
   color: var(--text);

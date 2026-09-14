@@ -1,0 +1,95 @@
+---
+title: astro-better-details
+description: Native details/summary disclosure panels with animated chevron and CSS custom property theming.
+order: 7
+---
+
+import Details from 'astro-better-details/Details.astro';
+
+# astro-better-details
+
+Expandable disclosure panels built on the native `<details>`/`<summary>` HTML elements.
+No JavaScript required. Includes an animated chevron and CSS custom property theming.
+
+<p class="pkg-meta">Current version: <strong>0.1.2</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-details" target="_blank" rel="noopener">npm</a></p>
+
+## Installation
+
+```shell-session
+npm install astro-better-details
+```
+
+## Usage
+
+````mdx escape
+import Details from 'astro-better-details/Details.astro';
+
+<Details title="Section title">
+  Content goes here. Supports **markdown** and MDX components.
+</Details>
+````
+
+## Live examples
+
+<Details title="Click to expand">
+  This content is hidden by default and revealed when clicked.
+  Supports any MDX content including code blocks, lists, and other components.
+</Details>
+
+<Details open title="Open by default">
+  Pass the `open` prop to render the panel pre-expanded.
+</Details>
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | -- | Text shown in the clickable header |
+| `open` | `boolean` | `false` | Render the panel pre-expanded |
+| `class` | `string` | -- | Extra class(es) added to the `<details>` element |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `title` | Rich header content (use in `.astro` files; prefer the `title` prop in MDX) |
+| (default) | Body content revealed when expanded |
+
+## Theming
+
+The component exposes CSS custom properties on `.abt-details`:
+
+| Property | Controls |
+|----------|----------|
+| `--abt-details-border` | Border color of the outer container |
+| `--abt-details-separator` | Border color of the line between header and body when open (defaults to `--abt-details-border`; set to `transparent` to hide) |
+| `--abt-details-summary-bg` | Background color of the summary/header bar |
+| `--abt-details-chevron` | Color of the rotating chevron icon |
+
+Override to match your brand:
+
+```css
+.abt-details {
+  --abt-details-border:     #ddd6fe;
+  --abt-details-summary-bg: #f5f3ff;
+  --abt-details-chevron:    #7c3aed;
+}
+
+.dark .abt-details {
+  --abt-details-border:     #1c0e00;
+  --abt-details-summary-bg: #111111;
+  --abt-details-chevron:    #9ca3af;
+}
+```
+
+### Tailwind Typography note
+
+Applying `.prose` directly to `.abt-details-body` causes `@tailwindcss/typography` to italicize `<figcaption>` elements, which conflicts with code block titles from `astro-better-code-blocks`. Wrap prose content in a `<div>` inside the slot instead:
+
+````mdx escape
+<Details title="With prose styling">
+  <div class="prose prose-slate dark:prose-invert max-w-none">
+    Content with prose typography here.
+  </div>
+</Details>
+````

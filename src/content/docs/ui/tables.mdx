@@ -4,14 +4,14 @@ description: RST-style list-table and grid-table components for structured data.
 order: 5
 ---
 
-import Table from 'astro-better-tables/Table.astro';
+import TableGrid from 'astro-better-tables/TableGrid.astro';
 import Row from 'astro-better-tables/Row.astro';
 import Cell from 'astro-better-tables/Cell.astro';
 
 # astro-better-tables
 
-RST-style table components for Astro MDX. Provides `Table`, `Row`, and `Cell` components
-for building structured data tables with consistent styling.
+Table components for Astro MDX. `TableGrid` uses `Row` and `Cell` child components.
+`Table` uses RST-style nested markdown lists.
 
 <p class="pkg-meta">Current version: <strong>0.1.0</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-tables" target="_blank" rel="noopener">npm</a></p>
 
@@ -21,18 +21,21 @@ for building structured data tables with consistent styling.
 npm install astro-better-tables
 ```
 
-## Components
+## TableGrid
 
-### Table
+Use `TableGrid` with `Row` and `Cell` child components. Header rows go in a `Row` with `slot="head"`.
 
-The outer container. Accepts a `headers` array for the column header row.
-
-```mdx
-import Table from 'astro-better-tables/Table.astro';
+````mdx escape
+import TableGrid from 'astro-better-tables/TableGrid.astro';
 import Row from 'astro-better-tables/Row.astro';
 import Cell from 'astro-better-tables/Cell.astro';
 
-<Table headers={['Name', 'Type', 'Description']}>
+<TableGrid>
+  <Row slot="head">
+    <Cell header>Name</Cell>
+    <Cell header>Type</Cell>
+    <Cell header>Description</Cell>
+  </Row>
   <Row>
     <Cell>href</Cell>
     <Cell>string</Cell>
@@ -43,12 +46,17 @@ import Cell from 'astro-better-tables/Cell.astro';
     <Cell>string</Cell>
     <Cell>Card heading text.</Cell>
   </Row>
-</Table>
-```
+</TableGrid>
+````
 
 ### Live example
 
-<Table headers={['Package', 'Type', 'Version']}>
+<TableGrid>
+  <Row slot="head">
+    <Cell header>Package</Cell>
+    <Cell header>Type</Cell>
+    <Cell header>Version</Cell>
+  </Row>
   <Row>
     <Cell>astro-better-nav-bar</Cell>
     <Cell>component</Cell>
@@ -64,27 +72,226 @@ import Cell from 'astro-better-tables/Cell.astro';
     <Cell>integration</Cell>
     <Cell>1.0.0</Cell>
   </Row>
-</Table>
+</TableGrid>
 
-### Table props
+### Multiple header rows
+
+Two `Row slot="head"` entries build a two-row `<thead>`. Use `colspan` on group labels
+and `rowspan` on cells that should span both header rows. This lets you group related
+columns under a shared label, something impossible with standard markdown tables.
+
+````mdx escape
+<TableGrid widths="3 1 1 1 1">
+  <Row slot="head">
+    <Cell header rowspan={2}>Package</Cell>
+    <Cell header colspan={2} align="center">Compatibility</Cell>
+    <Cell header colspan={2} align="center">Features</Cell>
+  </Row>
+  <Row slot="head">
+    <Cell header>Min Astro</Cell>
+    <Cell header>Peer deps</Cell>
+    <Cell header>JS-free</Cell>
+    <Cell header>Dark mode</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-details</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">yes</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-tabs</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">no</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-toc-smol</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">no</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-tables</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">yes</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+</TableGrid>
+````
+
+<TableGrid widths="3 1 1 1 1">
+  <Row slot="head">
+    <Cell header rowspan={2}>Package</Cell>
+    <Cell header colspan={2} align="center">Compatibility</Cell>
+    <Cell header colspan={2} align="center">Features</Cell>
+  </Row>
+  <Row slot="head">
+    <Cell header>Min Astro</Cell>
+    <Cell header>Peer deps</Cell>
+    <Cell header>JS-free</Cell>
+    <Cell header>Dark mode</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-details</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">yes</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-tabs</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">no</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-toc-smol</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">no</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+  <Row>
+    <Cell>astro-better-tables</Cell>
+    <Cell align="center">4.0</Cell>
+    <Cell>none</Cell>
+    <Cell align="center">yes</Cell>
+    <Cell align="center">yes</Cell>
+  </Row>
+</TableGrid>
+
+### Rowspan in body rows
+
+Use `rowspan` on a body cell to group multiple rows under a shared label.
+This is the classic "stub column" pattern for changelogs, reference tables, and
+any data where rows naturally cluster into named groups.
+
+````mdx escape
+<TableGrid widths="1 1 3">
+  <Row slot="head">
+    <Cell header>Version</Cell>
+    <Cell header>Type</Cell>
+    <Cell header>Change</Cell>
+  </Row>
+  <Row>
+    <Cell rowspan={3} valign="top">1.1.0</Cell>
+    <Cell>feature</Cell>
+    <Cell>Added `MarkdownOnly` component export</Cell>
+  </Row>
+  <Row>
+    <Cell>fix</Cell>
+    <Cell>Fixed `TableGrid` rendering empty `tbody` in MDX</Cell>
+  </Row>
+  <Row>
+    <Cell>docs</Cell>
+    <Cell>Rewrote `tables.mdx` with correct component APIs</Cell>
+  </Row>
+  <Row>
+    <Cell rowspan={2} valign="top">1.0.0</Cell>
+    <Cell>feature</Cell>
+    <Cell>Initial release with `Table` and `TableGrid`</Cell>
+  </Row>
+  <Row>
+    <Cell>docs</Cell>
+    <Cell>Added README with RST list-table syntax guide</Cell>
+  </Row>
+</TableGrid>
+````
+
+<TableGrid widths="1 1 3">
+  <Row slot="head">
+    <Cell header>Version</Cell>
+    <Cell header>Type</Cell>
+    <Cell header>Change</Cell>
+  </Row>
+  <Row>
+    <Cell rowspan={3} valign="top">1.1.0</Cell>
+    <Cell>feature</Cell>
+    <Cell>Added `MarkdownOnly` component export</Cell>
+  </Row>
+  <Row>
+    <Cell>fix</Cell>
+    <Cell>Fixed `TableGrid` rendering empty `tbody` in MDX</Cell>
+  </Row>
+  <Row>
+    <Cell>docs</Cell>
+    <Cell>Rewrote `tables.mdx` with correct component APIs</Cell>
+  </Row>
+  <Row>
+    <Cell rowspan={2} valign="top">1.0.0</Cell>
+    <Cell>feature</Cell>
+    <Cell>Initial release with `Table` and `TableGrid`</Cell>
+  </Row>
+  <Row>
+    <Cell>docs</Cell>
+    <Cell>Added README with RST list-table syntax guide</Cell>
+  </Row>
+</TableGrid>
+
+### TableGrid props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `headers` | `string[]` | `[]` | Column header text |
+| `widths` | `string` | -- | Space-separated column width ratios, e.g. `"1 2 1"` |
+| `caption` | `string` | -- | Table caption |
+| `align` | `'left' \| 'center' \| 'right'` | -- | Horizontal alignment of the table |
+| `width` | `string` | -- | CSS width of the table, e.g. `"100%"` |
+| `scroll` | `boolean` | `true` | Wrap in a horizontally-scrollable container |
 | `class` | `string` | -- | Additional CSS classes |
 
 ### Row props
 
-`Row` takes no props. It renders a `<tr>` element.
+`Row` renders a `<tr>`. Add `slot="head"` to place it in `<thead>`.
 
 ### Cell props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `header` | `boolean` | `false` | Render as `<th>` instead of `<td>` |
+| `header` | `boolean` | `false` | Render as `<th>` |
+| `colspan` | `number` | -- | Column span |
+| `rowspan` | `number` | -- | Row span |
+| `align` | `string` | -- | `text-align` value |
+| `valign` | `string` | -- | `vertical-align` value |
 | `class` | `string` | -- | Additional CSS classes |
 
-## TableGrid
+## Table
 
-The package also exports `TableGrid` for grid-style tables with explicit positioning.
-See the source for advanced usage.
+`Table` uses RST-style nested markdown lists. Each outer list item is a row;
+each inner list item is a cell. Use `headerRows` to specify how many leading
+rows become `<thead>` rows.
+
+````mdx escape
+import Table from 'astro-better-tables/Table.astro';
+
+<Table headerRows={1}>
+- - Package
+  - Type
+  - Version
+- - astro-better-nav-bar
+  - component
+  - 0.1.1
+- - astro-better-steps
+  - component
+  - 0.1.0
+</Table>
+````
+
+### Table props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `headerRows` | `number` | `0` | Number of leading rows to render as `<thead>` |
+| `stubCols` | `number` | `0` | Number of leading columns rendered as `<th scope="row">` |
+| `widths` | `string` | -- | Space-separated column width ratios |
+| `colAlign` | `string` | -- | Space-separated `text-align` values per column |
+| `caption` | `string` | -- | Table caption |
+| `align` | `'left' \| 'center' \| 'right'` | -- | Horizontal alignment of the table |
+| `width` | `string` | -- | CSS width of the table |
+| `scroll` | `boolean` | `true` | Wrap in a horizontally-scrollable container |
+| `class` | `string` | -- | Additional CSS classes |

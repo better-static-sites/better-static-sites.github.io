@@ -1,6 +1,6 @@
 ---
 title: astro-better-code-blocks
-description: Remark/rehype plugins for enhanced code blocks with copy button and shell session formatting.
+description: Remark/rehype plugins for enhanced code blocks with copy button, line highlighting, diff mode, collapsible sections, file titles, and shell session formatting.
 order: 1
 ---
 
@@ -9,10 +9,11 @@ import { Steps } from 'astro-better-steps';
 # astro-better-code-blocks
 
 Remark and rehype plugins that enhance code blocks in Astro MDX files.
-Adds a copy-to-clipboard button to all code blocks, and formats shell session
-blocks (lines starting with `$` or `#`) with distinct styling.
+Adds a copy-to-clipboard button, syntax highlighting via Prism, and a
+meta string mini-language for titles, line highlights, collapsible sections,
+and diff overlays. Also formats shell session blocks with distinct prompt styling.
 
-<p class="pkg-meta">Current version: <strong>0.1.1</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-code-blocks" target="_blank" rel="noopener">npm</a></p>
+<p class="pkg-meta">Current version: <strong>0.1.4</strong> &mdash; <a href="https://www.npmjs.com/package/astro-better-code-blocks" target="_blank" rel="noopener">npm</a></p>
 
 ## Installation
 
@@ -34,7 +35,60 @@ Import the CSS in your global stylesheet:
 
 In `astro.config.ts`:
 
-```ts
+```ts title="astro.config.ts"
+import { defineConfig } from 'astro/config';
+import { rehypeCodeBlocks, remarkShellSession } from 'astro-better-code-blocks';
+
+export default defineConfig({
+  markdown: {
+    syntaxHighlight: false,
+    remarkPlugins: [remarkShellSession],
+    rehypePlugins: [rehypeCodeBlocks],
+  },
+});
+```
+
+### Import the CSS
+
+In your root layout or global stylesheet:
+
+```css
+@import "astro-better-code-blocks/style.css";
+```
+
+</Steps>
+
+## Meta string features
+
+All features are activated by keywords or patterns in the opening code fence.
+They can be combined freely on the same block.
+
+### Title tab
+
+`title="filename"` renders a filename tab above the code block.
+
+````text
+```ts title="src/lib/auth.ts"
+````
+
+```ts title="src/lib/auth.ts"
+export async function verifyToken(token: string) {
+  const payload = await decode(token);
+  return payload.sub;
+}
+```
+
+### Line highlighting
+
+`{lines}` highlights specific lines with a yellow tint and a left accent bar.
+Accepts individual lines and ranges separated by commas.
+
+````text
+```ts {2,6-8}
+````
+
+```ts {2,6-8}
+import { defineConfig } from 'astro/config';
 import { rehypeCodeBlocks, remarkShellSession } from 'astro-better-code-blocks';
 
 export default defineConfig({
@@ -45,38 +99,161 @@ export default defineConfig({
 });
 ```
 
-### Add the copy button component (optional)
+### Collapsible sections
 
-If you want to customize the copy button, import and use `CopyCodeButton.astro` in your layout.
-By default, the rehype plugin injects buttons automatically.
+`[lines]` hides a range of lines behind an expandable toggle. Use this to keep
+examples focused while still making the full code accessible.
 
-</Steps>
+````text
+```ts [4-8]
+````
 
-## Plugins
+```ts [4-8]
+import { defineConfig } from 'astro/config';
+import { rehypeCodeBlocks, remarkShellSession } from 'astro-better-code-blocks';
+
+export default defineConfig({
+  markdown: {
+    remarkPlugins: [remarkShellSession],
+    rehypePlugins: [rehypeCodeBlocks],
+    syntaxHighlight: false,
+  },
+  integrations: [],
+});
+```
+
+### Diff mode
+
+`diff` colors lines that start with `+` green and lines that start with `-` red.
+Works on any language -- the language sets the syntax highlighting, `diff` adds
+the color overlay on top.
+
+````text
+```ts diff
+````
+
+```ts diff
+-import { oldHelper } from './utils';
++import { newHelper } from './helpers';
+
+export function processData(input: string) {
+-  return oldHelper(input);
++  return newHelper(input);
+}
+```
+
+### Escape (MDX-safe blocks)
+
+`escape` renders the block using JSX grammar so that MDX component tags like
+`<Details>` appear as literal text instead of being executed by the MDX compiler.
+Use this whenever you're documenting MDX component usage inside an MDX file.
+
+````text
+````mdx escape
+````
+
+````mdx escape
+import Details from 'astro-better-details/Details.astro';
+
+<Details title="Click to expand">
+  This content is hidden by default and revealed when clicked.
+</Details>
+````
+
+Without `escape`, the `<Details>` tag above would render as a live component
+rather than source code.
+
+### Combining features
+
+All meta keywords compose freely on the same fence:
+
+````text
+```ts {2} [5-8] title="astro.config.ts"
+````
+
+```ts {2} [5-8] title="astro.config.ts"
+import { defineConfig } from 'astro/config';
+import { rehypeCodeBlocks, remarkShellSession } from 'astro-better-code-blocks';
+
+export default defineConfig({
+  markdown: {
+    remarkPlugins: [remarkShellSession],
+    rehypePlugins: [rehypeCodeBlocks],
+    syntaxHighlight: false,
+  },
+});
+```
+
+Line 2 is highlighted, lines 5-8 are collapsible, and a title tab appears above.
+
+## Shell session
+
+`shell-session` blocks are processed by `remarkShellSession` before syntax
+highlighting. Lines that do not already start with `$ ` or `# ` get `$ `
+prepended automatically, so you can write clean commands without repeating the
+prompt on every line.
+
+Prompt characters are excluded from the copy button -- clicking copy gives you
+the raw commands without the `$` prefix.
+
+```shell-session
+npm install astro-better-code-blocks
+npx astro dev
+```
+
+### Multi-line commands
+
+Line continuation (`\` at end of a line) and open single-quoted strings are
+tracked so that continuation lines do not get a prompt prepended.
+
+```shell-session
+npm install \
+    astro-better-code-blocks \
+    @astrojs/prism prismjs
+added 5 packages in 0.8s
+```
+
+### Mixed commands and output
+
+Lines that already start with `$ ` or `# ` are left unchanged, so you can
+mix commands and output freely.
+
+```shell-session
+$ git status
+On branch main
+nothing to commit, working tree clean
+$ git log --oneline -3
+1dc6d53 Update llms-for-docs and actions
+62ba842 migrate php quickstart to bluehawk
+6d4605 migrate laravel quickstart to bluehawk
+```
+
+## Plugin options
 
 ### rehypeCodeBlocks
 
-A rehype plugin that:
-- Wraps every `<pre><code>` block in a container div with a copy button
-- Sets the language class for Prism syntax highlighting
-- Adds a filename label if the code block has a `title` attribute
+```ts
+rehypeCodeBlocks({
+  // Languages to skip entirely -- no highlighting, no copy button wrapper.
+  // Default: ['mermaid']
+  excludeLangs: ['mermaid'],
+
+  // Inject a copy-to-clipboard button into every code block.
+  // Default: true
+  copyButton: true,
+
+  // Position of the title tab when title="..." is present.
+  // Default: { position: 'top' }
+  title: { position: 'top' },
+})
+```
 
 ### remarkShellSession
 
-A remark plugin that parses shell session blocks. Lines starting with `$` are styled
-as commands; other lines are styled as output. The `$` prompt character gets a distinct color.
-
-## Shell session example
-
-```shell-session
-$ npm install astro-better-code-blocks
-added 3 packages in 0.5s
-$ npx astro dev
-  🚀  astro  v7.0.0 ready in 412ms
+```ts
+remarkShellSession({
+  // Prompt string prepended to lines that have no existing prompt.
+  // Default: '$ '
+  prompt: '$ ',
+})
 ```
-
-## CopyCodeButton props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `class` | `string` | -- | Additional CSS classes |

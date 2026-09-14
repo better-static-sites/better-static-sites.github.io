@@ -47,6 +47,43 @@ Output goes to `dist/`. The site is built with `base: '/bss-docs'` so all asset 
 prefixed accordingly. The `astro-gen-markdown-pages` integration also writes `.md` companion
 files and `dist/llms.txt` at build time.
 
+## Screenshots
+
+Screenshots are generated with Playwright via a separate npm install in `screenshots/`
+to keep browser binaries out of the main `node_modules`.
+
+### One-time setup
+
+```sh
+cd screenshots
+npm install
+npx playwright install webkit --with-deps
+```
+
+### Generating
+
+Run from the repo root -- the script builds the site first, then starts the Docker
+container defined in `screenshots/docker-compose.yml`, captures every `<Screenshot>`
+declared in `src/`, and writes PNGs to `public/img/screenshots/`.
+
+```sh
+npm run screenshots
+```
+
+Commit the generated PNGs. Regular docs builds read them from disk -- no Playwright
+or Docker involved.
+
+### Checking for drift
+
+`check-screenshots` does not rebuild -- run `npm run screenshots` first if `dist/` is stale.
+
+```sh
+npm run check-screenshots -- --threshold 0.002
+```
+
+A GitHub Action (`.github/workflows/update-screenshots.yml`) runs this automatically
+every Monday and opens a PR if any screenshots have changed.
+
 ## Deployment
 
 The site deploys to GitHub Pages automatically on every push to `main` via

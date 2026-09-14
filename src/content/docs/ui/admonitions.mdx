@@ -27,42 +27,58 @@ Import the CSS in your global stylesheet:
 
 ## Usage
 
-```mdx
+```mdx escape
 import { Admonition } from 'astro-better-admonitions';
 
-<Admonition type="note" title="Something to know">
-  This is a note callout.
+<Admonition type="note">
+  Use notes for supplementary information that does not block the reader.
 </Admonition>
 
-<Admonition type="tip" title="Pro tip">
-  This is a tip callout.
+<Admonition type="tip">
+  Tips highlight helpful shortcuts or best practices.
 </Admonition>
 
-<Admonition type="caution" title="Be careful">
-  This is a caution callout.
+<Admonition type="caution">
+  Caution boxes warn about actions that could cause problems.
 </Admonition>
 
-<Admonition type="warning" title="Warning">
-  This is a warning callout.
+<Admonition type="danger">
+  Dangers indicate something spicy that will definitely cause issues if ignored.
+</Admonition>
+
+<Admonition type="other">
+  You can specify any other type name for a generic appearance.
+</Admonition>
+
+<Admonition type="other" title="my unique admonition">
+  You can specify a title on any of these to override the default, which uses the type name (built-in types get a leading capital letter, but can still be overridden).
 </Admonition>
 ```
 
 ## Live examples
 
-<Admonition type="note" title="Note">
+<Admonition type="note">
   Use notes for supplementary information that does not block the reader.
 </Admonition>
 
-<Admonition type="tip" title="Tip">
+<Admonition type="tip">
   Tips highlight helpful shortcuts or best practices.
 </Admonition>
 
-<Admonition type="caution" title="Caution">
+<Admonition type="caution">
   Caution boxes warn about actions that could cause problems.
 </Admonition>
 
-<Admonition type="warning" title="Warning">
-  Warnings indicate something that will definitely cause issues if ignored.
+<Admonition type="danger">
+  Dangers indicate something spicy that will definitely cause issues if ignored.
+</Admonition>
+
+<Admonition type="other">
+  You can specify any other type name for a generic appearance.
+</Admonition>
+
+<Admonition type="other" title="my unique admonition">
+  You can specify a title on any of these to override the default, which uses the type name (built-in types get a leading capital letter, but can still be overridden).
 </Admonition>
 
 ## Props
@@ -76,7 +92,7 @@ import { Admonition } from 'astro-better-admonitions';
 
 Pass a `types` prop with additional type configs to add new callout types:
 
-```astro
+```astro escape
 ---
 import { Admonition } from 'astro-better-admonitions';
 const customTypes = {

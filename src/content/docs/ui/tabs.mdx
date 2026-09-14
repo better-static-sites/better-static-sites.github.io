@@ -28,7 +28,7 @@ Import the CSS in your global stylesheet:
 
 ## Usage
 
-````mdx
+````mdx escape
 import Tabs from 'astro-better-tabs/Tabs.astro';
 import TabItem from 'astro-better-tabs/TabItem.astro';
 
@@ -88,7 +88,7 @@ import TabItem from 'astro-better-tabs/TabItem.astro';
 Set the same `syncKey` on multiple `<Tabs>` groups to synchronize them.
 Selecting "yarn" in one group automatically selects "yarn" in all others.
 
-```mdx
+```mdx escape
 <Tabs syncKey="pkg-manager">
   <TabItem label="npm">npm install foo</TabItem>
   <TabItem label="yarn">yarn add foo</TabItem>
