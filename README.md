@@ -20,7 +20,7 @@ Some packages have their own dependencies that Node resolves from the source dir
 loaded via `file:` paths. If you add a new local package dependency, run `npm install` inside
 that package's directory in addition to running it here.
 
-```sh
+```shell-session
 # install deps (including all local file: packages)
 npm install
 
@@ -39,7 +39,7 @@ into `node_modules`.
 
 ## Production build
 
-```sh
+```shell-session
 npm run build
 ```
 
@@ -54,30 +54,30 @@ to keep browser binaries out of the main `node_modules`.
 
 ### One-time setup
 
-```sh
+```shell-session
 cd screenshots
 npm install
 npx playwright install webkit --with-deps
 ```
 
-### Generating
+### Generate Screenshots
 
-Run from the repo root -- the script builds the site first, then starts the Docker
-container defined in `screenshots/docker-compose.yml`, captures every `<Screenshot>`
-declared in `src/`, and writes PNGs to `public/img/screenshots/`.
+Run from the repo root to first build the site, then start the Docker
+container defined in `screenshots/docker-compose.yml`, then capture every `<Screenshot>`
+declared in `src/`, and write PNGs to `public/img/screenshots/`:
 
-```sh
+```shell-session
 npm run screenshots
 ```
 
-Commit the generated PNGs. Regular docs builds read them from disk -- no Playwright
+Commit the generated PNGs. Regular docs builds read them from disk, no Playwright
 or Docker involved.
 
 ### Checking for drift
 
-`check-screenshots` does not rebuild -- run `npm run screenshots` first if `dist/` is stale.
+`check-screenshots` does not rebuild. Run `npm run screenshots` first if `dist/` is stale.
 
-```sh
+```shell-session
 npm run check-screenshots -- --threshold 0.002
 ```
 
