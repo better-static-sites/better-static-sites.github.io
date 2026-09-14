@@ -54,7 +54,7 @@
   --nav-border: #ddd6fe;
   --nav-text: #18181b;
   --nav-text-muted: #7c3aed;
-  --nav-hover: rgba(124, 58, 237, 0.08);
+  --nav-hover: #7c3aed;
   --nav-cta-bg: #16a34a;
   --nav-cta-hover-bg: #15803d;
   --nav-max-width: 1400px;
@@ -65,7 +65,7 @@
   --nav-border: #2a1200;
   --nav-text: #e8e8e8;
   --nav-text-muted: #fb923c;
-  --nav-hover: rgba(249, 115, 22, 0.1);
+  --nav-hover: #fb923c;
   --nav-cta-bg: #f97316;
   --nav-cta-hover-bg: #ea580c;
 }
@@ -139,13 +139,58 @@ body {
   }
 }
 
+/* sidebar toggle -- checkbox is visually hidden, label goes in nav sidebar-toggle slot */
+.nav-sidebar-checkbox {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.nav-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: 0.25rem;
+  color: var(--nav-text, #fff);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+.nav-sidebar-toggle:hover { background: rgba(255, 255, 255, 0.1); }
+.nav-sidebar-toggle svg { width: 18px; height: 18px; }
+/* hide toggle when sidebar is visible inline */
+@media (min-width: 769px) { .nav-sidebar-toggle { display: none; } }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
+  .doc-layout { padding: 0 0.75rem; }
   .doc-sidebar {
-    display: none;
+    position: fixed;
+    top: 3.75rem;
+    left: 0;
+    bottom: 0;
+    z-index: 40;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    width: 16rem;
+    max-height: none;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    padding: 1rem 0.5rem;
   }
-  .doc-layout {
-    padding: 0 0.75rem;
-  }
+  body:has(.nav-sidebar-checkbox:checked) .doc-sidebar { transform: translateX(0); }
+  body:has(.nav-sidebar-checkbox:checked) .sidebar-backdrop { display: block; }
 }
 
 #toc-container { font-size: 0.8125rem; }
@@ -236,7 +281,7 @@ aside.aside { background: transparent; border-color: transparent; }
 }
 
 /* tables */
-.prose table { border-collapse: collapse; width: 100%; }
+.prose table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .prose table th {
   background: var(--bg-alt);
   color: var(--accent);

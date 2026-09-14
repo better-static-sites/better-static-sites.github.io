@@ -37,6 +37,7 @@ const docsCollection = await getCollection('docs');
     <link rel="shortcut icon" href={`${base}favicon.ico`}>
   </head>
   <body class="page-wrapper">
+    <input type="checkbox" id="nav-sidebar-open" class="nav-sidebar-checkbox" aria-hidden="true">
     <NavBar
       sectionTitle="Better Static Sites"
       sectionTitleHref={base}
@@ -45,9 +46,13 @@ const docsCollection = await getCollection('docs');
       showSearch={false}
     >
       <img slot="logo" src={`${base}favicon-32x32.png`} width="32" height="32" alt="" />
+      <label slot="sidebar-toggle" for="nav-sidebar-open" class="nav-sidebar-toggle" aria-label="Open navigation">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 7.75zm0 5a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H1.75a.75.75 0 01-.75-.75z"/></svg>
+      </label>
     </NavBar>
     <CopyCodeButton />
 
+    <label class="sidebar-backdrop" for="nav-sidebar-open" aria-hidden="true"></label>
     <div class="doc-layout">
       <aside class="doc-sidebar">
         <Sidebar
@@ -92,7 +97,7 @@ const docsCollection = await getCollection('docs');
             <!-- mobile hamburger -->
             <details class="doc-actions-menu">
               <summary class="doc-action" title="Page actions">
-                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 7.75zm0 5a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H1.75a.75.75 0 01-.75-.75z"/></svg>
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm-5.5 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm11 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
               </summary>
               <div class="doc-actions-dropdown">
                 {editUrl && <a href={editUrl} target="_blank" rel="noopener">Edit on GitHub</a>}

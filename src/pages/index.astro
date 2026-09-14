@@ -21,6 +21,7 @@ const docsCollection = await getCollection('docs');
     <link rel="shortcut icon" href={`${base}favicon.ico`}>
   </head>
   <body class="page-wrapper">
+    <input type="checkbox" id="nav-sidebar-open" class="nav-sidebar-checkbox" aria-hidden="true">
     <NavBar
       sectionTitle="Better Static Sites"
       sectionTitleHref={base}
@@ -29,8 +30,12 @@ const docsCollection = await getCollection('docs');
       showSearch={false}
     >
       <img slot="logo" src={`${base}favicon-32x32.png`} width="32" height="32" alt="" />
+      <label slot="sidebar-toggle" for="nav-sidebar-open" class="nav-sidebar-toggle" aria-label="Open navigation">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 7.75zm0 5a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H1.75a.75.75 0 01-.75-.75z"/></svg>
+      </label>
     </NavBar>
 
+    <label class="sidebar-backdrop" for="nav-sidebar-open" aria-hidden="true"></label>
     <div class="doc-layout">
       <aside class="doc-sidebar">
         <Sidebar
