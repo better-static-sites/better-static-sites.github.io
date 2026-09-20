@@ -15,11 +15,10 @@ interface Props {
 const GITHUB_REPO = 'https://github.com/better-static-sites/docs';
 
 const { title, description, entryId } = Astro.props;
-const base = '/docs/';
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
 const editUrl  = entryId ? `${GITHUB_REPO}/blob/main/src/content/docs/${entryId}.mdx` : null;
-const mdUrl    = slug ? `${base}${slug}.md` : null;
+const mdUrl    = slug ? `${slug}.md` : null;
 
 const docsCollection = await getCollection('docs');
 ---
@@ -30,22 +29,22 @@ const docsCollection = await getCollection('docs');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | Better Static Sites</title>
     {description && <meta name="description" content={description} />}
-    <link rel="apple-touch-icon" sizes="180x180" href={`${base}apple-touch-icon.png`}>
-    <link rel="icon" type="image/png" sizes="32x32" href={`${base}favicon-32x32.png`}>
-    <link rel="icon" type="image/png" sizes="16x16" href={`${base}favicon-16x16.png`}>
-    <link rel="manifest" href={`${base}site.webmanifest`}>
-    <link rel="shortcut icon" href={`${base}favicon.ico`}>
+    <link rel="apple-touch-icon" sizes="180x180" href={`/apple-touch-icon.png`}>
+    <link rel="icon" type="image/png" sizes="32x32" href={`/favicon-32x32.png`}>
+    <link rel="icon" type="image/png" sizes="16x16" href={`/favicon-16x16.png`}>
+    <link rel="manifest" href={`/site.webmanifest`}>
+    <link rel="shortcut icon" href={`/favicon.ico`}>
   </head>
   <body class="page-wrapper">
     <input type="checkbox" id="nav-sidebar-open" class="nav-sidebar-checkbox" aria-hidden="true">
     <NavBar
       sectionTitle="Better Static Sites"
-      sectionTitleHref={base}
-      logoHref={base}
+      sectionTitleHref="/"
+      logoHref="/"
       showThemeSelector
       showSearch={false}
     >
-      <img slot="logo" src={`${base}favicon-32x32.png`} width="32" height="32" alt="" />
+      <img slot="logo" src={`/favicon-32x32.png`} width="32" height="32" alt="" />
       <label slot="sidebar-toggle" for="nav-sidebar-open" class="nav-sidebar-toggle" aria-label="Open navigation">
         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 7.75zm0 5a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H1.75a.75.75 0 01-.75-.75z"/></svg>
       </label>
@@ -58,12 +57,12 @@ const docsCollection = await getCollection('docs');
         <Sidebar
           frontmatter={Astro.props}
           collection={docsCollection}
-          basePath="/docs"
+          basePath="/"
         />
         <nav class="sidebar-extra-nav">
           <a
-            href={`${base}release-notes`}
-            class:list={['sidebar-extra-link', { 'sidebar-extra-link--active': Astro.url.pathname === `${base}release-notes` }]}
+            href={`/release-notes`}
+            class:list={['sidebar-extra-link', { 'sidebar-extra-link--active': Astro.url.pathname === `/release-notes` }]}
           >
             Release Notes
           </a>

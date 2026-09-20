@@ -9,10 +9,9 @@ const { pkg } = Astro.props;
 
 const pages = await getCollection('docs');
 const pathname = Astro.url.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
-const entryId = pathname.startsWith('docs/') ? pathname.slice(5) : pathname;
 const entry = pages.find(p => {
   const cid = p.id.replace(/\.(md|mdx)$/i, '').replace(/\/index$/, '');
-  return cid === entryId;
+  return cid === pathname;
 });
 
 const version = entry?.data.versions?.[pkg] ?? entry?.data.version;
