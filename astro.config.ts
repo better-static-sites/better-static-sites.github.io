@@ -34,7 +34,7 @@ export default defineConfig({
     }),
     tocSmol({ articleSelector: ['article.prose', 'main'] }),
     astroRefs({
-      collections: [{ src: 'src/content/docs', base: '/' }],
+      collections: [{ src: 'src/content/', base: '/' }],
       state: refsState,
     }),
     genMarkdownPages({

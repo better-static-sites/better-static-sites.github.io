@@ -16,7 +16,7 @@ export default {
     compose: 'screenshots/docker-compose.yml',
     service: 'bss-docs',
     healthcheck: {
-      url:      'http://localhost:4000/docs/',
+      url:      'http://localhost:4000/',
       timeout:  60000,
       interval: 3000,
     },

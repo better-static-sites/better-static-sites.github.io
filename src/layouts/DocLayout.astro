@@ -12,12 +12,12 @@ interface Props {
   entryId?: string;
 }
 
-const GITHUB_REPO = 'https://github.com/better-static-sites/docs';
+const GITHUB_REPO = 'https://github.com/better-static-sites/better-static-sites.github.io';
 
 const { title, description, entryId } = Astro.props;
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
-const editUrl  = entryId ? `${GITHUB_REPO}/blob/main/src/content/docs/${entryId}.mdx` : null;
+const editUrl  = entryId ? `${GITHUB_REPO}/blob/main/src/content/${entryId}.mdx` : null;
 const mdUrl    = slug ? `${slug}.md` : null;
 
 const docsCollection = await getCollection('docs');

@@ -7,6 +7,8 @@ badges: ["component"]
 ---
 
 import Card from 'astro-better-cards/Card.astro';
+import ChildCards from 'astro-better-cards/ChildCards.astro';
+import PageNav from 'astro-better-cards/PageNav.astro';
 import PkgMeta from 'src/components/PkgMeta.astro';
 
 # astro-better-cards
@@ -26,7 +28,7 @@ npm install astro-better-cards
 ## Live example
 
 <Card
-  href="/docs"
+  href="/"
   title="Getting Started"
   description="Install your first astro-better-* package and have something on the page in five minutes."
   label="docs"
@@ -40,7 +42,7 @@ A single link card with optional icon, title, description, and label.
 import Card from 'astro-better-cards/Card.astro';
 
 <Card
-  href="/docs"
+  href="/"
   title="Getting Started"
   description="Set up your first project in five minutes."
 />
@@ -69,19 +71,27 @@ Generates a card grid from pages in the same content collection directory.
 import ChildCards from 'astro-better-cards/ChildCards.astro';
 
 <ChildCards
-  basePath="/docs"
-  currentPath="/docs/ui"
+  depth={2}
+  folder="/docs/ui"
   collection={docsCollection}
 />
 ```
+
+## Live example
+
+<ChildCards
+  depth="{1}"
+  folder="/"
+  collection="docs"
+/>
 
 ### ChildCards props
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `basePath` | `string` | Root path of the collection |
-| `currentPath` | `string` | Current page path (to determine children) |
-| `collection` | `CollectionEntry[]` | The full Astro content collection array |
+| `depth` | `integer` | How many folder levels deep to generate cards for (only supports `1` or `2`; past 1, this will generate headers) |
+| `folder` | `string` | Folder to search for card content |
+| `collection` | `CollectionEntry[]` | An Astro content collection array to use instead of a folder |
 
 ## PageNav
 
