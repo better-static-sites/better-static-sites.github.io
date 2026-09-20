@@ -23,7 +23,7 @@ const markdownProcessor = unified({
 
 export default defineConfig({
   site: 'https://lambdalatitudinarians.org',
-  base: '/docs',
+  base: '/',
   markdown: {
     processor: markdownProcessor,
   },
