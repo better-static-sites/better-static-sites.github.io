@@ -17,8 +17,8 @@ const GITHUB_REPO = 'https://github.com/better-static-sites/better-static-sites.
 const { title, description, entryId } = Astro.props;
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
-const editUrl  = entryId ? `${GITHUB_REPO}/blob/main/src/content/${entryId}.mdx` : null;
-const mdUrl    = slug ? `${slug}.md` : null;
+const editUrl = entryId ? `${GITHUB_REPO}/blob/main/src/content/${entryId}.mdx` : null;
+const mdUrl = slug ? `/${slug}.md` : null;
 
 const docsCollection = await getCollection('docs');
 ---
@@ -100,7 +100,7 @@ const docsCollection = await getCollection('docs');
               </summary>
               <div class="doc-actions-dropdown">
                 {editUrl && <a href={editUrl} target="_blank" rel="noopener">Edit on GitHub</a>}
-                {mdUrl && <a href={mdUrl}>Link to Markdown</a>}
+                {mdUrl && <a href={mdUrl}>View Markdown</a>}
                 {mdUrl && <button class="copy-md-btn" data-md-url={mdUrl}>Copy as Markdown</button>}
               </div>
             </details>
