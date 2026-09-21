@@ -2,8 +2,10 @@
 title: astro-better-cards
 description: Link cards, child-page grids, and prev/next page navigation.
 order: 4
-version: "0.2.2"
+version: "1.0.0"
 badges: ["component"]
+prev: "tabs"
+next: "tables"
 ---
 
 import Card from 'astro-better-cards/Card.astro';
@@ -14,7 +16,7 @@ import PkgMeta from 'src/components/PkgMeta.astro';
 # astro-better-cards
 
 Three components for navigational content: `Card` (a standalone link card),
-`ChildCards` (a grid of cards auto-generated from sibling pages), and `PageNav`
+`ChildCards` (a grid of cards auto-generated from child pages), and `PageNav`
 (previous/next page navigation for sequential docs).
 
 <PkgMeta pkg="astro-better-cards" />
@@ -25,18 +27,9 @@ Three components for navigational content: `Card` (a standalone link card),
 npm install astro-better-cards
 ```
 
-## Live example
-
-<Card
-  href="/"
-  title="Getting Started"
-  description="Install your first astro-better-* package and have something on the page in five minutes."
-  label="docs"
-/>
-
 ## Card
 
-A single link card with optional icon, title, description, and label.
+A single link card with optional icon, image, title, description, label, version, and badges.
 
 ```mdx escape
 import Card from 'astro-better-cards/Card.astro';
@@ -48,67 +41,112 @@ import Card from 'astro-better-cards/Card.astro';
 />
 ```
 
+### Live example
+
+<Card
+  href="/"
+  title="Getting Started"
+  description="Install your first astro-better-* package and have something on the page in five minutes."
+/>
+
 ### Card props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `href` | `string` | (required) | Destination URL |
-| `title` | `string` | -- | Card heading |
+| `title` | `string` | -- | Card heading (HTML allowed) |
 | `description` | `string` | -- | Card body text |
 | `icon` | `string` | -- | Icon image URL (light mode) |
 | `darkIcon` | `string` | -- | Icon image URL (dark mode) |
-| `cardImage` | `string` | -- | Full-width image at top of card |
-| `label` | `string` | -- | Badge label in the top corner |
-| `labelFirst` | `boolean` | `false` | Show label before title |
-| `variant` | `'full' \| 'compact'` | `'full'` | Card layout variant |
-| `comingSoon` | `boolean` | `false` | Grays out and disables click |
+| `cardImage` | `string` | -- | Full-width image at the top of the card |
+| `label` | `string` | -- | Small badge label |
+| `labelFirst` | `boolean` | `false` | Render label before the title |
+| `version` | `string` | -- | Version string displayed below the title |
+| `badges` | `string[]` | -- | Badge labels rendered as `<span class="badge badge-{name}">` -- requires `.badge` CSS in your project |
+| `variant` | `'full' \| 'compact' \| 'quickstart'` | `'full'` | Card layout variant |
+| `comingSoon` | `boolean` | `false` | Grays out the card and disables the link |
 
 ## ChildCards
 
-Generates a card grid from pages in the same content collection directory.
+Generates a card grid from the child pages of the current folder. Most useful on section index pages.
+Use `folder` to target a different path, or `depth` to include deeper levels.
 
 ```mdx escape
 import ChildCards from 'astro-better-cards/ChildCards.astro';
 
-<ChildCards
-  depth={2}
-  folder="/docs/ui"
-  collection={docsCollection}
-/>
+<!-- children of the current folder (use on a section index page) -->
+<ChildCards />
+
+<!-- grandchildren grouped by subfolder, with h2 section headers -->
+<ChildCards depth={2} />
+
+<!-- up to 4 levels deep with nested headers (h2, h3, h4) -->
+<ChildCards depth={4} />
+
+<!-- explicit folder, 3 columns, compact cards -->
+<ChildCards folder="get-started/quickstarts" columns={3} variant="compact" />
+
+<!-- different collection -->
+<ChildCards collection="articles" />
 ```
 
-## Live example
+Pages with `excludeFromNav: true` or `route: false` in their frontmatter are excluded.
+You must add `excludeFromNav` to your content schema for it to take effect.
 
-<ChildCards
-  depth="{1}"
-  folder="/"
-  collection="docs"
-/>
+### Live example
+
+<ChildCards folder="content" />
 
 ### ChildCards props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `depth` | `integer` | How many folder levels deep to generate cards for (only supports `1` or `2`; past 1, this will generate headers) |
-| `folder` | `string` | Folder to search for card content |
-| `collection` | `CollectionEntry[]` | An Astro content collection array to use instead of a folder |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `collection` | `string` | `'docs'` | Astro content collection name |
+| `folder` | `string` | current page URL | Collection-relative (`get-started/foo`), URL-absolute (`/docs/get-started/foo`), or relative (`./sub`, `../other`) path |
+| `depth` | `1 \| 2 \| 3 \| 4` | `1` | How many directory levels to descend. Levels past 1 render grouped section headers (`h2` at depth 2, `h2`/`h3` at depth 3, `h2`/`h3`/`h4` at depth 4). |
+| `columns` | `1 \| 2 \| 3 \| 4` | `2` | Max columns in the grid. Always 1 column on small screens; scales up to N on large screens. |
+| `variant` | `'full' \| 'compact' \| 'quickstart'` | `'full'` | Card display variant passed to every card in the grid |
 
 ## PageNav
 
-Previous/next navigation at the bottom of a page.
+Previous/next navigation rendered at the bottom of a page.
+
+The resolution order is: prop value, then frontmatter `prev`/`next`, then automatic detection
+by sibling `order`. On most pages you can drop `<PageNav />` with no configuration and it
+will figure out the neighbors on its own.
+
+To force a specific order or override auto-detection, add `prev` and `next` to frontmatter:
+
+```yaml
+prev: "step-1"
+next: "step-3"
+```
+
+Then use the component with no props:
 
 ```mdx escape
 import PageNav from 'astro-better-cards/PageNav.astro';
 
-<PageNav
-  prev={{ title: 'Installation', href: '/docs/install' }}
-  next={{ title: 'Configuration', href: '/docs/config' }}
-/>
+<PageNav />
 ```
+
+To override on a specific instance without touching frontmatter:
+
+```mdx escape
+<PageNav prev="other-page" next="another-page" />
+```
+
+`prev` and `next` accept the same path formats as `folder` in ChildCards:
+a bare filename (`step-2`), a collection-relative path, or an absolute URL path starting with `/`.
+
+### Live example
+
+<PageNav />
 
 ### PageNav props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `prev` | `{title, href}` | Previous page link |
-| `next` | `{title, href}` | Next page link |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `collection` | `string` | `'docs'` | Astro content collection name |
+| `prev` | `string` | frontmatter `prev`, then auto-detected | Path to the previous page (relative to current folder, or absolute) |
+| `next` | `string` | frontmatter `next`, then auto-detected | Path to the next page |
