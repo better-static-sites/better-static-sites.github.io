@@ -2,20 +2,22 @@
 title: astro-better-cards
 description: Link cards, child-page grids, and prev/next page navigation.
 order: 4
-version: "1.0.0"
+version: "1.0.1"
 badges: ["component"]
 prev: "tabs"
 next: "tables"
 ---
 
 import Card from 'astro-better-cards/Card.astro';
+import CardGrid from 'astro-better-cards/CardGrid.astro';
 import ChildCards from 'astro-better-cards/ChildCards.astro';
 import PageNav from 'astro-better-cards/PageNav.astro';
 import PkgMeta from 'src/components/PkgMeta.astro';
 
 # astro-better-cards
 
-Three components for navigational content: `Card` (a standalone link card),
+Four components for navigational content: `Card` (a standalone link card),
+`CardGrid` (a responsive grid wrapper for arbitrary `Card` children),
 `ChildCards` (a grid of cards auto-generated from child pages), and `PageNav`
 (previous/next page navigation for sequential docs).
 
@@ -65,6 +67,42 @@ import Card from 'astro-better-cards/Card.astro';
 | `badges` | `string[]` | -- | Badge labels rendered as `<span class="badge badge-{name}">` -- requires `.badge` CSS in your project |
 | `variant` | `'full' \| 'compact' \| 'quickstart'` | `'full'` | Card layout variant |
 | `comingSoon` | `boolean` | `false` | Grays out the card and disables the link |
+
+## CardGrid
+
+A responsive grid wrapper for manually-specified `Card` children. Use this when
+your cards have arbitrary hrefs not tied to the content collection. A curated
+list of links on a landing page is the typical use case.
+
+```mdx escape
+import Card from 'astro-better-cards/Card.astro';
+import CardGrid from 'astro-better-cards/CardGrid.astro';
+
+<CardGrid>
+  <Card variant="quickstart" href="/docs/quickstarts/react" icon="/img/react.svg" title="React" />
+  <Card variant="quickstart" href="/docs/quickstarts/python" icon="/img/python.svg" title="Python" />
+</CardGrid>
+
+<!-- three columns -->
+<CardGrid columns={3}>
+  <Card href="/a" title="Alpha" />
+  <Card href="/b" title="Beta" />
+  <Card href="/c" title="Gamma" />
+</CardGrid>
+```
+
+### Live example
+
+<CardGrid>
+  <Card href="/" title="Getting Started" description="Install your first astro-better-* package." />
+  <Card href="/" title="Components" description="Browse the full component library." />
+</CardGrid>
+
+### CardGrid props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `columns` | `1 \| 2 \| 3 \| 4` | `2` | Max columns in the grid. Always 1 column on small screens; scales up to N on large screens. |
 
 ## ChildCards
 
