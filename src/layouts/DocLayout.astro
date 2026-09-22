@@ -34,8 +34,14 @@ const docsCollection = await getCollection('docs');
     <link rel="icon" type="image/png" sizes="16x16" href={`/favicon-16x16.png`}>
     <link rel="manifest" href={`/site.webmanifest`}>
     <link rel="shortcut icon" href={`/favicon.ico`}>
+    <link rel="alternate" type="text/plain" title="LLM Index" href="/llms.txt" />
+    {mdUrl && <link rel="alternate" type="text/markdown" title="Page Markdown Source" href={mdUrl} />}
   </head>
   <body class="page-wrapper">
+    <div class="sr-only">
+      For AI agents: The complete documentation index is available at <a href="/llms.txt">/llms.txt</a>.
+      {mdUrl && <> A markdown version of this page is available at <a href={mdUrl}>{mdUrl}</a>.</>}
+    </div>
     <input type="checkbox" id="nav-sidebar-open" class="nav-sidebar-checkbox" aria-hidden="true">
     <NavBar
       sectionTitle="Better Static Sites"
