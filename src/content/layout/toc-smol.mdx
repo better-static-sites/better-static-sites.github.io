@@ -1,8 +1,8 @@
 ---
 title: astro-toc-smol
-description: Server-side table of contents with scroll spy, injected at build time.
+description: Server-side table of contents with scroll spy and optional inline mobile accordion, injected at build time.
 order: 2
-version: "1.0.0"
+version: "1.1.0"
 badges: ["integration", "component"]
 ---
 
@@ -10,11 +10,10 @@ import { Admonition } from 'astro-better-admonitions';
 import { Steps } from 'astro-better-steps';
 import PkgMeta from 'src/components/PkgMeta.astro';
 
-# astro-toc-smol
-
 An Astro integration that generates an "On This Page" table of contents by scanning
 the final rendered HTML at build time. Includes a scroll spy script that highlights
-the active section as the user scrolls.
+the active section as the user scrolls. Optionally renders a collapsible inline TOC
+for narrow screens where the sidebar TOC is hidden.
 
 <PkgMeta pkg="astro-toc-smol" />
 
@@ -44,10 +43,10 @@ export default defineConfig({
 });
 ```
 
-### Place the TOC component
+### Place the sidebar TOC component
 
-In your layout, add the `<TOC>` component where you want the table of contents to appear.
-Wrap it in a `[data-toc-aside]` element -- the component hides the wrapper when the TOC is empty.
+In your layout, add the `<TOC>` component inside a `[data-toc-aside]` wrapper. The component
+hides the wrapper automatically when the page has no headings.
 
 ```astro
 ---
@@ -58,6 +57,27 @@ import TOC from 'astro-toc-smol/TOC.astro';
   <TOC />
 </aside>
 ```
+
+### Add the inline mobile TOC (optional)
+
+For narrow screens where the sidebar TOC is hidden, add `<InlineTOC>` inside the content
+area, after your page heading. It renders a collapsible `<details>` element and disappears
+on viewports where the sidebar is visible. Style it with the `.toc-inline` family of CSS
+classes (see [Styling](#styling) below).
+
+```astro
+---
+import InlineTOC from 'astro-toc-smol/InlineTOC.astro';
+---
+<main>
+  <h1>{title}</h1>
+  <InlineTOC />
+  <slot />
+</main>
+```
+
+The `<details>` element on this page is a live example -- resize the window below
+1280px to see it appear.
 
 </Steps>
 
@@ -74,16 +94,53 @@ import TOC from 'astro-toc-smol/TOC.astro';
 | `maxDepth` | `number` | `4` | Maximum heading depth to include (h2=2, h3=3, ...) |
 | `class` | `string` | -- | Additional CSS classes on the TOC container |
 
+## InlineTOC component props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `maxDepth` | `number` | `4` | Maximum heading depth to include |
+
+## Styling
+
+The `InlineTOC` component uses three CSS classes you define in your stylesheet:
+
+| Class | Purpose |
+|-------|---------|
+| `.toc-inline` | The `<details>` wrapper. Hide at wide breakpoints (`display: none` at your TOC-visible width). |
+| `.toc-inline-summary` | The `<summary>` trigger row. |
+| `.toc-inline-body` | The container wrapping the `<nav>`. |
+
+The component adds `not-prose` directly on the element to prevent Tailwind Typography link
+styles from bleeding in.
+
+Minimal example:
+
+```css
+.toc-inline { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+@media (min-width: 1280px) { .toc-inline { display: none; } }
+.toc-inline[hidden] { display: none; }
+.toc-inline a { border-bottom: none; }
+.toc-inline ul { list-style: none; padding: 0 !important; }
+.toc-inline ul > * + * { margin-top: 0 !important; }
+.toc-inline-summary { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.75rem; cursor: pointer; }
+.toc-inline-summary svg { transition: transform 0.2s; }
+.toc-inline[open] .toc-inline-summary svg { transform: rotate(90deg); }
+.toc-inline-body { padding: 0.25rem 0.75rem 0.5rem; }
+```
+
 ## How it works
 
 The integration hooks into `astro:build:done` and walks every `.html` file in the output.
 For each file, it finds the content area matching `articleSelector`, extracts headings,
-and injects a nested `<ol>` into the `[data-server-toc]` element the `<TOC>` component rendered.
+and injects the same TOC HTML into every `[data-server-toc]` element on the page. This
+means both the sidebar `<TOC>` and the inline `<InlineTOC>` receive identical content
+from a single pass.
 
-The scroll spy script runs in the browser and updates `aria-current="true"` on the active
-TOC link as the user scrolls.
+The scroll spy in `<TOC>` is scoped to `#toc-container` so it only highlights items in
+the sidebar and does not interfere with the inline accordion.
 
 <Admonition type="tip" title="Empty pages">
-  If a page has no headings, the TOC is empty and the `[data-toc-aside]` wrapper is hidden
-  via JavaScript on `DOMContentLoaded`.
+  If a page has no headings, any `[data-toc-inline]` elements are set to `hidden` in the
+  generated HTML, and the sidebar `[data-toc-aside]` is hidden via JavaScript on
+  `DOMContentLoaded`. Neither widget appears on pages with no navigable sections.
 </Admonition>

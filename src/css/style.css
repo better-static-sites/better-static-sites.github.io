@@ -17,6 +17,7 @@
 @source "../../node_modules/astro-better-tabs/TabItem.astro";
 @source "../../node_modules/astro-better-cards/Card.astro";
 @source "../../node_modules/astro-toc-smol/src/index.js";
+@source "../../node_modules/astro-toc-smol/src/InlineTOC.astro";
 
 :root {
   --bg: #ffffff;
@@ -220,6 +221,45 @@ body {
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
+
+/* inline mobile TOC (astro-toc-smol InlineTOC) */
+.toc-inline {
+  display: block;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+@media (min-width: 1280px) {
+  .toc-inline { display: none; }
+}
+.toc-inline[hidden] { display: none; }
+.toc-inline a { border-bottom: none; }
+.toc-inline ul { list-style: none; padding: 0 !important; margin: 0; }
+.toc-inline ul > * + * { margin-block: 0 !important; }
+.toc-inline ul ul { margin-left: 0.5rem; padding-top: 0 !important; }
+.toc-inline-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  list-style: none;
+  user-select: none;
+}
+.toc-inline-summary::-webkit-details-marker { display: none; }
+.toc-inline-summary:hover { background: var(--bg-alt); }
+.toc-inline-summary svg { transition: transform 0.2s; }
+.toc-inline[open] .toc-inline-summary svg { transform: rotate(90deg); }
+.toc-inline-body {
+  padding: 0.25rem 0.75rem 0.5rem;
+}
+.toc-inline nav > ul { padding-top: 0 !important; }
 
 aside.aside { background: transparent; border-color: transparent; }
 .dark aside.aside { background: var(--bg-alt); border-color: var(--border); }

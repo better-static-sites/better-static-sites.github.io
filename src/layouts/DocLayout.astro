@@ -2,6 +2,7 @@
 import { NavBar } from 'astro-better-nav-bar';
 import Sidebar from 'astro-better-docs-sidebar/Sidebar.astro';
 import TOC from 'astro-toc-smol/TOC.astro';
+import InlineTOC from 'astro-toc-smol/InlineTOC.astro';
 import CopyCodeButton from 'astro-better-code-blocks/CopyCodeButton.astro';
 import 'src/css/style.css';
 import { getCollection } from 'astro:content';
@@ -10,11 +11,13 @@ interface Props {
   title: string;
   description?: string;
   entryId?: string;
+  hideTitle?: boolean;
 }
 
 const GITHUB_REPO = 'https://github.com/better-static-sites/better-static-sites.github.io';
 
-const { title, description, entryId } = Astro.props;
+const { title, description, entryId, hideTitle = false } = Astro.props;
+const isIndex = entryId === 'index';
 
 const slug = entryId ? entryId.replace(/\.(md|mdx)$/i, '') : null;
 const editUrl = entryId ? `${GITHUB_REPO}/blob/main/src/content/${entryId}.mdx` : null;
@@ -113,6 +116,8 @@ const docsCollection = await getCollection('docs');
           </div>
         )}
         <article class="prose">
+          {!hideTitle && !isIndex && <h1>{title}</h1>}
+          {!isIndex && <InlineTOC />}
           <slot />
         </article>
       </main>
