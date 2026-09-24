@@ -236,7 +236,7 @@ body {
 .toc-inline[hidden] { display: none; }
 .toc-inline a { border-bottom: none; }
 .toc-inline ul { list-style: none; padding: 0 !important; margin: 0; }
-.toc-inline ul > * + * { margin-block: 0 !important; }
+.toc-inline ul > * { margin-block: 0 !important; }
 .toc-inline ul ul { margin-left: 0.5rem; padding-top: 0 !important; }
 .toc-inline-summary {
   display: flex;
