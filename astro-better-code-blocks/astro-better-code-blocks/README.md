@@ -15,7 +15,7 @@ npm install astro-better-code-blocks
 - Diff overlay on any language with the `diff` keyword
 - File name tabs with `title="..."` syntax
 - A copy button that works correctly with all of the above
-- Shell-session prompts added per command (not on continuation lines) and excluded from clipboard copy
+- Shell-session prompts added per command (not on continuation lines); copying a shell session gives only the commands, without prompts or output
 
 ## Documentation
 

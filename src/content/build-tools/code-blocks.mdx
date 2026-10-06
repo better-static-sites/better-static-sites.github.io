@@ -2,7 +2,7 @@
 title: Code Snippets
 description: Remark/rehype and Sätteri plugins for enhanced code blocks with copy button, line highlighting, diff mode, collapsible sections, file titles, and shell session formatting.
 order: 1
-version: "0.2.3"
+version: "0.2.4"
 badges: ["integration"]
 ---
 
@@ -249,7 +249,7 @@ npx astro dev
 
 If any line in a block already starts with `$ `, the block is left exactly as
 written: prompted lines render as commands and everything else renders as
-output.
+output. The copy button copies only the commands, not the output.
 
 ```shell-session
 $ git status

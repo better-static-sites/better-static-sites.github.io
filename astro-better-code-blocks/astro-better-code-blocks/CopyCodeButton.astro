@@ -17,7 +17,7 @@
   const svgUse = (id: string) =>
     `<svg width="16" height="16" fill="currentColor" aria-hidden="true"><use href="${id}"/></svg>`;
 
-  // Walk DOM text nodes, skipping subtrees marked data-no-copy or with shell-symbol class.
+  // Walk DOM text nodes, skipping subtrees marked data-no-copy, prompts, and shell-session output.
   function extractText(root: Element): string {
     const parts: string[] = [];
     const walk = (node: Node): void => {
@@ -25,6 +25,8 @@
         const el = node as Element;
         if (el.hasAttribute('data-no-copy')) return;
         if (typeof el.className === 'string' && el.className.includes('shell-symbol')) return;
+        // command output in a shell-session transcript; copying gives just the commands
+        if (el.classList.contains('output') && el.closest('code.language-shell-session')) return;
         el.childNodes.forEach(walk);
       } else if (node.nodeType === Node.TEXT_NODE) {
         parts.push(node.nodeValue ?? '');
@@ -51,7 +53,10 @@
       let text: string;
 
       if (lineSpans.length) {
-        text = Array.from(lineSpans).map(span => extractText(span)).join('\n');
+        text = Array.from(lineSpans)
+          // drop lines that held nothing but command output
+          .filter(span => !(code.classList.contains('language-shell-session') && span.querySelector('.output')) || extractText(span).trim() !== '')
+          .map(span => extractText(span)).join('\n');
       } else {
         text = extractText(code).trim();
       }

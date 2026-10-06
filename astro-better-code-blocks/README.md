@@ -182,7 +182,7 @@ npx astro dev
 ```
 ````
 
-To include output lines, write the prompts yourself. If any line in a block starts with `$ `, the block is left exactly as written: prompted lines render as commands and everything else renders as output.
+To include output lines, write the prompts yourself. If any line in a block starts with `$ `, the block is left exactly as written: prompted lines render as commands and everything else renders as output. The copy button copies only the commands, not the output.
 
 ````
 ```shell-session
