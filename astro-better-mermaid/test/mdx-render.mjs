@@ -7,6 +7,9 @@
 import { evaluate as evaluateUnified, nodeTypes } from '@mdx-js/mdx';
 import { evaluate as evaluateSatteri } from 'satteri';
 import rehypeRaw from 'rehype-raw';
+import { fromHtml } from 'hast-util-from-html';
+import { removePosition } from 'unist-util-remove-position';
+import { find, html as htmlSchema, svg as svgSchema } from 'property-information';
 
 const Fragment = Symbol('Fragment');
 
@@ -24,8 +27,25 @@ function kids(children) {
     .flatMap(c => (typeof c === 'object' ? (c.type === 'root' ? c.children : [c]) : [{ type: 'text', value: String(c) }]));
 }
 
+// hast property names (className, strokeWidth) to the attribute names JSX props use
+function toAttributes(node, space = 'html') {
+  if (node.type !== 'element') return node;
+  const inner = node.tagName === 'svg' ? 'svg' : space;
+  const schema = inner === 'svg' ? svgSchema : htmlSchema;
+  const properties = {};
+  for (const [key, value] of Object.entries(node.properties ?? {})) {
+    const info = find(schema, key);
+    properties[info.attribute] = Array.isArray(value) ? value.join(info.commaSeparated ? ', ' : ' ') : value === true ? '' : String(value);
+  }
+  return { ...node, properties, children: node.children.map(c => toAttributes(c, inner)) };
+}
+
 function jsx(type, props = {}) {
-  const { children, ...properties } = props;
+  const { children: given, 'set:html': setHtml, ...properties } = props;
+  // Astro's set:html replaces the element's children with parsed HTML
+  const parsed = setHtml === undefined ? null : fromHtml(setHtml, { fragment: true });
+  if (parsed) removePosition(parsed, { force: true });
+  const children = parsed ? parsed.children.map(c => toAttributes(c)) : given;
   if (type === Fragment) return { type: 'root', children: kids(children) };
   if (typeof type === 'function') return type(props);
   return { type: 'element', tagName: type, properties, children: kids(children) };

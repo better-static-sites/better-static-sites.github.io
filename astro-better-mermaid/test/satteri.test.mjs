@@ -44,7 +44,7 @@ test('disk cache: second renderer reads the entry instead of rendering', async (
   const cacheDir = tmpDir();
   const first = await createRenderer({ cacheDir })(FLOW, 0);
   const [entry] = fs.readdirSync(cacheDir);
-  assert.ok(entry?.endsWith('.html'), 'cache entry written');
+  assert.ok(entry?.endsWith('.svg'), 'cache entry written');
   assert.equal(fs.readFileSync(path.join(cacheDir, entry), 'utf-8'), first);
 
   fs.writeFileSync(path.join(cacheDir, entry), 'SENTINEL');
@@ -61,7 +61,7 @@ test('disk cache: key covers theme', async () => {
 test('disk cache: failed diagrams are not cached', async () => {
   const cacheDir = tmpDir();
   assert.equal(await createRenderer({ cacheDir })('this is not mermaid !!!', 0), null);
-  assert.deepEqual(fs.readdirSync(cacheDir).filter(f => f.endsWith('.html')), []);
+  assert.deepEqual(fs.readdirSync(cacheDir).filter(f => f.endsWith('.svg')), []);
 });
 
 test('cache: false writes nothing', async () => {

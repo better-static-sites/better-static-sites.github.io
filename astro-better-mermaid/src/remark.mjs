@@ -13,7 +13,7 @@
  */
 
 import { visit } from 'unist-util-visit';
-import { createRenderer, titleNode } from './core.mjs';
+import { createRenderer, titleNode, wrap } from './core.mjs';
 
 /**
  * Remark plugin factory. Options:
@@ -33,10 +33,10 @@ export function remarkMermaidSSR(options = {}) {
 
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      const html = await render(node.value, i);
-      if (!html) continue;
+      const svg = await render(node.value, i);
+      if (!svg) continue;
       node.type  = 'html';
-      node.value = html;
+      node.value = wrap(node.value, svg);
       delete node.lang;
       delete node.meta;
     }

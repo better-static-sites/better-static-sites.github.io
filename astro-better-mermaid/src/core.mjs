@@ -69,8 +69,8 @@ const _mermaidImport = domReady
     })
   : Promise.resolve(null);
 
-// bump when the post-processing below changes, so stale cache entries miss
-const CACHE_FORMAT = 1;
+// bump when cached entries change shape, so old ones miss (2: bare post-processed SVG)
+const CACHE_FORMAT = 2;
 
 function mermaidVersion() {
   try { return _require('mermaid/package.json').version; } catch { return 'unknown'; }
@@ -78,8 +78,8 @@ function mermaidVersion() {
 
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 
-/** Wrap rendered SVG the way the plugins emit it. */
-function wrap(source, svg) {
+/** Wrap rendered SVG in the `<div class="mermaid">` the plugins emit as HTML. */
+export function wrap(source, svg) {
   // &#10; keeps indentation intact through MDX raw parsing, which strips it after literal newlines
   const escapedSrc = source.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
   return `<div class="mermaid" data-processed="true" data-mermaid-src="${escapedSrc}">\n${svg}\n</div>`;
@@ -117,12 +117,12 @@ function postProcess(svg) {
 /**
  * Create a renderer for one plugin instance.
  *
- * `render(source, index)` resolves to the `<div class="mermaid">` HTML, or null
+ * `render(source, index)` resolves to the post-processed SVG markup, or null
  * when the diagram fails (callers leave the code block as-is). `index` is the
  * diagram's position in its document; with the source hash it forms the SVG id,
  * so output is stable across builds and unique within a page.
  *
- * Rendered HTML is cached in memory and, unless `cache` is false, on disk under
+ * Rendered SVG is cached in memory and, unless `cache` is false, on disk under
  * `cacheDir`, keyed by mermaid version, options, id, and source.
  */
 export function createRenderer({
@@ -153,7 +153,7 @@ export function createRenderer({
     if (!mermaid) return null;
     try {
       const { svg } = await mermaid.render(id, source);
-      return wrap(source, postProcess(svg));
+      return postProcess(svg);
     } catch (err) {
       console.warn(`[astro-mermaid-ssr] Diagram ${index} failed to render.\n  ${err.message.slice(0, 120)}`);
       return null;
@@ -165,27 +165,27 @@ export function createRenderer({
     const key = sha(JSON.stringify([CACHE_FORMAT, version, theme, securityLevel, id, source]));
     if (memo.has(key)) return memo.get(key);
 
-    const file = cache ? path.join(cacheDir, `${key}.html`) : null;
+    const file = cache ? path.join(cacheDir, `${key}.svg`) : null;
     const result = queue.then(async () => {
       if (file) {
         try { return fs.readFileSync(file, 'utf-8'); } catch { /* miss */ }
       }
-      const html = await renderUncached(source, id, index);
-      if (html && file) {
+      const svg = await renderUncached(source, id, index);
+      if (svg && file) {
         try {
           fs.mkdirSync(cacheDir, { recursive: true });
           // tmp + rename so concurrent builds never read a partial entry
           const tmp = `${file}.${process.pid}.tmp`;
-          fs.writeFileSync(tmp, html, 'utf-8');
+          fs.writeFileSync(tmp, svg, 'utf-8');
           fs.renameSync(tmp, file);
         } catch { /* cache is best-effort */ }
       }
-      return html;
+      return svg;
     });
     queue = result.catch(() => {});
     // failures aren't memoized, so a later build retries them
     memo.set(key, result);
-    result.then(html => { if (!html) memo.delete(key); }, () => memo.delete(key));
+    result.then(svg => { if (!svg) memo.delete(key); }, () => memo.delete(key));
     return result;
   };
 }

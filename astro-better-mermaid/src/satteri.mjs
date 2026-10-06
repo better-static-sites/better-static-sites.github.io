@@ -8,9 +8,12 @@
  *   satteri({ mdastPlugins: [mermaidTitle(), mermaidSSR()] });
  *
  * Put mermaidTitle first, as with the unified plugins.
+ *
+ * In MDX the SVG reaches the page through Astro's `set:html`, so these plugins
+ * target Astro's JSX runtime.
  */
 
-import { createRenderer, titleNode } from './core.mjs';
+import { createRenderer, titleNode, wrap } from './core.mjs';
 
 /**
  * Render ```mermaid blocks to inline SVG. Options match remarkMermaidSSR:
@@ -26,10 +29,21 @@ export function mermaidSSR(options = {}) {
       name: 'astro-better-mermaid:ssr',
       async code(node, ctx) {
         if (node.lang !== 'mermaid') return;
-        const html = await render(node.value, index++);
-        if (!html) return;
-        // MDX can't hold html nodes, so parse into JSX there; the SVG's CSS braces stay literal
-        return ctx.sourceFormat === 'mdx' ? { raw: html, mdxExpressions: false } : { type: 'html', value: html };
+        const svg = await render(node.value, index++);
+        if (!svg) return;
+        if (ctx.sourceFormat !== 'mdx') return { type: 'html', value: wrap(node.value, svg) };
+        // one set:html string; parsing the svg into jsx costs ~30ms a diagram
+        return {
+          type: 'mdxJsxFlowElement',
+          name: 'div',
+          attributes: [
+            { type: 'mdxJsxAttribute', name: 'class', value: 'mermaid' },
+            { type: 'mdxJsxAttribute', name: 'data-processed', value: 'true' },
+            { type: 'mdxJsxAttribute', name: 'data-mermaid-src', value: node.value },
+            { type: 'mdxJsxAttribute', name: 'set:html', value: `\n${svg}\n` },
+          ],
+          children: [],
+        };
       },
     };
   };
