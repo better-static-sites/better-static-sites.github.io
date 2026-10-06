@@ -1,6 +1,6 @@
 {
   "name": "astro-better-tables",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "RST-style list-table and grid-table components for Astro",
   "keywords": [
     "astro",

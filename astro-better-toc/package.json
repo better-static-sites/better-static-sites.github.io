@@ -1,6 +1,6 @@
 {
   "name": "astro-better-toc",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Astro integration + component for a full server-side 'On This Page' TOC with scroll spy",
   "keywords": [
     "astro",

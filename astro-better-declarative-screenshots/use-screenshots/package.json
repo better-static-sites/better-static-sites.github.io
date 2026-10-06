@@ -1,6 +1,6 @@
 {
   "name": "astro-better-declarative-screenshots",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Astro components that render committed screenshot PNGs in your docs site",
   "repository": {
     "type": "git",

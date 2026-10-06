@@ -32,8 +32,9 @@ const { open, class: cls, title, ...rest } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    /* about 40px tall at a 24px line height, above the 24px WCAG 2.2 target minimum */
+    padding: 0.5rem 0.75rem;
     cursor: pointer;
     list-style: none;
     background: var(--abt-details-summary-bg, #f9fafb);
@@ -41,6 +42,12 @@ const { open, class: cls, title, ...rest } = Astro.props;
     user-select: none;
     /* always present so open/close is a color-only change -- no layout shift */
     border-bottom: 1px solid transparent;
+  }
+
+  /* the container's overflow: hidden would clip an outside focus ring */
+  .abt-details-summary:focus-visible {
+    outline: 2px solid var(--abt-details-focus, currentColor);
+    outline-offset: -2px;
   }
 
   .abt-details-summary::-webkit-details-marker { display: none; }
@@ -68,6 +75,6 @@ const { open, class: cls, title, ...rest } = Astro.props;
   }
 
   .abt-details-body {
-    padding: 1rem;
+    padding: 0.5rem 0.75rem;
   }
 </style>

@@ -1,6 +1,6 @@
 {
   "name": "astro-better-nav-bar",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Configurable sticky navigation bar component for Astro with dropdowns, theme selector, search, and CTA slots",
   "keywords": [
     "astro",

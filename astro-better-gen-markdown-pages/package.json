@@ -1,6 +1,6 @@
 {
   "name": "astro-better-gen-markdown-pages",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Astro integration that generates .md and llms.txt companion files from built HTML pages",
   "keywords": [
     "astro",

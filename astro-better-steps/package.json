@@ -1,6 +1,6 @@
 {
   "name": "astro-better-steps",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Numbered step-by-step component for Astro",
   "keywords": [
     "astro",

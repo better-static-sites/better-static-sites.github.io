@@ -1,6 +1,6 @@
 {
   "name": "astro-better-link-checker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fast intra-site broken link and image checker for Astro — deduplicates destinations and checks each one exactly once",
   "keywords": [
     "astro",
