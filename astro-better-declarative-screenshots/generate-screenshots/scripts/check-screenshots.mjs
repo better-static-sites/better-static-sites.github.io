@@ -92,7 +92,16 @@ async function main() {
         context,
       });
 
-      const newBuffer = await applyChrome(rawBuffer, config, fullUrl);
+      let newBuffer = rawBuffer;
+      if (config.chrome.style !== 'none' && config.chrome.renderIn !== 'css') {
+        newBuffer = await addChrome(rawBuffer, {
+          url: fullUrl,
+          dark: config.chrome.dark,
+          showUrl: config.chrome.showUrl,
+          shadowBlur: config.chrome.shadowBlur,
+          shadowPadding: config.chrome.shadowPadding,
+        });
+      }
 
       const result = await diffScreenshot(referencePath, newBuffer, {
         threshold: args.pixelThreshold ?? 0.1,
