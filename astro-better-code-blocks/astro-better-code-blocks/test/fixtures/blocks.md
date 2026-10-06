@@ -44,7 +44,6 @@ Shell session with continuations and quotes:
 
 ```shell-session
 npm install
-$ already prompted
 # root prompt
 curl -X POST \
   -H 'Content-Type: application/json' \

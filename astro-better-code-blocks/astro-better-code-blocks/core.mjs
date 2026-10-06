@@ -263,35 +263,69 @@ export async function buildCodeBlock({ language, meta, code }, { copyButton = tr
   return resultNode;
 }
 
+// Scan one line of shell. Returns the quote still open at the end of the line, whether the
+// line ends with a continuation (\, &&, ||, |), and any heredoc it starts.
+function scanShellLine(line, quote) {
+  let code = '';
+  let heredoc = null;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (quote === "'") { if (c === "'") quote = null; continue; }
+    if (quote === '"') {
+      if (c === '\\') i++;
+      else if (c === '"') quote = null;
+      continue;
+    }
+    if (c === '\\') { code += line.slice(i, i + 2); i++; continue; }
+    if (c === "'" || c === '"') { quote = c; continue; }
+    // a comment ends the line's code
+    if (c === '#' && (i === 0 || /\s/.test(line[i - 1]))) break;
+    if (c === '<' && line[i + 1] === '<' && line[i + 2] !== '<') {
+      const m = line.slice(i).match(/^<<(-?)\s*(['"]?)([A-Za-z_]\w*)\2/);
+      if (m) heredoc = { tag: m[3], stripTabs: m[1] === '-' };
+    }
+    code += c;
+  }
+  const tail = code.trimEnd();
+  // an odd run of trailing backslashes escapes the newline; an even run is literal backslashes
+  const trailingBackslashes = tail.match(/\\*$/)[0].length;
+  const continues = !quote && (trailingBackslashes % 2 === 1 || /(&&|\|\||\|)$/.test(tail));
+  return { quote, continues, heredoc };
+}
+
 /**
- * Prepend `prompt` to shell-session lines that have none, so Prism's
- * shell-session grammar can tokenize them. Continuation lines (after a
- * trailing backslash or inside an open single quote) are left alone.
+ * Prepend `prompt` to each shell-session command so Prism's shell-session grammar
+ * can tokenize it. Lines that continue a command get no prompt: after a trailing
+ * \, &&, ||, or |, inside a multi-line quoted string, and inside a heredoc.
+ * Blocks that already contain a `$ ` prompt are left as written.
  */
 export function addShellPrompts(value, prompt = '$ ') {
   const lines = value.split('\n');
-  let continuation = false;
-  let openQuote = false;
+  if (lines.some(line => /^\$( |$)/.test(line))) return value;
+
+  let quote = null;
+  let continued = false;
+  let heredoc = null;
 
   return lines.map(line => {
-    // empty lines reset all state
-    if (!line.trim()) {
-      continuation = false;
-      openQuote = false;
+    if (heredoc) {
+      if ((heredoc.stripTabs ? line.replace(/^\t+/, '') : line) === heredoc.tag) heredoc = null;
+      return line;
+    }
+    // blank lines end a command, except inside a quoted string
+    if (!line.trim() && !quote) {
+      continued = false;
       return line;
     }
 
-    const isContinuation = continuation || openQuote;
-
-    // update state from this line's content
-    const endsWithBackslash = line.trimEnd().endsWith('\\');
-    // count unescaped single quotes to track whether a quoted argument spans lines
-    const quoteCount = (line.match(/'/g) || []).length;
-    openQuote = openQuote !== (quoteCount % 2 === 1);
-    continuation = endsWithBackslash;
+    const isContinuation = continued || quote !== null;
+    const scan = scanShellLine(line, quote);
+    quote = scan.quote;
+    continued = scan.continues;
+    if (scan.heredoc && !quote) heredoc = scan.heredoc;
 
     if (isContinuation) return line;
-    if (line.startsWith('$ ') || line.startsWith('# ')) return line;
+    if (line.startsWith('# ')) return line;
     return prompt + line;
   }).join('\n');
 }

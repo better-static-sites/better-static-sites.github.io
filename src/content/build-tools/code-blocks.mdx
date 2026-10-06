@@ -2,7 +2,7 @@
 title: Code Snippets
 description: Remark/rehype and Sätteri plugins for enhanced code blocks with copy button, line highlighting, diff mode, collapsible sections, file titles, and shell session formatting.
 order: 1
-version: "0.2.2"
+version: "0.2.3"
 badges: ["integration"]
 ---
 
@@ -221,12 +221,11 @@ Line 2 is highlighted, lines 5-8 are collapsible, and a title tab appears above.
 ## Shell session
 
 `shell-session` blocks are processed by `remarkShellSession` before syntax
-highlighting. Lines that do not already start with `$ ` or `# ` get `$ `
-prepended automatically, so you can write clean commands without repeating the
-prompt on every line.
+highlighting. Each command gets `$ ` prepended automatically, so you can write
+clean commands without repeating the prompt on every line.
 
-Prompt characters are excluded from the copy button -- clicking copy gives you
-the raw commands without the `$` prefix.
+The prompt and the space after it are excluded from the copy button -- clicking
+copy gives you the raw commands.
 
 ```shell-session
 npm install astro-better-code-blocks
@@ -235,20 +234,22 @@ npx astro dev
 
 ### Multi-line commands
 
-Line continuation (`\` at end of a line) and open single-quoted strings are
-tracked so that continuation lines do not get a prompt prepended.
+Lines that continue a command don't get a prompt: lines after a trailing `\`,
+`&&`, `||`, or `|`, lines inside a multi-line single- or double-quoted string,
+and the body of a heredoc.
 
 ```shell-session
 npm install \
     astro-better-code-blocks \
-    @astrojs/prism prismjs
-added 5 packages in 0.8s
+    @astrojs/prism prismjs && \
+npx astro dev
 ```
 
 ### Mixed commands and output
 
-Lines that already start with `$ ` or `# ` are left unchanged, so you can
-mix commands and output freely.
+If any line in a block already starts with `$ `, the block is left exactly as
+written: prompted lines render as commands and everything else renders as
+output.
 
 ```shell-session
 $ git status

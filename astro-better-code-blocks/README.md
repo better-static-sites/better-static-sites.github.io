@@ -168,11 +168,21 @@ npm install astro-better-code-blocks
 ```
 ````
 
-`remarkShellSession` normalizes lines without a prompt by prepending `$ `. Prism then tokenizes the `$ ` as a `shell-symbol.important` token. The rehype plugin marks those tokens with `data-no-copy` so the copy button skips them entirely -- no client-side string manipulation.
+`remarkShellSession` prepends `$ ` to each command. Prism then tokenizes the `$ ` as a `shell-symbol.important` token. The rehype plugin marks those tokens, and the space after them, with `data-no-copy` so the copy button skips them entirely -- no client-side string manipulation.
 
 Users who manually select and copy also get clean output because `[data-no-copy]` has `user-select: none`.
 
-To include output lines (no prompt), write them explicitly:
+Lines that continue a command get no prompt: lines after a trailing `\`, `&&`, `||`, or `|`, lines inside a multi-line single- or double-quoted string, and the body of a heredoc.
+
+````
+```shell-session
+npm install \
+    astro-better-code-blocks && \
+npx astro dev
+```
+````
+
+To include output lines, write the prompts yourself. If any line in a block starts with `$ `, the block is left exactly as written: prompted lines render as commands and everything else renders as output.
 
 ````
 ```shell-session
@@ -181,8 +191,6 @@ $ npm run build
   > astro build
 ```
 ````
-
-Lines that start with `$ ` or `# ` are treated as input. All other non-empty lines pass through untouched.
 
 ## Stylesheet
 

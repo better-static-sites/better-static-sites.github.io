@@ -66,27 +66,39 @@ for (const c of CASES) {
   });
 }
 
-test('addShellPrompts leaves prompted, continued, and quoted lines alone', () => {
-  const input = [
-    'npm i',
-    '$ ls',
-    '# whoami',
-    'curl \\',
-    '  -d x',
-    "echo 'a",
-    "b'",
-    'next',
-  ].join('\n');
-  assert.equal(addShellPrompts(input), [
-    '$ npm i',
-    '$ ls',
-    '# whoami',
-    '$ curl \\',
-    '  -d x',
-    "$ echo 'a",
-    "b'",
-    '$ next',
-  ].join('\n'));
+test('addShellPrompts: one prompt per command', () => {
+  assert.equal(addShellPrompts('npm i\n# whoami\nnext'), '$ npm i\n# whoami\n$ next');
+});
+
+test('addShellPrompts: no prompt on continuation lines', () => {
+  const cases = [
+    ['curl \\\n  -d x', 'backslash'],
+    ['make &&\nmake install', 'trailing &&'],
+    ['false ||\necho fallback', 'trailing ||'],
+    ['cat log |\ngrep error', 'trailing |'],
+    ["echo 'a\nb'", 'multi-line single quotes'],
+    ['echo "a\nb"', 'multi-line double quotes'],
+    ['cat <<EOF > f\nbody\nEOF', 'heredoc'],
+  ];
+  for (const [src, label] of cases) {
+    const lines = addShellPrompts(src).split('\n');
+    assert.ok(lines[0].startsWith('$ '), label);
+    assert.ok(lines.slice(1).every(l => !l.startsWith('$ ')), label);
+  }
+});
+
+test('addShellPrompts: quotes in comments and inside the other quote type do not continue', () => {
+  assert.equal(addShellPrompts("cmd # don't\nnext"), "$ cmd # don't\n$ next");
+  assert.equal(addShellPrompts('echo "it\'s"\nnext'), '$ echo "it\'s"\n$ next');
+});
+
+test('addShellPrompts: an escaped trailing backslash is not a continuation', () => {
+  assert.equal(addShellPrompts('echo a \\\\\nnext'), '$ echo a \\\\\n$ next');
+});
+
+test('addShellPrompts: blocks with an explicit $ prompt are left as written', () => {
+  const src = '$ ls\noutput line\nmore output';
+  assert.equal(addShellPrompts(src), src);
 });
 
 test('addShellPrompts: blank line resets continuation state', () => {
