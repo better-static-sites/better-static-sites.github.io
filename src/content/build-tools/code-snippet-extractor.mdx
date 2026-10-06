@@ -2,7 +2,7 @@
 title: Code Snippet Extraction
 description: Load Bluehawk-annotated code snippets and local source files into Astro pages.
 order: 2
-version: "0.2.3"
+version: "0.2.4"
 badges: ["integration", "component"]
 ---
 
@@ -60,8 +60,12 @@ import ExtractedCode from 'astro-better-code-snippet-extractor/ExtractedCode.ast
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `sourcePaths` | `string[]` | `[]` | Directories to scan for Bluehawk-annotated files |
-| `outputDir` | `string` | `.astro/snippets` | Where to write extracted snippet files |
+| `sourceDir` | `string` | `'extractedcode'` | Directory of annotated source projects; each subdirectory is processed separately |
+| `outputDir` | `string` | `'src/generated-code-snippets'` | Where to write extracted snippet files |
+| `ignore` | `string[]` | `node_modules`, `vendor`, lockfiles, and similar | Patterns passed to `bluehawk snip --ignore` |
+| `plugin` | `string` | none | Bluehawk plugin path, relative to the project root |
+
+The integration hashes `sourceDir` and skips extraction when nothing changed since the last run. When something did change, it runs Bluehawk on every subdirectory in parallel, one per CPU. Bluehawk ships as a dependency, so no `npx` download or startup is involved.
 
 ## ExtractedCode props
 

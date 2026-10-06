@@ -1,7 +1,9 @@
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { availableParallelism } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 
 const DEFAULT_IGNORE = [
   'node_modules', 'vendor', '.gitignore', '.DS_Store',
@@ -58,9 +60,49 @@ function filterOutput(raw) {
     .trim();
 }
 
+// bluehawk's own entry point, run with this Node; npx only as a fallback.
+// Skipping npx saves about half a second of startup per directory.
+function bluehawkCommand() {
+  try {
+    const require = createRequire(import.meta.url);
+    const pkgPath = require.resolve('bluehawk/package.json');
+    const { bin } = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+    const entry = typeof bin === 'string' ? bin : bin.bluehawk;
+    return { file: process.execPath, args: [join(dirname(pkgPath), entry)] };
+  } catch {
+    return { file: 'npx', args: ['--yes', 'bluehawk'] };
+  }
+}
+
+function run(file, args, opts) {
+  return new Promise((resolvePromise) => {
+    const child = spawn(file, args, opts);
+    let stdout = '';
+    let stderr = '';
+    child.stdout.setEncoding('utf-8').on('data', (d) => { stdout += d; });
+    child.stderr.setEncoding('utf-8').on('data', (d) => { stderr += d; });
+    child.on('error', (err) => resolvePromise({ status: 1, stdout, stderr: stderr + err.message }));
+    child.on('close', (status) => resolvePromise({ status, stdout, stderr }));
+  });
+}
+
+// results come back in input order, whatever order the work finishes in
+async function mapLimit(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i]);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
 /**
- * Astro integration: runs `bluehawk snip` on each subdirectory of sourceDir
- * and writes generated snippets to outputDir. Skips if source content is unchanged.
+ * Astro integration: runs `bluehawk snip` on each subdirectory of sourceDir, in
+ * parallel, and writes generated snippets to outputDir. Skips if source content is unchanged.
  *
  * @param {object} [opts]
  * @param {string} [opts.sourceDir='extractedcode'] - directory of tested source projects, relative to project root
@@ -77,7 +119,7 @@ export function extractedCodeSnippets({
   return {
     name: 'astro-better-code-snippet-extractor',
     hooks: {
-      'astro:config:done': ({ logger }) => {
+      'astro:config:done': async ({ logger }) => {
         const root = process.cwd();
         const sourcePath = resolve(root, sourceDir);
         const outputPath = resolve(root, outputDir);
@@ -111,32 +153,32 @@ export function extractedCodeSnippets({
           return;
         }
 
-        let totalWritten = 0;
+        // NODE_ENV=development causes bluehawk to include .ts in its extension list,
+        // which matches .d.ts files; Node 22.6+ then fails when trying to strip types
+        // from .d.ts files in node_modules.
+        const spawnEnv = { ...process.env };
+        delete spawnEnv.NODE_ENV;
 
-        for (const dir of dirs) {
-          const dirPath = join(sourcePath, dir);
+        const command = bluehawkCommand();
+        const runDir = (dir) => {
           const dirOutput = join(outputPath, dir);
           mkdirSync(dirOutput, { recursive: true });
-
-          const args = ['--yes', 'bluehawk', 'snip', dirPath, '--output', dirOutput];
+          const args = [...command.args, 'snip', join(sourcePath, dir), '--output', dirOutput];
           if (plugin) args.push('--plugin', plugin);
           for (const pattern of ignore) args.push('--ignore', pattern);
+          return run(command.file, args, { cwd: root, env: spawnEnv });
+        };
 
-          // NODE_ENV=development causes bluehawk to include .ts in its extension list,
-          // which matches .d.ts files; Node 22.6+ then fails when trying to strip types
-          // from .d.ts files in node_modules.
-          const spawnEnv = { ...process.env };
-          delete spawnEnv.NODE_ENV;
-          const result = spawnSync('npx', args, { encoding: 'utf-8', cwd: root, env: spawnEnv });
-          const stdout = result.stdout || '';
-          const stderr = result.stderr || '';
+        // each directory writes only to its own output folder, so they can run side by side
+        const results = await mapLimit(dirs, availableParallelism(), runDir);
 
-          if (result.status !== 0 || (stdout + stderr).includes('bluehawk errors')) {
+        let totalWritten = 0;
+        for (const [i, { status, stdout, stderr }] of results.entries()) {
+          if (status !== 0 || (stdout + stderr).includes('bluehawk errors')) {
             throw new Error(
-              `bluehawk snip failed for "${dir}":\n${filterOutput(stdout + stderr)}`
+              `bluehawk snip failed for "${dirs[i]}":\n${filterOutput(stdout + stderr)}`
             );
           }
-
           totalWritten += (stdout.match(/wrote text file/g) || []).length;
         }
 

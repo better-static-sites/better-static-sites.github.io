@@ -1,6 +1,6 @@
 {
   "name": "astro-better-code-snippet-extractor",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Astro component and integration for loading Bluehawk-annotated code snippets and local source files",
   "keywords": [
     "astro",
@@ -28,6 +28,12 @@
     "*.js",
     "*.astro"
   ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "bluehawk": "^1.6.0"
+  },
   "peerDependencies": {
     "@astrojs/prism": ">=3.0.0"
   }

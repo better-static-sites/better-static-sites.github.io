@@ -237,7 +237,7 @@ npm install astro-better-code-snippet-extractor
 
 ### Astro integration
 
-The package includes an Astro integration that runs `bluehawk snip` automatically at build time and dev server start, replacing any manual `bluehawk snip` script calls.
+The package includes an Astro integration that runs `bluehawk snip` automatically at build time and dev server start, replacing any manual `bluehawk snip` script calls. Each subdirectory of the source directory gets its own run, and the runs happen in parallel.
 
 In `astro.config.ts`:
 
