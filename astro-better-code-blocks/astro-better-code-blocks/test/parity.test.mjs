@@ -107,3 +107,14 @@ test('MDX: satteri output matches unified output', async () => {
   assert.ok(JSON.stringify(a).includes('"tagName":"aside"'));
   assert.deepEqual(b, a);
 });
+
+test('copied shell-session text has neither the prompt nor the space after it', async () => {
+  const html = await renderUnified('```shell-session\nnpm install\n$ npm run dev\n```\n', CASES[0]);
+  // same walk as CopyCodeButton: skip data-no-copy subtrees
+  const copy = (node) => node.type === 'text' ? node.value
+    : node.properties?.dataNoCopy !== undefined ? ''
+    : (node.children ?? []).map(copy).join('');
+  const code = fromHtml(html, { fragment: true }).children[0].children[0].children[0];
+  assert.equal(code.tagName, 'code');
+  assert.equal(copy(code).trim(), 'npm install\nnpm run dev');
+});

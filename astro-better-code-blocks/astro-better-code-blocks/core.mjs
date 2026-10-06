@@ -143,15 +143,25 @@ function buildLineNodes(rawLines, highlight, collapse, diff) {
   return nodes;
 }
 
-/** Add data-no-copy to shell-symbol.important tokens so the copy button skips them */
+/** Add data-no-copy to shell-symbol.important tokens, and the space after them, so the copy button skips both */
 function markShellPrompts(nodes) {
-  for (const n of nodes) {
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
     if (
       n.type === 'element' &&
       Array.isArray(n.properties?.className) &&
       n.properties.className.includes('shell-symbol')
     ) {
       n.properties['data-no-copy'] = '';
+      const next = nodes[i + 1];
+      const space = next?.type === 'text' ? next.value.match(/^[ \t]+/)?.[0] : undefined;
+      if (space) {
+        // still rendered, just not copied
+        const rest = next.value.slice(space.length);
+        const marked = { type: 'element', tagName: 'span', properties: { 'data-no-copy': '' }, children: [{ type: 'text', value: space }] };
+        nodes.splice(i + 1, 1, marked, ...(rest ? [{ type: 'text', value: rest }] : []));
+        i++;
+      }
     }
     if (n.children?.length) markShellPrompts(n.children);
   }
