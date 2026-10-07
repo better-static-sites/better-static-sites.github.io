@@ -139,3 +139,25 @@ test('resolveExtractedCodePath prefers generated output and falls back to source
   assert.equal(resolveExtractedCodePath('project-0/package.json', snippetRoot, sourceRoot),
                path.join(sourceRoot, 'project-0/package.json'));
 });
+
+test('output from another version or other options is regenerated even when the source is unchanged', async () => {
+  const root = makeProject(1);
+  await runIn(root);
+  assert.ok((await runIn(root)).some(m => m.startsWith('snippets up to date')));
+
+  // a cache restored from 0.2.x has a matching .snippets-hash but no generator record
+  fs.rmSync(generated(root, '.snippets-generator'));
+  assert.ok((await runIn(root)).some(m => /snippets? written/.test(m)));
+
+  assert.ok((await runIn(root, { state: 'published' })).some(m => /snippets? written/.test(m)));
+  assert.ok((await runIn(root, { state: 'published' })).some(m => m.startsWith('snippets up to date')));
+});
+
+test('a changed bluehawk plugin regenerates the output', async () => {
+  const root = makeProject(1);
+  fs.writeFileSync(path.join(root, 'plugin.js'), 'module.exports = { register() {} };\n');
+  await runIn(root, { plugin: 'plugin.js' });
+  assert.ok((await runIn(root, { plugin: 'plugin.js' })).some(m => m.startsWith('snippets up to date')));
+  fs.appendFileSync(path.join(root, 'plugin.js'), '// changed\n');
+  assert.ok((await runIn(root, { plugin: 'plugin.js' })).some(m => /snippets? written/.test(m)));
+});

@@ -31,6 +31,16 @@ function hashDir(sourcePath) {
   return hash.digest('hex');
 }
 
+// what produced the output; a cache restored from another version or other options must not count as up to date
+function generatorStamp(root, { ignore, plugin, state }) {
+  const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
+  const pluginPath = plugin && resolve(root, plugin);
+  const pluginHash = pluginPath && existsSync(pluginPath)
+    ? createHash('sha256').update(readFileSync(pluginPath)).digest('hex')
+    : null;
+  return JSON.stringify({ version, ignore, plugin: plugin ?? null, pluginHash, state: state ?? null });
+}
+
 function countFiles(dir, exclude) {
   let n = 0;
   function walk(d) {
@@ -127,6 +137,7 @@ export function extractedCodeSnippets({
         const sourcePath = resolve(root, sourceDir);
         const outputPath = resolve(root, outputDir);
         const hashFile = join(outputPath, '.snippets-hash');
+        const stampFile = join(outputPath, '.snippets-generator');
 
         if (!existsSync(sourcePath)) {
           logger.warn(`source directory not found: ${sourcePath} -- skipping snippet generation`);
@@ -136,11 +147,14 @@ export function extractedCodeSnippets({
         mkdirSync(outputPath, { recursive: true });
 
         const currentHash = hashDir(sourcePath);
+        const currentStamp = generatorStamp(root, { ignore, plugin, state });
         const snippetCount = countFiles(outputPath, hashFile);
 
         if (
           existsSync(hashFile) &&
           readFileSync(hashFile, 'utf-8').trim() === currentHash &&
+          existsSync(stampFile) &&
+          readFileSync(stampFile, 'utf-8') === currentStamp &&
           snippetCount > 0
         ) {
           logger.info(`snippets up to date (${snippetCount} files)`);
@@ -198,6 +212,7 @@ export function extractedCodeSnippets({
 
         pruneEmptyDirs(outputPath);
         writeFileSync(hashFile, currentHash);
+        writeFileSync(stampFile, currentStamp);
         logger.info(`${totalWritten} snippet${totalWritten !== 1 ? 's' : ''} written`);
       },
     },

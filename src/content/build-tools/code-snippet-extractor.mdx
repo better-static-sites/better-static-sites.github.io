@@ -2,7 +2,7 @@
 title: Code Snippet Extraction
 description: Load Bluehawk-annotated code snippets and local source files into Astro pages.
 order: 2
-version: "0.3.0"
+version: "0.3.1"
 badges: ["integration", "component"]
 ---
 
@@ -66,7 +66,7 @@ The first renders the `loginExample` snippet. The second renders the whole file.
 | `plugin` | `string` | none | Bluehawk plugin path, relative to the project root |
 | `state` | `string` | none | Bluehawk state passed to `--state`, so snippets and whole files match a published state |
 
-For each project, the integration runs `bluehawk snip` to write the snippets and `bluehawk copy` to write a copy of the whole project with Bluehawk markup removed. Both land in `outputDir`. The integration hashes `sourceDir` and skips this when nothing changed since the last run. When something did change, it regenerates every project in parallel, one per CPU. Bluehawk ships as a dependency, so no `npx` download or startup is involved.
+For each project, the integration runs `bluehawk snip` to write the snippets and `bluehawk copy` to write a copy of the whole project with Bluehawk markup removed. Both land in `outputDir`. The integration hashes `sourceDir` and skips this when nothing changed since the last run. It also reruns after a package upgrade or a change to its options, so output restored from a cache built another way gets regenerated. When something did change, it regenerates every project in parallel, one per CPU. Bluehawk ships as a dependency, so no `npx` download or startup is involved.
 
 ## ExtractedCode props
 
