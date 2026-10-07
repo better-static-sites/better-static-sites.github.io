@@ -3,27 +3,29 @@
  * Loads a code file from disk and renders it with Prism.
  * Supports two file conventions:
  *   - Bluehawk snippets: paths containing ".snippet." are resolved relative to snippetRoot
- *   - Source files: all other paths are resolved relative to sourceRoot
+ *   - Whole files: resolved relative to snippetRoot, where the integration writes a copy with
+ *     Bluehawk markup removed. Files the integration ignored fall back to sourceRoot.
  */
 
 import { Prism } from '@astrojs/prism';
 import fs from 'fs';
 import path from 'path';
+import { resolveExtractedCodePath } from './resolve.js';
 
 interface Props {
-  /** Path to the file. Snippet detection: if the path contains ".snippet.", reads from snippetRoot; otherwise reads from sourceRoot. */
+  /** Path to the file, relative to the source project root. Paths containing ".snippet." name a Bluehawk snippet. */
   src: string;
   /** Prism language identifier. Defaults to "plaintext". */
   lang?: string;
   /** Optional title shown above the code block as a .code-title tab. */
   title?: string;
   /**
-   * Root directory for Bluehawk-generated snippets.
+   * Root directory for Bluehawk-generated snippets and processed whole files.
    * @default path.join(process.cwd(), 'src', 'generated-code-snippets')
    */
   snippetRoot?: string;
   /**
-   * Root directory for raw source files.
+   * Root directory for raw source files, used for whole files the integration ignored.
    * @default path.join(process.cwd(), 'extractedcode')
    */
   sourceRoot?: string;
@@ -37,9 +39,7 @@ const {
   sourceRoot = path.join(process.cwd(), 'extractedcode'),
 } = Astro.props;
 
-const filePath = src.includes('.snippet.')
-  ? path.join(snippetRoot, src)
-  : path.join(sourceRoot, src);
+const filePath = resolveExtractedCodePath(src, snippetRoot, sourceRoot);
 
 let code = '';
 try {

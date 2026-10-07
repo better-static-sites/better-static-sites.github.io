@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { extractedCodeSnippets } from '../integration.js';
+import { resolveExtractedCodePath } from '../resolve.js';
 
 function makeProject(dirCount = 6) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'abcse-'));
@@ -71,4 +72,70 @@ test('a failing directory throws with its name', async () => {
   const root = makeProject(3);
   fs.writeFileSync(path.join(root, 'extractedcode/project-2/app.js'), '// :snippet-start: broken\nno end tag\n');
   await assert.rejects(runIn(root), /bluehawk snip failed for "project-2"/);
+});
+
+const generated = (root, ...parts) => path.join(root, 'src/generated-code-snippets', ...parts);
+
+test('writes a copy of each whole file with bluehawk markup removed', async () => {
+  const root = makeProject(1);
+  fs.mkdirSync(path.join(root, 'extractedcode/project-0/routes'));
+  fs.writeFileSync(path.join(root, 'extractedcode/project-0/routes/index.js'), [
+    'const a = 1;',
+    '// :snippet-start: outer',
+    '// :snippet-start: inner',
+    'const b = 2;',
+    '// :snippet-end:',
+    '// :snippet-end:',
+    '// :remove-start:',
+    'const debug = true;',
+    '// :remove-end:',
+    '',
+  ].join('\n'));
+  await runIn(root);
+  const copy = fs.readFileSync(generated(root, 'project-0/routes/index.js'), 'utf-8');
+  assert.match(copy, /const a = 1;/);
+  assert.match(copy, /const b = 2;/);
+  assert.doesNotMatch(copy, /:snippet-|:remove-|debug/);
+});
+
+test('forwards state so copies and snippets match a published state', async () => {
+  const root = makeProject(1);
+  fs.writeFileSync(path.join(root, 'extractedcode/project-0/state.js'), [
+    '// :state-start: published',
+    'const shipped = true;',
+    '// :state-end:',
+    '// :state-start: draft',
+    'const unfinished = true;',
+    '// :state-end:',
+    '',
+  ].join('\n'));
+  await runIn(root, { state: 'published' });
+  const copy = fs.readFileSync(generated(root, 'project-0/state.js'), 'utf-8');
+  assert.match(copy, /shipped/);
+  assert.doesNotMatch(copy, /unfinished|:state-/);
+});
+
+test('a file deleted from the source does not leave a stale copy', async () => {
+  const root = makeProject(1);
+  fs.writeFileSync(path.join(root, 'extractedcode/project-0/old.js'), 'const old = true;\n');
+  await runIn(root);
+  assert.ok(fs.existsSync(generated(root, 'project-0/old.js')));
+  fs.rmSync(path.join(root, 'extractedcode/project-0/old.js'));
+  await runIn(root);
+  assert.ok(!fs.existsSync(generated(root, 'project-0/old.js')));
+  assert.ok(fs.existsSync(generated(root, 'project-0/app.js')));
+});
+
+test('resolveExtractedCodePath prefers generated output and falls back to source for ignored files', async () => {
+  const root = makeProject(1);
+  fs.writeFileSync(path.join(root, 'extractedcode/project-0/package.json'), '{}\n');
+  await runIn(root);
+  const snippetRoot = path.join(root, 'src/generated-code-snippets');
+  const sourceRoot = path.join(root, 'extractedcode');
+  assert.equal(resolveExtractedCodePath('project-0/app.snippet.greet-0.js', snippetRoot, sourceRoot),
+               path.join(snippetRoot, 'project-0/app.snippet.greet-0.js'));
+  assert.equal(resolveExtractedCodePath('project-0/app.js', snippetRoot, sourceRoot),
+               path.join(snippetRoot, 'project-0/app.js'));
+  assert.equal(resolveExtractedCodePath('project-0/package.json', snippetRoot, sourceRoot),
+               path.join(sourceRoot, 'project-0/package.json'));
 });

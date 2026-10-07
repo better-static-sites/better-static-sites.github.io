@@ -2,7 +2,7 @@
 title: Code Snippet Extraction
 description: Load Bluehawk-annotated code snippets and local source files into Astro pages.
 order: 2
-version: "0.2.4"
+version: "0.3.0"
 badges: ["integration", "component"]
 ---
 
@@ -31,28 +31,28 @@ npm install astro-better-code-snippet-extractor @astrojs/prism
 In `astro.config.ts`:
 
 ```ts
-import { codeSnippetExtractor } from 'astro-better-code-snippet-extractor/integration.js';
+import { extractedCodeSnippets } from 'astro-better-code-snippet-extractor';
 
 export default defineConfig({
   integrations: [
-    codeSnippetExtractor({
-      sourcePaths: ['../my-app/src'],
-    }),
+    extractedCodeSnippets(),
   ],
 });
 ```
+
+Put each source project in its own folder under `extractedcode/`, such as `extractedcode/my-app/`.
 
 ### Use the component in MDX
 
 ```mdx escape
 import ExtractedCode from 'astro-better-code-snippet-extractor/ExtractedCode.astro';
 
-<ExtractedCode
-  path="../my-app/src/auth/login.ts"
-  snippet="loginExample"
-  lang="typescript"
-/>
+<ExtractedCode src="my-app/login.snippet.loginExample.ts" lang="typescript" />
+
+<ExtractedCode src="my-app/src/auth/login.ts" lang="typescript" title="login.ts" />
 ```
+
+The first renders the `loginExample` snippet. The second renders the whole file.
 
 </Steps>
 
@@ -61,20 +61,24 @@ import ExtractedCode from 'astro-better-code-snippet-extractor/ExtractedCode.ast
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `sourceDir` | `string` | `'extractedcode'` | Directory of annotated source projects; each subdirectory is processed separately |
-| `outputDir` | `string` | `'src/generated-code-snippets'` | Where to write extracted snippet files |
-| `ignore` | `string[]` | `node_modules`, `vendor`, lockfiles, and similar | Patterns passed to `bluehawk snip --ignore` |
+| `outputDir` | `string` | `'src/generated-code-snippets'` | Where to write snippets and whole-file copies |
+| `ignore` | `string[]` | `node_modules`, `vendor`, lockfiles, and similar | Patterns passed to Bluehawk's `--ignore` |
 | `plugin` | `string` | none | Bluehawk plugin path, relative to the project root |
+| `state` | `string` | none | Bluehawk state passed to `--state`, so snippets and whole files match a published state |
 
-The integration hashes `sourceDir` and skips extraction when nothing changed since the last run. When something did change, it runs Bluehawk on every subdirectory in parallel, one per CPU. Bluehawk ships as a dependency, so no `npx` download or startup is involved.
+For each project, the integration runs `bluehawk snip` to write the snippets and `bluehawk copy` to write a copy of the whole project with Bluehawk markup removed. Both land in `outputDir`. The integration hashes `sourceDir` and skips this when nothing changed since the last run. When something did change, it regenerates every project in parallel, one per CPU. Bluehawk ships as a dependency, so no `npx` download or startup is involved.
 
 ## ExtractedCode props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `path` | `string` | (required) | Path to the source file |
-| `snippet` | `string` | -- | Bluehawk snippet ID to extract (omit to include the whole file) |
-| `lang` | `string` | -- | Language for syntax highlighting |
+| `src` | `string` | (required) | Path relative to `sourceDir`. A path containing `.snippet.` names a snippet. Any other path renders a whole file |
+| `lang` | `string` | `plaintext` | Language for syntax highlighting |
 | `title` | `string` | -- | Filename label shown above the code block |
+| `snippetRoot` | `string` | `src/generated-code-snippets` | Where to read snippets and whole files. Match the integration's `outputDir` |
+| `sourceRoot` | `string` | `extractedcode` | Where to read whole files the integration ignored, such as `package.json` |
+
+Whole files render from the integration's copy, so nested snippet markers and other Bluehawk markup never show up on the page.
 
 ## Bluehawk annotations
 
@@ -92,5 +96,5 @@ async function login(username: string, password: string) {
 // :snippet-end:
 ```
 
-The integration runs Bluehawk at build time to extract annotated regions.
+The integration runs Bluehawk at build time to extract annotated regions and strip the markup from whole files.
 The `ExtractedCode` component then renders the result with syntax highlighting.

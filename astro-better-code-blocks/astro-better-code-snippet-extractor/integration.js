@@ -101,20 +101,23 @@ async function mapLimit(items, limit, fn) {
 }
 
 /**
- * Astro integration: runs `bluehawk snip` on each subdirectory of sourceDir, in
- * parallel, and writes generated snippets to outputDir. Skips if source content is unchanged.
+ * Astro integration: runs `bluehawk snip` and `bluehawk copy` on each subdirectory of sourceDir,
+ * in parallel, and writes the snippets and a markup-free copy of each project to outputDir.
+ * Skips if source content is unchanged.
  *
  * @param {object} [opts]
  * @param {string} [opts.sourceDir='extractedcode'] - directory of tested source projects, relative to project root
- * @param {string} [opts.outputDir='src/generated-code-snippets'] - where generated snippets land
+ * @param {string} [opts.outputDir='src/generated-code-snippets'] - where generated snippets and copies land
  * @param {string[]} [opts.ignore] - patterns forwarded to bluehawk --ignore
  * @param {string} [opts.plugin] - optional bluehawk plugin path (relative to project root)
+ * @param {string} [opts.state] - optional bluehawk state forwarded to --state, e.g. to match a published copy
  */
 export function extractedCodeSnippets({
   sourceDir = 'extractedcode',
   outputDir = 'src/generated-code-snippets',
   ignore = DEFAULT_IGNORE,
   plugin,
+  state,
 } = {}) {
   return {
     name: 'astro-better-code-snippet-extractor',
@@ -160,26 +163,37 @@ export function extractedCodeSnippets({
         delete spawnEnv.NODE_ENV;
 
         const command = bluehawkCommand();
-        const runDir = (dir) => {
-          const dirOutput = join(outputPath, dir);
-          mkdirSync(dirOutput, { recursive: true });
-          const args = [...command.args, 'snip', join(sourcePath, dir), '--output', dirOutput];
+        const bluehawk = (subcommand, dir, dirOutput) => {
+          const args = [...command.args, subcommand, join(sourcePath, dir), '--output', dirOutput];
           if (plugin) args.push('--plugin', plugin);
+          if (state) args.push('--state', state);
           for (const pattern of ignore) args.push('--ignore', pattern);
           return run(command.file, args, { cwd: root, env: spawnEnv });
+        };
+        // cleared first so a file deleted from the source can't linger as a stale copy
+        const runDir = async (dir) => {
+          const dirOutput = join(outputPath, dir);
+          rmSync(dirOutput, { recursive: true, force: true });
+          mkdirSync(dirOutput, { recursive: true });
+          const snip = await bluehawk('snip', dir, dirOutput);
+          if (snip.status !== 0 || (snip.stdout + snip.stderr).includes('bluehawk errors')) {
+            return { ...snip, subcommand: 'snip' };
+          }
+          const copy = await bluehawk('copy', dir, dirOutput);
+          return { ...copy, subcommand: 'copy', snipStdout: snip.stdout };
         };
 
         // each directory writes only to its own output folder, so they can run side by side
         const results = await mapLimit(dirs, availableParallelism(), runDir);
 
         let totalWritten = 0;
-        for (const [i, { status, stdout, stderr }] of results.entries()) {
+        for (const [i, { status, stdout, stderr, subcommand, snipStdout }] of results.entries()) {
           if (status !== 0 || (stdout + stderr).includes('bluehawk errors')) {
             throw new Error(
-              `bluehawk snip failed for "${dirs[i]}":\n${filterOutput(stdout + stderr)}`
+              `bluehawk ${subcommand} failed for "${dirs[i]}":\n${filterOutput(stdout + stderr)}`
             );
           }
-          totalWritten += (stdout.match(/wrote text file/g) || []).length;
+          totalWritten += (snipStdout.match(/wrote text file/g) || []).length;
         }
 
         pruneEmptyDirs(outputPath);

@@ -10,9 +10,9 @@ npm install astro-better-code-snippet-extractor
 
 ## What it does
 
-- Runs `bluehawk snip` at build time and on dev server start, one source directory per CPU in parallel
+- Runs `bluehawk snip` and `bluehawk copy` at build time and on dev server start, one source directory per CPU in parallel
 - Skips re-running when the source directory has not changed
-- `<ExtractedCode>` component for snippets and raw source files
+- `<ExtractedCode>` component for snippets and whole source files, with Bluehawk markup removed
 
 ## Documentation
 
