@@ -81,6 +81,7 @@ Dropdowns with zero items are silently omitted.
 | `logo` | Logo SVG or image. Rendered inside a link to `logoHref`. |
 | `sidebar-toggle` | Optional button to open a docs sidebar. Rendered at the left of the mobile bar. |
 | `extra-actions` | Additional items injected before the search/theme/login/CTA cluster in the desktop action area. |
+| `search` | Optional search field rendered right after the section title on desktop. When filled, it replaces the desktop search icon; the mobile icon still shows if `showSearch` is `true`. |
 
 ## Section title per page
 
@@ -102,6 +103,15 @@ When `showSearch` is `true`, a search icon button appears in both the desktop an
 document.querySelectorAll('[data-widget="search-button"]').forEach(btn => {
   btn.addEventListener('click', () => openSearch());
 });
+```
+
+To show a full search field on desktop instead of the icon, put it in the `search` slot. It renders after the section title and takes up to `18rem`. The mobile bar keeps the icon button:
+
+```astro
+<NavBar sectionTitle="Docs" showSearch>
+  <MyLogo slot="logo" />
+  <MySearchField slot="search" />
+</NavBar>
 ```
 
 ## Theme selector

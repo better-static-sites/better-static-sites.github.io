@@ -99,6 +99,13 @@
   color: var(--nav-text-muted, #94a3b8);
 }
 
+/* inline search field after the brand (search slot) */
+.nav-search {
+  flex: 0 1 18rem;
+  min-width: 0;
+  margin-left: 1.5rem;
+}
+
 /* dropdowns nav */
 .nav-dropdowns {
   display: flex;
