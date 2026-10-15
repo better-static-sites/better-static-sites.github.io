@@ -28,6 +28,8 @@ interface Props {
   crop?: string;
   /** pixels of space kept around the cropped area (default 16) */
   cropPadding?: number;
+  /** draw the window chrome around the image (default true, false when cropped) */
+  chrome?: boolean;
   /** outputDir relative to project root; falls back to env SCREENSHOTS_DIR or 'src/assets/screenshots' */
   outputDir?: string;
 }
@@ -41,6 +43,7 @@ const {
   fullPage = false,
   crop,
   cropPadding,
+  chrome: showChrome = !crop,
   outputDir,
 } = Astro.props;
 
@@ -74,7 +77,8 @@ const name = id ?? deriveName(url, highlights);
 
 let resolvedOutputDir = outputDir ?? process.env.SCREENSHOTS_DIR;
 let chrome = { style: 'safari-macos', renderIn: 'png', showUrl: true, theme: 'light',
-               shadowBlur: 40, shadowPadding: 48, baseUrl: undefined as string | undefined };
+               shadowBlur: 40, shadowPadding: 48, baseUrl: undefined as string | undefined,
+               url: undefined as string | undefined };
 let configBaseUrl = '';
 if (!resolvedOutputDir) {
   try {
@@ -103,13 +107,16 @@ if (!fileExists && strict) {
   );
 }
 
-const specData = JSON.stringify({ url, highlights, width, height, fullPage, crop, cropPadding });
+const specData = JSON.stringify({ url, highlights, width, height, fullPage, crop, cropPadding, chrome: showChrome });
 
-const cssChrome = chrome.renderIn === 'css' && chrome.style !== 'none';
+const cssChrome = showChrome && chrome.renderIn === 'css' && chrome.style !== 'none';
 let displayUrl = url;
-if (chrome.baseUrl && configBaseUrl && displayUrl.startsWith(configBaseUrl)) {
+if (chrome.baseUrl && displayUrl.startsWith('/')) {
+  displayUrl = chrome.baseUrl.replace(/\/$/, '') + displayUrl;
+} else if (chrome.baseUrl && configBaseUrl && displayUrl.startsWith(configBaseUrl)) {
   displayUrl = chrome.baseUrl.replace(/\/$/, '') + displayUrl.slice(configBaseUrl.length);
 }
+if (chrome.url) displayUrl = chrome.url;
 if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
 ---
 

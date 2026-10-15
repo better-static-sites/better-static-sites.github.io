@@ -151,7 +151,8 @@ export default {
 ```
 
 The `chrome.baseUrl` substitution makes the URL bar show `better-static-sites.github.io/docs/...`
-instead of `localhost:4000/docs/...` in the rendered screenshot.
+instead of `localhost:4000/docs/...` in the rendered screenshot. To show the same text for
+every screenshot, such as a host name, set `chrome.url` instead.
 
 ### Consistent rendering across operating systems
 
@@ -414,6 +415,9 @@ jobs:
 | `width` | `number` | `window.width` from config | Viewport width for this screenshot |
 | `height` | `number` | `window.height` from config | Viewport height for this screenshot |
 | `fullPage` | `boolean` | `false` | Capture the full scrollable page height |
+| `crop` | `string` | — | CSS selector for the part of the page to crop the image to; covers every matching element and overrides `fullPage` |
+| `cropPadding` | `number` | `16` | Pixels of space kept around the cropped area |
+| `chrome` | `boolean` | `true`, `false` when cropped | Draw the window chrome around the image |
 
 Filenames are derived from the URL path and highlight selectors. `/docs/ui/tables` with a
 `.abt-grid-table` highlight becomes `docs-ui-tables-abt-grid-table.png`. Pass an explicit

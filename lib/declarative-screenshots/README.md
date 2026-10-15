@@ -120,7 +120,7 @@ Crop the image to part of the page instead of the whole window:
 </Screenshot>
 ```
 
-The crop covers every element the selector matches, so a selector list like the one above keeps the page title and its buttons in view along with the field. It also grows to include any highlight borders, arrows, and labels. If the selector matches nothing, the screenshot fails rather than falling back to the full window. Give each cropped screenshot an `id` when you crop more than one part of the same page.
+The crop covers every element the selector matches, so a selector list like the one above keeps the page title and its buttons in view along with the field. It also grows to include any highlight borders, arrows, and labels. If the selector matches nothing, the screenshot fails rather than falling back to the full window. Give each cropped screenshot an `id` when you crop more than one part of the same page. A cropped screenshot has no window chrome around it; add `chrome={true}` to keep it.
 
 Call out a specific element with a `<Highlight>` nested inside:
 
@@ -174,6 +174,7 @@ Commit the generated PNG files alongside your source. The `<Screenshot>` compone
 | `fullPage` | `boolean` | `false` | Capture the full scrollable page height |
 | `crop` | `string` | — | CSS selector for the part of the page to crop the image to; covers every matching element and overrides `fullPage` |
 | `cropPadding` | `number` | `16` | Pixels of space kept around the cropped area |
+| `chrome` | `boolean` | `true`, `false` when cropped | Draw the window chrome around the image |
 
 Filenames are derived from the URL path and highlight selectors:
 
@@ -273,6 +274,9 @@ export default {
     // replaces the baseUrl prefix in the displayed URL
     // useful when localhost:9011 should appear as app.example.com
     baseUrl: 'https://app.example.com',
+
+    // fixed text for the address bar, such as a host name, in place of each page's URL
+    url: 'app.example.com',
 
     // png-only: drop shadow blur radius in pixels (0 to disable)
     shadowBlur: 40,
