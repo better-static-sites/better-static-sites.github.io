@@ -47,5 +47,9 @@
     "turndown-plugin-gfm": "^1.0.2",
     "unist-util-remove-position": "^5.0.0",
     "unist-util-visit": "^5.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true
   }
 }
