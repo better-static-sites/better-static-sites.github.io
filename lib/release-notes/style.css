@@ -382,6 +382,23 @@
 
 .dark .version-date { color: #94a3b8; }
 
+.version-summary {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.version-summary summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.version-summary p {
+  margin: 0.5rem 0 0;
+}
+
+.dark .version-summary { color: #cbd5e1; }
+
 /* ---------------------------------------------------------------
    Version anchor links (# permalink)
 --------------------------------------------------------------- */

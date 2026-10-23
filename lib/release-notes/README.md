@@ -35,6 +35,8 @@ const releases = defineCollection({
     version: z.string(),
     date:    z.coerce.date(),
     name:    z.string().optional(),
+    // optional; renders as a collapsed summary under the version header
+    description: z.string().optional(),
   }),
 });
 ```

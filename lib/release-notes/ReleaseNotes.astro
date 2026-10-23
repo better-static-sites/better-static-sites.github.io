@@ -33,6 +33,7 @@ export interface ReleaseEntry {
     version: string;
     date: Date;
     name?: string;
+    description?: string;
   };
   Content: any;
 }
@@ -113,6 +114,13 @@ const filterCSS = [
               {item.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
             </time>
           </header>
+
+          {item.data.description && (
+            <details class="version-summary">
+              <summary>Summary</summary>
+              <p>{item.data.description}</p>
+            </details>
+          )}
 
           <div class="version-content">
             <Content components={mergedComponents} />
