@@ -28,6 +28,7 @@ const releases = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     version: z.string(),
+    description: z.string().optional(),
     categories: z.array(z.string()).optional(),
   }),
 });

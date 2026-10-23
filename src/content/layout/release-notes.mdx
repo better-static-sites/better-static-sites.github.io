@@ -2,7 +2,7 @@
 title: Release Notes
 description: Versioned changelogs with category filtering and version dropdown navigation.
 order: 4
-version: "0.3.0"
+version: "0.3.1"
 badges: ["component"]
 ---
 
@@ -46,7 +46,7 @@ The version jump dropdown. `ReleaseNotes` includes it automatically; use it on i
 
 ### Content collection
 
-Each entry needs a `version` and a `date`, plus an optional release `name`:
+Each entry needs a `version` and a `date`, plus an optional release `name` and `description`:
 
 ```ts
 // src/content.config.ts
@@ -59,6 +59,8 @@ const releases = defineCollection({
     version: z.string(),
     date: z.coerce.date(),
     name: z.string().optional(),
+    // rendered as HTML in a collapsed summary under the version header
+    description: z.string().optional(),
   }),
 });
 
@@ -108,7 +110,7 @@ const updates = await Promise.all(
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `updates` | `ReleaseEntry[]` | required | Rendered entries: `{ data: { version, date, name? }, Content }` |
+| `updates` | `ReleaseEntry[]` | required | Rendered entries: `{ data: { version, date, name?, description? }, Content }` |
 | `categories` | `Category[]` | `DEFAULT_CATEGORIES` | Categories shown as filter chips: `{ id, label, color }` |
 | `components` | `Record<string, any>` | `{}` | Components passed to each entry's `Content`, e.g. a custom `ReleaseNotesItem` wrapper |
 | `showSelector` | `boolean` | `true` | Set `false` to hide the version selector |
@@ -191,6 +193,14 @@ When you map these to your own palette, keep `--rn-chip-color` and `--rn-text-mu
 - Badge and selected-chip text is mixed from the category color (darker in light mode, lighter in dark mode), which keeps the default categories at 4.5:1 or better.
 - The version selector is labelled, and its options are bare version numbers, so typing `1.56` jumps to 1.56.0. Each jump is announced through a polite live region. Focus stays on the selector so type-ahead and arrow keys keep working: it scrolls with `scrollIntoView` and updates the URL with `history.replaceState`, because assigning `location.hash` would blur it. Jumps don't add browser history entries.
 - Transitions and the badge hover scale are turned off under `prefers-reduced-motion: reduce`.
+
+## Upgrading to 0.3.1
+
+- `description` now renders as HTML, so it can contain inline markup such as links. Escape a literal `<` or `&` in a plain-text description.
+
+## Upgrading to 0.3.0
+
+- An entry with a `description` now shows it in a collapsed `<details>` summary under the version header. Entries without one render as before.
 
 ## Upgrading to 0.2.3
 

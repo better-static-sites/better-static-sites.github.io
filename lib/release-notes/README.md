@@ -35,7 +35,7 @@ const releases = defineCollection({
     version: z.string(),
     date:    z.coerce.date(),
     name:    z.string().optional(),
-    // optional; renders as a collapsed summary under the version header
+    // optional; rendered as HTML in a collapsed summary under the version header
     description: z.string().optional(),
   }),
 });
@@ -243,6 +243,14 @@ import { ReleaseNotesSelector } from 'astro-better-release-notes';
 - The version selector has a label, and its options are bare version numbers, so typing `1.56` jumps to 1.56.0. Each jump is announced through a polite live region. Focus stays on the selector so type-ahead and arrow keys keep working: the selector scrolls with `scrollIntoView` and updates the URL with `history.replaceState`, because assigning `location.hash` would blur it. Jumps don't add browser history entries.
 - Transitions and the badge hover scale are disabled under `prefers-reduced-motion: reduce`.
 - The package ships its own `.rn-sr-only` class, so it doesn't depend on a host `sr-only` utility.
+
+## Upgrading to 0.3.1
+
+- `description` now renders as HTML, so it can contain inline markup such as links. Escape a literal `<` or `&` in a plain-text description.
+
+## Upgrading to 0.3.0
+
+- An entry with a `description` now shows it in a collapsed `<details>` summary under the version header. Entries without one render as before.
 
 ## Upgrading to 0.2.3
 

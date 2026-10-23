@@ -118,7 +118,7 @@ const filterCSS = [
           {item.data.description && (
             <details class="version-summary">
               <summary>Summary</summary>
-              <p>{item.data.description}</p>
+              <p set:html={item.data.description} />
             </details>
           )}
 
