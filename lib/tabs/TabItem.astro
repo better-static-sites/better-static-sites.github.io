@@ -54,7 +54,7 @@ const markdownifiedLabel = remark.parseInline(label);
     background-color: var(--tabs-bg, #e5e7eb);
   }
 
-  /* prose styles set explicit color on spans, beating CSS inheritance — must target spans directly */
+  /* styles for text and bg color set with high specificity to beat CSS inheritance */
   .tab-bar .tab-input:not(:checked) + .tab-label,
   .tab-bar .tab-input:not(:checked) + .tab-label span {
     color: #4b5563 !important;
@@ -62,7 +62,23 @@ const markdownifiedLabel = remark.parseInline(label);
 
   .tab-bar .tab-input:not(:checked) + .tab-label:hover,
   .tab-bar .tab-input:not(:checked) + .tab-label:hover span {
+    color: #445599 !important;
+  }
+
+  .tab-bar .tab-input:not(:checked) + .tab-label:hover,
+  .tab-bar .tab-input:not(:checked) + .tab-label:hover {
+    background-color: #CCCCCC !important;
+  }
+
+  html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover,
+  html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover span {
     color: #ffffff !important;
+    background-color: #8888AA !important;
+  }
+
+  html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover,
+  html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover {
+    background-color: #8888AA !important;
   }
 
   html.dark .tab-bar .tab-input:not(:checked) + .tab-label,
@@ -74,7 +90,7 @@ const markdownifiedLabel = remark.parseInline(label);
     color: var(--tabs-active-color, #e2e8f0) !important;
   }
 
-  /* panels — hidden by default; :has() shows the active one */
+  /* panels hidden by default; :has() shows the active one */
   .tab-panel {
     display: none;
     width: 100%;
@@ -82,7 +98,7 @@ const markdownifiedLabel = remark.parseInline(label);
     background-color: var(--tabs-panel-bg, #ffffff);
   }
 
-  /* panel switching via :has() — direct-child combinators prevent outer rules from firing on nested groups */
+  /* panel switching via :has(), direct-child combinators prevent outer rules from firing on nested groups */
   .tabs-group:has(> .tab-bar > .tab-input:nth-of-type(1):checked) > .tab-panel:nth-of-type(1) { display: block; }
   .tabs-group:has(> .tab-bar > .tab-input:nth-of-type(2):checked) > .tab-panel:nth-of-type(2) { display: block; }
   .tabs-group:has(> .tab-bar > .tab-input:nth-of-type(3):checked) > .tab-panel:nth-of-type(3) { display: block; }
@@ -97,13 +113,13 @@ const markdownifiedLabel = remark.parseInline(label);
   .tabs-group:has(> .tab-bar > .tab-input:nth-of-type(12):checked) > .tab-panel:nth-of-type(12) { display: block; }
 
   /* 0.25rem < container's rounded-md (0.375rem): label bg covers the container's clip area */
-  /* flex-grow: 1 fills remaining bar space — no separate spacer needed */
+  /* flex-grow: 1 fills remaining bar space, no separate spacer needed */
   .tab-label {
     border-radius: 0.25rem 0.25rem 0 0;
     flex-grow: 1;
   }
 
-  /* strip bottom margin from nested tab groups — the panel's pb handles spacing */
+  /* strip bottom margin from nested tab groups, the panel's pb handles spacing */
   .tab-panel .tabs-group { margin-bottom: 0; }
 
   .tab-input:checked + .tab-label {
