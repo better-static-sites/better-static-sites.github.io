@@ -240,9 +240,14 @@ beforeScreenshot: async (page, { url, name }) => {
 },
 ```
 
+### `afterScreenshot`
+
+Called once after each screenshot attempt, after the screenshot buffer is captured (or capture fails) and before the Playwright page is closed. Receives the Playwright `Page` and the same spec object `{ url, name, highlights }` as `beforeScreenshot`. Use this hook to cleanup and remove any changes you made in beforeScreenshot, so that each screenshot is idempotent. The hook also runs when `beforeScreenshot` or capture throws, provided the page was created.
+
+
 ### `afterAll`
 
-Called once after all screenshots are taken. Use for cleanup.
+Called once after all screenshots are taken. Use for run-level cleanup.
 
 ```js
 afterAll: async () => {
