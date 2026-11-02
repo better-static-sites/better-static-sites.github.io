@@ -2,7 +2,7 @@
 title: Markdown Page Generation
 description: Generates .md companion files and llms.txt from built HTML pages at build time.
 order: 5
-version: "1.2.1"
+version: "1.2.2"
 badges: ["integration", "component"]
 ---
 
@@ -89,6 +89,10 @@ import MarkdownOnly from 'astro-better-gen-markdown-pages/MarkdownOnly.astro';
 The integration hooks into `astro:build:done`. For each `.html` file in the output,
 it runs a Turndown-based HTML-to-Markdown conversion, then writes the `.md` file.
 The `llms.txt` is generated from the collected titles and paths.
+
+Code blocks keep their language tag. When a code block contains its own backtick fences, such as
+a Markdown example with code blocks inside a list, the outer fence grows one backtick longer than
+the longest fence inside, indented or not, so the example stays in one block.
 
 Conversion runs in a pool of worker threads, one per CPU, that hands out pages in small
 batches. When a site uses several instances of the integration (one per section, say),

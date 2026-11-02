@@ -294,6 +294,10 @@ Internally, `MarkdownOnly` renders a `<div data-mdonly class="hidden">`. The con
 
 Hidden tab panels are revealed before conversion so their content is included in the Markdown output. Each panel's label becomes an `###` heading above the content, ensuring all tabbed content is discoverable by LLMs even when only one tab is visible in the browser.
 
+### Code blocks
+
+Code blocks become fenced code blocks tagged with the language from their `language-*` class. When the code itself contains a backtick fence, such as a Markdown example with its own code blocks, the outer fence is one backtick longer than the longest fence inside. Indented fences count too, such as one inside a list item, so they can't close the outer block early.
+
 ### Card components
 
 Card components (an `<a>` element wrapping block-level children like `<div>` or `<p>`) are wrapped in a block container before conversion so adjacent cards are separated by blank lines in the output rather than run together on a single line.
