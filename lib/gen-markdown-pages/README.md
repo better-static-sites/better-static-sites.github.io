@@ -197,6 +197,10 @@ genMarkdownPages({
   // Default: alphabetical.
   sortCategories: (names) => [...names].sort(),
 
+  // Create llms.txt files.
+  // Default: true
+  createLlmsTxt: true,
+
   // Path to write llms.txt, relative to the build output directory.
   // Default: 'llms.txt'
   llmsTxtPath: 'docs/llms.txt',
