@@ -340,6 +340,11 @@ export default {
     });
   },
 
+  // called after each capture attempt, before its page closes, to undo changes to FusionAuth before the next screenshot runs
+  afterScreenshot: async (page, { name }) => {
+    // restore any backend state changed for this screenshot
+  },
+
   // called once after all screenshots are taken
   afterAll: async () => {},
 };

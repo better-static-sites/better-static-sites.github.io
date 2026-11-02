@@ -28,6 +28,8 @@ interface Props {
   crop?: string;
   /** pixels of space kept around the cropped area (default 16) */
   cropPadding?: number;
+  /** start this capture with a fresh browser context */
+  clearBrowserBeforeCapture?: boolean;
   /** draw the window chrome around the image (default true, false when cropped) */
   chrome?: boolean;
   /** outputDir relative to project root; falls back to env SCREENSHOTS_DIR or 'src/assets/screenshots' */
@@ -43,6 +45,7 @@ const {
   fullPage = false,
   crop,
   cropPadding,
+  clearBrowserBeforeCapture = false,
   chrome: showChrome = !crop,
   outputDir,
 } = Astro.props;
@@ -107,7 +110,7 @@ if (!fileExists && strict) {
   );
 }
 
-const specData = JSON.stringify({ url, highlights, width, height, fullPage, crop, cropPadding, chrome: showChrome });
+const specData = JSON.stringify({ url, highlights, width, height, fullPage, crop, cropPadding, chrome: showChrome, clearBrowserBeforeCapture });
 
 const cssChrome = showChrome && chrome.renderIn === 'css' && chrome.style !== 'none';
 let displayUrl = url;
