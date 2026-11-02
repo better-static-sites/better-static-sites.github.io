@@ -19,6 +19,8 @@ npm install astro-better-generate-screenshots
 
 Text renders differently on each OS, which makes drift checks flag screenshots that didn't really change. Set `browserContainer: true` in `screenshot.config.mjs` to capture in a container built from `mcr.microsoft.com/playwright` at your installed Playwright version, with macOS-like fonts (Inter and DejaVu Sans Mono). The container starts and stops with each run, and pages at `localhost` URLs load through the host. Docker is the only requirement; you don't need a local browser install. Pass `{ image }` to use your own Playwright-based image instead.
 
+Every page is captured with smooth scrolling turned off. On a page that sets `scroll-behavior: smooth`, a scroll would still be moving when the crop or highlight is measured, so the image would come out offset from what you asked for.
+
 ## Documentation
 
 Full documentation, including configuration and examples, is at
