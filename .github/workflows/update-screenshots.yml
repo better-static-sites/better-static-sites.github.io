@@ -1,5 +1,6 @@
-# Weekly screenshot refresh. Regenerates every screenshot and opens a PR only when one of
-# them meaningfully changed, judged by a pixel diff with a tolerance rather than by bytes.
+# Weekly screenshot refresh. Regenerates every screenshot and opens an issue only when one of
+# them meaningfully changed, judged by a pixel diff with a tolerance rather than by bytes. It
+# never pushes; a person regenerates the screenshots locally and commits them.
 #
 # All logic lives in scripts/refresh-screenshots.sh, which runs the same way locally:
 #
@@ -24,8 +25,8 @@ on:
         type: string
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  issues: write
 
 jobs:
   update:
@@ -57,8 +58,8 @@ jobs:
         id: refresh
         run: |
           set +e
-          scripts/refresh-screenshots.sh --threshold "${{ inputs.threshold || '0.02' }}"
-          status=$?
+          scripts/refresh-screenshots.sh --threshold "${{ inputs.threshold || '0.02' }}" 2>&1 | tee "$RUNNER_TEMP/refresh.log"
+          status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -eq 1 ] || [ "$status" -gt 2 ]; then exit 1; fi
           echo "changed=$([ "$status" -eq 2 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
@@ -71,32 +72,44 @@ jobs:
           path: .screenshot-diffs/
           if-no-files-found: ignore
 
-      - name: Open PR with updated screenshots
+      # one open issue at a time: open it, comment while screenshots still differ, close it once they match
+      - name: Open or update the screenshots issue
         if: steps.refresh.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          THRESHOLD: ${{ inputs.threshold || '0.02' }}
         run: |
-          BRANCH="screenshots/auto-update-$(date +%Y-%m-%d)"
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
-          git add public/img/screenshots/
-          git commit -m "chore: update screenshots $(date +%Y-%m-%d)"
-          git push origin "$BRANCH"
+          TITLE="Screenshots are out of date"
+          {
+            printf 'The screenshot refresh in [this run](%s) found screenshots that changed beyond the tolerance. Diff images are in its `screenshot-diffs` artifact.\n\n' "$RUN_URL"
+            printf 'To update them, run this from the repo root, review the changes, and open a PR:\n\n```bash\nscripts/refresh-screenshots.sh --threshold %s\n```\n\n' "$THRESHOLD"
+            printf '### Comparison\n\n```\n'
+            sed -n '/^Comparing /,$p' "$RUNNER_TEMP/refresh.log"
+            printf '```\n'
+          } > "$RUNNER_TEMP/issue-body.md"
+          cat "$RUNNER_TEMP/issue-body.md"
+          gh label create screenshots --repo "$REPO" --force --color 0E8A16 --description "Screenshot refresh"
+          issue=$(gh issue list --repo "$REPO" --label screenshots --state open --json number,title \
+            --jq "map(select(.title == \"$TITLE\"))[0].number // empty")
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --repo "$REPO" --body-file "$RUNNER_TEMP/issue-body.md"
+          else
+            gh issue create --repo "$REPO" --label screenshots --title "$TITLE" --body-file "$RUNNER_TEMP/issue-body.md"
+          fi
 
-          FILES=$(git diff --name-only HEAD~1 HEAD | sed 's|.*/||' | sed 's/^/- /')
-          gh pr create \
-            --title "chore: update screenshots $(date +%Y-%m-%d)" \
-            --body "Weekly screenshot refresh. Only images whose pixel diff exceeded the tolerance are included; anything within tolerance was reverted to the committed version.
-
-          ### Changed
-
-          ${FILES}
-
-          Diff images are attached to this workflow run as the \`screenshot-diffs\` artifact." \
-            --label "screenshots" \
-            --base main
+      - name: Close the screenshots issue
+        if: steps.refresh.outputs.changed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          issue=$(gh issue list --repo "$REPO" --label screenshots --state open --json number,title \
+            --jq 'map(select(.title == "Screenshots are out of date"))[0].number // empty')
+          [ -z "$issue" ] || gh issue close "$issue" --repo "$REPO" --comment "Screenshots match again: $RUN_URL"
 
       - name: No changes
         if: steps.refresh.outputs.changed == 'false'
-        run: echo "All screenshots within tolerance -- no PR needed."
+        run: echo "All screenshots within tolerance, so there's nothing to update."
