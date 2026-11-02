@@ -160,6 +160,19 @@ integrations: [
 
 Use `pageFilter` to prevent instances from overwriting each other's `.md` files. Each instance writes its own `llms.txt` independently.
 
+## Using your own llms.txt
+
+To write `llms.txt` by hand, put it in `public/` and set `llmsTxt: false`. The integration still writes a `.md` file for every page, but skips the hub, its `.well-known` mirror, spoke files, and the sibling page sections that link to spokes. In dev, requests for `llmsTxtPath` reach your file instead of the dev placeholder.
+
+Each `.md` file still opens with a link to the index at `${site}/${llmsTxtPath}`. If your file lives somewhere else, set `indexUrl` to its URL.
+
+```ts
+genMarkdownPages({
+  llmsTxt: false,
+  indexUrl: 'https://example.com/ai/llms.txt',
+})
+```
+
 ## All options
 
 ```ts
@@ -197,9 +210,10 @@ genMarkdownPages({
   // Default: alphabetical.
   sortCategories: (names) => [...names].sort(),
 
-  // Create llms.txt files.
+  // Write llms.txt, its .well-known mirror, and spoke files. Set to false to serve your own.
+  // .md files are written either way. See "Using your own llms.txt".
   // Default: true
-  createLlmsTxt: true,
+  llmsTxt: true,
 
   // Path to write llms.txt, relative to the build output directory.
   // Default: 'llms.txt'
