@@ -81,8 +81,7 @@ foreignObject { overflow: visible; }
   /* Flowchart nodes */
   .node :is(rect, circle, ellipse, polygon, path) { stroke: #1e293b !important; fill: #e2e8f0 !important; }
 
-  /* Edge label pill: SSR positions the background rect for y=-10.1 but tspan dy="1.1em"
-     renders ~16px lower. translateY corrects the vertical offset; rx/ry round the corners. */
+  /* Edge label pill: rx/ry round the corners. */
   .edgeLabel rect {
     fill: rgba(226, 232, 240, 0.8) !important;
     stroke: none !important;
