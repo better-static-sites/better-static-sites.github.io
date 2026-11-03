@@ -2,7 +2,7 @@
 title: Mermaid Diagram Renderer
 description: Server-side Mermaid diagram rendering to inline SVG at build time.
 order: 3
-version: "0.2.2"
+version: "0.3.0"
 badges: ["integration"]
 ---
 
@@ -41,7 +41,7 @@ export default defineConfig({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `theme` | `string` | `'default'` | Mermaid theme: `default`, `dark`, `neutral`, `forest` |
-| `titleFix` | `boolean` | `true` | Strip title from rendered SVG (prevents duplicate headings) |
+| `titleFix` | `boolean` | `true` | Show `title="..."` from the code fence meta as a caption below the diagram |
 | `injectCSS` | `boolean` | `true` | Auto-inject default styles |
 | `securityLevel` | `string` | `'loose'` | Mermaid `securityLevel` setting |
 | `cache` | `boolean` | `true` | Cache rendered diagrams on disk between builds |
@@ -93,11 +93,20 @@ export default defineConfig({
 
 ## Caching
 
-Rendering a diagram is the slow part, so the plugin caches each rendered diagram on disk and reuses it on later builds. Entries are keyed by the Mermaid version, the theme and security level, and the diagram source, so editing a diagram or upgrading Mermaid renders it again. Diagrams that fail to render are never cached.
+Rendering a diagram is the slow part, so the plugin caches each rendered diagram on disk and reuses it on later builds. Entries are keyed by the Mermaid version, the theme and security level, and the diagram source, so editing a diagram or upgrading Mermaid renders it again, as does upgrading to a release of this package that changes how diagrams render. Diagrams that fail to render are never cached.
 
 Each diagram's SVG id comes from its position on the page and a hash of its source, so the same page builds to the same HTML every time. Earlier versions used a random id.
 
 Set `cache: false` to turn the disk cache off, or point `cacheDir` somewhere that persists between CI runs to share it.
+
+## Upgrading to 0.3.0
+
+Labels now fit their shapes: multi-line labels get room for every line, and text is centered in cylinders and other shapes and on edge label backgrounds. Rendering changed, so cached diagrams render again after you upgrade.
+
+If you set `injectCSS: false` and copied the stylesheet into your own CSS, update your copy:
+
+1. Remove `transform: translateY(16px) !important;` from the `.edgeLabel rect` rules in both themes. It made up for the old edge label measurement and now pushes label backgrounds below their text.
+1. Color `.loopText` and `.sectionTitle` like body text in both themes, so `alt`, `loop`, and `else` conditions in sequence diagrams stay readable. The light theme used to color `.loopText` almost white.
 
 ## Use with Sätteri
 

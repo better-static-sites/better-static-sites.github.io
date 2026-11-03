@@ -7,10 +7,10 @@ Rendering happens via [svgdom](https://github.com/svgdotjs/svgdom), a headless D
 ## Installation
 
 ```
-npm install astro-better-mermaid mermaid svgdom
+npm install astro-better-mermaid mermaid
 ```
 
-`mermaid` and `svgdom` are peer dependencies — install them alongside this package.
+`mermaid` is a peer dependency, so install it alongside this package. `svgdom` comes with this package.
 
 ## Usage
 
@@ -39,7 +39,7 @@ mermaidSSR({
 })
 ```
 
-Rendered diagrams are cached by Mermaid version, theme, security level, and diagram source, so unchanged diagrams skip rendering on later builds. Each SVG id comes from the diagram's position on the page and a hash of its source, so output is stable from build to build.
+Rendered diagrams are cached by Mermaid version, theme, security level, and diagram source, so unchanged diagrams skip rendering on later builds. Releases that change how diagrams render also invalidate the cache. Each SVG id comes from the diagram's position on the page and a hash of its source, so output is stable from build to build.
 
 ### Diagram titles
 
@@ -73,6 +73,15 @@ Mermaid's `style X fill:#color` directive injects `!important` inline styles tha
 .cluster > rect[data-fill-color="#abc"] { fill: your-color !important; }
 .dark .cluster > rect[data-fill-color="#abc"] { fill: your-dark-color !important; }
 ```
+
+## Upgrading to 0.3.0
+
+Labels now fit their shapes: multi-line labels get room for every line, and text is centered in cylinders and other shapes and on edge label backgrounds. Rendering changed, so cached diagrams render again after you upgrade.
+
+If you set `injectCSS: false` and copied the stylesheet into your own CSS, update your copy:
+
+1. Remove `transform: translateY(16px) !important;` from the `.edgeLabel rect` rules in both themes. It made up for the old edge label measurement and now pushes label backgrounds below their text.
+1. Color `.loopText` and `.sectionTitle` like body text in both themes, so `alt`, `loop`, and `else` conditions in sequence diagrams stay readable. The light theme used to color `.loopText` almost white.
 
 ## Using the remark plugins directly
 
