@@ -117,7 +117,13 @@ const filterCSS = [
 
           {item.data.description && (
             <details class="version-summary">
-              <summary>Summary</summary>
+              {/* the hidden version keeps each summary's accessible name unique on a page of many */}
+              <summary>
+                <span>Summary<span class="rn-sr-only"> of version {item.data.version}</span></span>
+                <svg class="version-summary-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
               <p set:html={item.data.description} />
             </details>
           )}

@@ -144,6 +144,9 @@ Set these on `:root` (and `.dark` for dark mode) to match your site. Each falls 
 | `--rn-chip-bg` | `#f1f5f9` | `#1e293b` | Unselected chip background |
 | `--rn-chip-border` | `#cbd5e1` | `#475569` | Unselected chip border |
 | `--rn-chip-color` | `#334155` | `#cbd5e1` | Unselected chip text |
+| `--rn-summary-border` | 12% of the text color | same | Summary box border and divider |
+| `--rn-summary-bg` | 6% of the text color | same | Summary bar background |
+| `--rn-summary-hover-bg` | 10% of the text color | same | Summary bar background on hover |
 | `--rn-color-{category}` | see `DEFAULT_CATEGORIES` | same | Category color for chips and badges |
 
 If you map these to your own palette, check that `--rn-chip-color` and `--rn-text-muted` keep a 4.5:1 contrast ratio against `--rn-chip-bg` and `--rn-input-bg`.
@@ -241,8 +244,14 @@ import { ReleaseNotesSelector } from 'astro-better-release-notes';
 - Category filters are native checkboxes inside a `<fieldset>` with a visually hidden `<legend>`. They work with Tab and Space, show a focus ring on the chip, and announce their checked state. Selected chips show a check mark as well as color.
 - Badge and selected-chip text colors are mixed from the category color (darker in light mode, lighter in dark mode), so they stay at or above 4.5:1 for the default categories and for most custom mid-tone colors.
 - The version selector has a label, and its options are bare version numbers, so typing `1.56` jumps to 1.56.0. Each jump is announced through a polite live region. Focus stays on the selector so type-ahead and arrow keys keep working: the selector scrolls with `scrollIntoView` and updates the URL with `history.replaceState`, because assigning `location.hash` would blur it. Jumps don't add browser history entries.
-- Transitions and the badge hover scale are disabled under `prefers-reduced-motion: reduce`.
+- Each version's description is a native `<details>`, so it opens with Enter or Space and announces its state without JavaScript, and its text stays in the HTML for search, find-in-page, and LLM tools. A visually hidden version number gives every summary a unique accessible name, such as "Summary of version 1.2.3".
+- Transitions, the summary chevron rotation, and the badge hover scale are disabled under `prefers-reduced-motion: reduce`.
 - The package ships its own `.rn-sr-only` class, so it doesn't depend on a host `sr-only` utility.
+
+## Upgrading to 0.3.2
+
+- The version summary is now a bordered box with a tinted bar and a chevron, styled like a details component, instead of a plain disclosure triangle. Its colors mix from the surrounding text color, so it follows light and dark mode. Override them with `--rn-summary-border`, `--rn-summary-bg`, and `--rn-summary-hover-bg`.
+- Each summary's accessible name now includes its version.
 
 ## Upgrading to 0.3.1
 
