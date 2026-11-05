@@ -66,6 +66,24 @@ const config = allTypes[type] ?? {
   color: '#71717a',
 };
 const resolvedTitle = title ?? config.label;
+
+// a title string may use inline markdown: `code`, **bold** or __bold__, *italic* or _italic_
+const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function renderInline(text: string, html: boolean) {
+  const codes: string[] = [];
+  // set code spans aside so their contents stay literal
+  let out = text.replace(/`([^`]+)`/g, (_, code) => `\u0000${codes.push(code) - 1}\u0000`);
+  if (html) out = escapeHtml(out);
+  const wrap = (tag: string) => (_: string, pre: string, inner: string) => pre + (html ? `<${tag}>${inner}</${tag}>` : inner);
+  out = out
+    .replace(/(^|[^*])\*\*([^*]+)\*\*/g, wrap('strong'))
+    .replace(/(^|[^\w])__([^_]+)__(?!\w)/g, wrap('strong'))
+    .replace(/(^|[^*])\*([^*]+)\*/g, wrap('em'))
+    .replace(/(^|[^\w])_([^_]+)_(?!\w)/g, wrap('em'));
+  return out.replace(/\u0000(\d+)\u0000/g, (_, i) => (html ? `<code>${escapeHtml(codes[i])}</code>` : codes[i]));
+}
+const titleHtml = renderInline(resolvedTitle, true);
+const titleText = renderInline(resolvedTitle, false);
 const hasDefaultSlot = Astro.slots.has('default');
 const hasTitleSlot = Astro.slots.has('title');
 
@@ -77,7 +95,7 @@ const isBlock = display === 'block' || (display === 'auto' && hasDefaultSlot);
   isBlock ? (
     <div
       role="note"
-      aria-label={resolvedTitle}
+      aria-label={titleText}
       class:list={['admonition', `admonition-type-${type}`, extraClass]}
       style={`--admonition-color: ${config.color}`}
     >
@@ -89,7 +107,7 @@ const isBlock = display === 'block' || (display === 'auto' && hasDefaultSlot);
             </svg>
           </span>
         )}
-        {hasTitleSlot ? <slot name="title" /> : <span>{resolvedTitle}</span>}
+        {hasTitleSlot ? <slot name="title" /> : <span set:html={titleHtml} />}
       </div>
       {hasDefaultSlot && (
         <div class="admonition-content">
@@ -103,7 +121,7 @@ const isBlock = display === 'block' || (display === 'auto' && hasDefaultSlot);
       class:list={['admonition-badge', `admonition-badge-${type}`, extraClass]}
       style={`--admonition-color: ${config.color}`}
     >
-      {hasTitleSlot ? <slot name="title" /> : resolvedTitle}
+      {hasTitleSlot ? <slot name="title" /> : <Fragment set:html={titleHtml} />}
     </span>
   )
 )}

@@ -36,7 +36,7 @@ Built-in types: `note`, `tip`, `caution`, `danger`.
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `type` | `string` | `'note'` | Key into the type map |
-| `title` | `string` | type label | Override the title text |
+| `title` | `string` | type label | Override the title text. Supports inline markdown: `` `code` ``, `**bold**`, and `*italic*` |
 | `types` | `Record<string, AdmonitionTypeConfig>` | `{}` | Extend or override built-in types |
 | `display` | `'block' \| 'inline' \| 'auto'` | `'block'` | Rendering mode |
 | `titleBold` | `boolean` | `true` | Bold title text |
@@ -88,7 +88,13 @@ Set `display="auto"` to switch automatically: badge when no content slot, callou
 
 ## Rich title markup
 
-Use the named `title` slot when the title needs HTML (e.g. inline code):
+The `title` prop renders inline markdown, so code, bold, and italic text work without a slot:
+
+```astro
+<Admonition type="caution" title="The Docker `latest` tag is not dynamic">...</Admonition>
+```
+
+Use the named `title` slot when the title needs other HTML, such as a link:
 
 ```astro
 <Admonition type="note" display="inline">

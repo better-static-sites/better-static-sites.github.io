@@ -82,12 +82,22 @@ import { Admonition } from 'astro-better-admonitions';
   You can specify a title on any of these to override the default, which uses the type name (built-in types get a leading capital letter, but can still be overridden).
 </Admonition>
 
+<Admonition type="caution" title="The Docker `latest` tag is **not** dynamic">
+  Titles render inline markdown, so you can use code, bold, and italic text in the `title` prop.
+</Admonition>
+
+```astro
+<Admonition type="caution" title="The Docker `latest` tag is **not** dynamic">
+  Titles render inline markdown, so you can use code, bold, and italic text in the `title` prop.
+</Admonition>
+```
+
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `type` | `string` | `note` | Callout type: `note`, `tip`, `caution`, `warning`, or a custom type |
-| `title` | `string` | -- | Callout heading (defaults to the type label) |
+| `title` | `string` | -- | Callout heading (defaults to the type label). Supports inline markdown: `` `code` ``, `**bold**`, and `*italic*` |
 
 ## Custom types
 
