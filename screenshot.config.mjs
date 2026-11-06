@@ -4,6 +4,10 @@ export default {
 
   window: { width: 1200, height: 800 },
 
+  // capture light and dark images; the site sets html.dark whenever it shows dark
+  colorScheme: 'both',
+  darkMode: 'class',
+
   chrome: {
     style:    'golden-gate',
     renderIn: 'css',

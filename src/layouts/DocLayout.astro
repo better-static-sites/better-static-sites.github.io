@@ -30,6 +30,8 @@ const docsCollection = await getCollection('docs');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- declares both schemes, so Safari's Adaptive Dark Mode leaves the page alone -->
+    <meta name="color-scheme" content="light dark" />
     <title>{title} | Better Static Sites</title>
     {description && <meta name="description" content={description} />}
     <link rel="apple-touch-icon" sizes="180x180" href={`/apple-touch-icon.png`}>
@@ -40,8 +42,8 @@ const docsCollection = await getCollection('docs');
     <link rel="alternate" type="text/plain" title="LLM Index" href="/llms.txt" />
     {mdUrl && <link rel="alternate" type="text/markdown" title="Page Markdown Source" href={mdUrl} />}
   <style is:inline>
-    html { background: #ffffff; color: #18181b; }
-    html.dark { background: #080808; color: #e8e8e8; }
+    html { color-scheme: light; background: #ffffff; color: #18181b; }
+    html.dark { color-scheme: dark; background: #080808; color: #e8e8e8; }
     body { background: #ffffff; min-height: 100vh; }
     html.dark body { background: #080808; }
     #main-header { background: #f5f3ff; position: sticky; top: 0; z-index: 50; }

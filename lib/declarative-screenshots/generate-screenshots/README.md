@@ -12,6 +12,8 @@ npm install astro-better-generate-screenshots
 
 - Starts Docker and captures pages with Playwright WebKit
 - Injects highlights and composites window chrome
+- Captures light and dark versions of each page with `colorScheme: 'both'`
+- Grows full-page captures to the page height, up to a cap you set
 - Diffs against committed PNGs to detect drift
 - Optionally renders in a pinned Linux browser container, so macOS, Linux, and CI produce identical images
 

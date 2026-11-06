@@ -3,8 +3,8 @@ title: Declarative Screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
 versions:
-  astro-better-declarative-screenshots: "0.4.6"
-  astro-better-generate-screenshots: "0.5.1"
+  astro-better-declarative-screenshots: "0.5.0"
+  astro-better-generate-screenshots: "0.6.0"
 badges: ["component", "tool"]
 ---
 
@@ -129,6 +129,10 @@ export default {
 
   window: { width: 1200, height: 800 },
 
+  // capture light and dark images; the site sets html.dark whenever it shows dark
+  colorScheme: 'both',
+  darkMode: 'class',
+
   chrome: {
     style:    'golden-gate',
     renderIn: 'css',
@@ -202,7 +206,7 @@ Place the `Screenshot` component where the image should appear:
 
 ### Full-page capture
 
-Capture the full scrollable height of a page with `fullPage`:
+Capture the full height of a page with `fullPage`:
 
 ````mdx escape
 <Screenshot
@@ -217,6 +221,21 @@ Capture the full scrollable height of a page with `fullPage`:
   alt="The code blocks documentation page showing all meta string features."
   fullPage={true}
 />
+
+A full-page capture grows the window until nothing on the page is scrolled out of view, including scrolling elements such as a sidebar. Growing the window keeps sticky headers and sidebars in place. The capture stops at `maxFullPage.height`, which is 8000 px by default. To stop a long page sooner, add `maxHeight={1400}` or another height to the screenshot. When the first highlight falls below `maxHeight`, the capture scrolls to the highlight.
+
+To make every screenshot full-page, set `fullPage: true` in `screenshot.config.mjs`. A screenshot that sets `height` or `fullPage={false}` then keeps a fixed window height.
+
+### Light and dark screenshots
+
+Set `colorScheme: 'both'` in `screenshot.config.mjs` to capture every screenshot in light and dark, or set `colorScheme="both"` on one screenshot. The generator writes `name.png` and `name.dark.png`, and the `Screenshot` component renders both. CSS shows the image that matches the site's theme, and the hidden image doesn't download. Every screenshot on this page switches when you change the theme.
+
+Set `darkMode` so the component reads your site's theme the same way the site does:
+
+- `'media'` (default) follows `prefers-color-scheme`, unless `<html>` has `data-theme="light"` or `class="light"`.
+- `'class'` reads only `<html>`: the page is dark when `<html>` has `class="dark"` or `data-theme="dark"`. Use `'class'` when your theme script adds `.dark` for the system setting too, as Tailwind's class strategy does. This site uses `'class'`.
+
+The generator switches the scheme with Playwright's color scheme emulation, so the page sees `prefers-color-scheme: dark`. If your app stores the theme somewhere else, such as a cookie, set it in `beforeScreenshot`, which receives `colorScheme`. Until a dark image exists, the light image shows in both themes.
 
 ### Highlight an element
 
@@ -413,8 +432,10 @@ jobs:
 | `alt` | `string` | derived from filename | Alt text for the `<img>` |
 | `id` | `string` | auto-derived | Override the output filename (without `.png`) |
 | `width` | `number` | `window.width` from config | Viewport width for this screenshot |
-| `height` | `number` | `window.height` from config | Viewport height for this screenshot |
-| `fullPage` | `boolean` | `false` | Capture the full scrollable page height |
+| `height` | `number` | `window.height` from config | Viewport height for this screenshot. Turns off a config-wide `fullPage` default |
+| `fullPage` | `boolean` | `fullPage` from config | Grow the capture to the full page height, up to `maxHeight` |
+| `maxHeight` | `number` | `maxFullPage.height` from config | Tallest a full-page capture grows |
+| `colorScheme` | `'light' \| 'dark' \| 'both'` | `colorScheme` from config | Color scheme to capture; `both` adds a dark image |
 | `crop` | `string` | — | CSS selector for the part of the page to crop the image to; covers every matching element and overrides `fullPage` |
 | `cropPadding` | `number` | `16` | Pixels of space kept around the cropped area |
 | `chrome` | `boolean` | `true`, `false` when cropped | Draw the window chrome around the image |
@@ -449,7 +470,8 @@ The `chrome.style` option in `screenshot.config.mjs` controls the window frame r
 
 <Admonition type="tip" title="renderIn: css vs png">
   `renderIn: 'css'` renders the window chrome as HTML/CSS in the `Screenshot` component -- no
-  image processing needed and the chrome adapts to dark mode automatically. `renderIn: 'png'`
+  image processing needed and the chrome adapts to dark mode automatically. With `colorScheme: 'both'`,
+  `renderIn: 'png'` draws each image's frame in that image's scheme. `renderIn: 'png'`
   composites the chrome into the PNG at capture time (legacy). Use `css` for new projects.
 </Admonition>
 

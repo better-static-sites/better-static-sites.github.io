@@ -106,11 +106,27 @@ Place `<Screenshot>` where the image should appear:
 <Screenshot url="/admin/group/" alt="The groups list in the FusionAuth admin UI." />
 ```
 
-Capture the full scrollable height of a page:
+Capture the full height of a page:
 
 ```mdx
 <Screenshot url="/admin/user/add" alt="The add user form." fullPage={true} />
 ```
+
+A full-page capture grows the window until nothing on the page is scrolled out of view, including scrolling elements such as a sidebar, and stops at `maxFullPage.height` (8000 px by default). Set `maxHeight` to stop a long page sooner. When the first highlight falls below that height, the capture scrolls to it:
+
+```mdx
+<Screenshot url="/admin/user/add" alt="The top of the add user form." fullPage={true} maxHeight={1400} />
+```
+
+To make every screenshot full-page, set `fullPage: true` in the config. A screenshot with `height` or `fullPage={false}` then keeps a fixed window height.
+
+Capture light and dark versions of a page with `colorScheme="both"`, or set `colorScheme: 'both'` in the config for every screenshot:
+
+```mdx
+<Screenshot url="/admin/group/" alt="The groups list." colorScheme="both" />
+```
+
+The generator writes `admin-group.png` and `admin-group.dark.png`. `<Screenshot>` renders both images and shows the one that matches your site's theme, and the hidden image doesn't download. Set [`darkMode`](#configuration-reference) to match how your site shows dark mode. Until the dark image exists, the light image shows in both themes.
 
 Crop the image to part of the page instead of the whole window:
 
@@ -170,8 +186,10 @@ Commit the generated PNG files alongside your source. The `<Screenshot>` compone
 | `id` | `string` | auto-derived | Override the output filename (without `.png`) |
 | `alt` | `string` | derived from filename | Alt text for the rendered `<img>` |
 | `width` | `number` | `window.width` from config | Viewport width for this screenshot |
-| `height` | `number` | `window.height` from config | Viewport height for this screenshot |
-| `fullPage` | `boolean` | `false` | Capture the full scrollable page height |
+| `height` | `number` | `window.height` from config | Viewport height for this screenshot. Turns off a config-wide `fullPage` default |
+| `fullPage` | `boolean` | `fullPage` from config | Grow the capture to the full page height, up to `maxHeight` |
+| `maxHeight` | `number` | `maxFullPage.height` from config | Tallest a full-page capture grows |
+| `colorScheme` | `'light' \| 'dark' \| 'both'` | `colorScheme` from config | Color scheme to capture; `both` adds a dark image |
 | `crop` | `string` | — | CSS selector for the part of the page to crop the image to; covers every matching element and overrides `fullPage` |
 | `cropPadding` | `number` | `16` | Pixels of space kept around the cropped area |
 | `chrome` | `boolean` | `true`, `false` when cropped | Draw the window chrome around the image |
@@ -245,15 +263,24 @@ export default {
   minWindow: { width: 640,  height: 400  },
   maxWindow: { width: 2560, height: 1600 },
 
-  // maximum dimensions for fullPage captures
+  // maximum dimensions for fullPage captures; a screenshot's maxHeight overrides the height
   maxFullPage: { width: 2560, height: 8000 },
+
+  // capture every screenshot at full page height unless it sets height or fullPage={false}
+  fullPage: false,
 
   // browser engine: 'webkit' | 'chromium' | 'firefox'
   // webkit gives the most accurate macOS Safari rendering
   browser: 'webkit',
 
-  // default color scheme passed to Playwright: 'light' | 'dark'
+  // color scheme to capture: 'light' | 'dark' | 'both'
+  // 'both' writes name.png (light) and name.dark.png
   colorScheme: 'light',
+
+  // how your site shows dark mode, so <Screenshot> shows the matching image and window frame
+  // 'media': follows prefers-color-scheme, unless <html> has data-theme="light" or class="light"
+  // 'class': <html> has class="dark" or data-theme="dark" whenever the page is dark
+  darkMode: 'media',
 
   chrome: {
     // window frame style: 'safari-macos' | 'golden-gate' | 'linux' | 'windows' | 'none'
@@ -331,7 +358,7 @@ export default {
   },
 
   // called before each individual screenshot; receives the Playwright Page
-  // (already navigated to the target URL) and { url, name, highlights }
+  // (already navigated to the target URL) and { url, name, highlights, colorScheme }
   beforeScreenshot: async (page, { url }) => {
     // typical use: dismiss transient UI (notifications, focus rings, etc.)
     await page.evaluate(() => {

@@ -60,24 +60,27 @@ const markdownifiedLabel = remark.parseInline(label);
     color: #4b5563 !important;
   }
 
-  .tab-bar .tab-input:not(:checked) + .tab-label:hover,
-  .tab-bar .tab-input:not(:checked) + .tab-label:hover span {
-    color: #445599 !important;
+  /* inactive tabs get an outline in the panel color, so their edges blend into the panel */
+  .tab-bar .tab-input:not(:checked) + .tab-label {
+    box-shadow: inset 0 0 0 1px var(--tabs-inactive-outline, var(--tabs-panel-bg, #ffffff));
   }
 
   .tab-bar .tab-input:not(:checked) + .tab-label:hover,
+  .tab-bar .tab-input:not(:checked) + .tab-label:hover span {
+    color: var(--tabs-hover-color, #445599) !important;
+  }
+
   .tab-bar .tab-input:not(:checked) + .tab-label:hover {
-    background-color: #CCCCCC !important;
+    background-color: var(--tabs-hover-bg, #d9d9de) !important;
   }
 
   html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover,
   html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover span {
-    color: #ffffff !important;
+    color: var(--tabs-hover-color, #ffffff) !important;
   }
 
-  html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover,
   html.dark .tab-bar .tab-input:not(:checked) + .tab-label:hover {
-    background-color: #888899 !important;
+    background-color: var(--tabs-hover-bg, #666677) !important;
   }
 
   html.dark .tab-bar .tab-input:not(:checked) + .tab-label,

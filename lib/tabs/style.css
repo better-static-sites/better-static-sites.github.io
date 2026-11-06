@@ -9,6 +9,8 @@
   --tabs-panel-border: #e5e7eb;
   --tabs-active-bg:    #ffffff;
   --tabs-active-color: #111827;
+  --tabs-hover-bg:     #d9d9de;
+  --tabs-hover-color:  #445599;
 }
 
 .dark .tabs-group {
@@ -18,4 +20,6 @@
   --tabs-panel-border: #334155;
   --tabs-active-bg:    #0f172a;
   --tabs-active-color: #e2e8f0;
+  --tabs-hover-bg:     #666677;
+  --tabs-hover-color:  #ffffff;
 }

@@ -96,7 +96,7 @@ The direct-child combinators (`>`) prevent an outer group's rules from accidenta
 
 The component requires Tailwind CSS in the consuming project (`@reference "tailwindcss"` is used in the style block).
 
-Light mode: inactive tab labels use a gray tab bar (`#e5e7eb`) with slightly lighter text (`#4b5563`). The active tab label has a white background that is flush with the white panel below it, creating a seamless appearance.
+Light mode: inactive tab labels use a gray tab bar (`#e5e7eb`) with slightly lighter text (`#4b5563`). The active tab label has a white background that is flush with the white panel below it, creating a seamless appearance. Inactive labels have a 1px outline in the panel color, which sets them apart from each other and from the bar.
 
 Dark mode: the active tab and panel share the site's dark background (`#0f172a`). The tab bar is slightly lighter (`#1e293b`) to distinguish inactive tabs, which use muted text (`#94a3b8`). The active label text color defaults to `#e2e8f0`.
 
@@ -113,3 +113,6 @@ Override these on `.tabs-group` to customize colors:
 | `--tabs-panel-bg` | `#ffffff` | `#0f172a` | panel background |
 | `--tabs-active-bg` | `#ffffff` | `#0f172a` | active label background |
 | `--tabs-active-color` | `#111827` | `#e2e8f0` | active label text color |
+| `--tabs-hover-bg` | `#d9d9de` | `#666677` | inactive label background on hover |
+| `--tabs-hover-color` | `#445599` | `#ffffff` | inactive label text color on hover |
+| `--tabs-inactive-outline` | `--tabs-panel-bg` | `--tabs-panel-bg` | 1px outline around inactive labels, so their edges blend into the panel |

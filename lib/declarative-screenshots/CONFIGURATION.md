@@ -44,11 +44,30 @@ WebKit gives the most accurate rendering for macOS Safari-style chrome. Use Chro
 
 ### `colorScheme`
 
-Default color scheme for captured pages.
+Color scheme for captured pages. A screenshot's `colorScheme` prop overrides it.
 
 Default: `'light'`
 
-Options: `'light'` | `'dark'`
+Options: `'light'` | `'dark'` | `'both'`
+
+`'both'` captures each screenshot twice and writes `name.png` (light) and `name.dark.png`. The `<Screenshot>` component shows the image that matches the site's theme. With `chrome.renderIn: 'png'`, each image gets a frame in its own theme. With `'css'`, the frame follows the site's theme.
+
+### `darkMode`
+
+How your site shows dark mode, so `<Screenshot>` shows the matching image and window frame.
+
+Default: `'media'`
+
+Options:
+
+- `'media'` -- follows `prefers-color-scheme`, unless `<html>` has `data-theme="light"` or `class="light"`.
+- `'class'` -- `<html>` has `class="dark"` or `data-theme="dark"` whenever the page is dark, including when the reader follows the system setting. Use this for Tailwind's class strategy and for toggles that only add or remove a `dark` class.
+
+### `fullPage`
+
+Capture every screenshot at full page height. A screenshot that sets `height` or `fullPage={false}` keeps a fixed window height.
+
+Default: `false`
 
 ### `strict`
 
@@ -70,7 +89,7 @@ Per-screenshot overrides are available via the `<Screenshot width height />` pro
 
 ### `minWindow` / `maxWindow`
 
-Viewport size guardrails. Any per-screenshot `width`/`height` values are clamped to these bounds.
+Viewport size guardrails. Any per-screenshot `width`/`height` values are clamped to these bounds. A full-page capture can grow past `maxWindow.height`, up to `maxFullPage.height`.
 
 ```js
 minWindow: { width: 640, height: 400 },
@@ -79,7 +98,7 @@ maxWindow: { width: 2560, height: 1600 },
 
 ### `maxFullPage`
 
-Maximum dimensions for full-page captures.
+Maximum dimensions for full-page captures. A full-page capture grows the window until nothing is scrolled out of view, in the page or in a scrolling element that stretches with the window, such as a sidebar, and stops at `maxFullPage.height`. A screenshot's `maxHeight` prop overrides the height.
 
 ```js
 maxFullPage: { width: 2560, height: 8000 }
@@ -230,7 +249,7 @@ beforeAll: async (context) => {
 
 ### `beforeScreenshot`
 
-Called before each individual screenshot. Receives the Playwright `Page` (already navigated to the target URL) and a spec object `{ url, name, highlights }`. Use this to dismiss notifications, close modals, or set up per-page state.
+Called before each individual screenshot. Receives the Playwright `Page` (already navigated to the target URL) and a spec object `{ url, name, highlights, colorScheme }`. With `colorScheme: 'both'`, the hook runs once per scheme. Use `colorScheme` to set app state that `prefers-color-scheme` doesn't control, such as a theme cookie. Use this to dismiss notifications, close modals, or set up per-page state.
 
 ```js
 beforeScreenshot: async (page, { url, name }) => {
@@ -242,7 +261,7 @@ beforeScreenshot: async (page, { url, name }) => {
 
 ### `afterScreenshot`
 
-Called once after each screenshot attempt, after the screenshot buffer is captured (or capture fails) and before the Playwright page is closed. Receives the Playwright `Page` and the same spec object `{ url, name, highlights }` as `beforeScreenshot`. Use this hook to cleanup and remove any changes you made in beforeScreenshot, so that each screenshot is idempotent. The hook also runs when `beforeScreenshot` or capture throws, provided the page was created.
+Called once after each screenshot attempt, after the screenshot buffer is captured (or capture fails) and before the Playwright page is closed. Receives the Playwright `Page` and the same spec object `{ url, name, highlights, colorScheme }` as `beforeScreenshot`. Use this hook to cleanup and remove any changes you made in beforeScreenshot, so that each screenshot is idempotent. The hook also runs when `beforeScreenshot` or capture throws, provided the page was created.
 
 
 ### `afterAll`

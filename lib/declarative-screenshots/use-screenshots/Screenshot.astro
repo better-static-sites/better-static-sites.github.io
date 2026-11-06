@@ -1,5 +1,5 @@
 ---
-import { deriveName } from './src/naming.mjs';
+import { deriveName, colorSchemeVariants } from './src/naming.mjs';
 import { loadConfig } from './src/config.mjs';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -22,8 +22,12 @@ interface Props {
   width?: number;
   /** override window height for this screenshot */
   height?: number;
-  /** capture the full scrollable page height */
+  /** grow the capture to the full content height (default: config fullPage, or false when height is set) */
   fullPage?: boolean;
+  /** tallest a full-page capture may grow (default: config maxFullPage.height) */
+  maxHeight?: number;
+  /** color scheme to capture; 'both' adds a dark image that shows when the page is dark (default: config colorScheme) */
+  colorScheme?: 'light' | 'dark' | 'both';
   /** selector for the part of the page to crop to; covers every matching element (overrides fullPage) */
   crop?: string;
   /** pixels of space kept around the cropped area (default 16) */
@@ -42,7 +46,9 @@ const {
   alt,
   width,
   height,
-  fullPage = false,
+  fullPage,
+  maxHeight,
+  colorScheme,
   crop,
   cropPadding,
   clearBrowserBeforeCapture = false,
@@ -83,15 +89,17 @@ let chrome = { style: 'safari-macos', renderIn: 'png', showUrl: true, theme: 'li
                shadowBlur: 40, shadowPadding: 48, baseUrl: undefined as string | undefined,
                url: undefined as string | undefined };
 let configBaseUrl = '';
-if (!resolvedOutputDir) {
-  try {
-    const cfg = await loadConfig(process.cwd());
-    resolvedOutputDir = cfg.outputDir;
-    chrome = cfg.chrome as typeof chrome;
-    configBaseUrl = cfg.baseUrl ?? '';
-  } catch {
-    resolvedOutputDir = 'src/assets/screenshots';
-  }
+let configColorScheme = 'light';
+let darkMode = 'media';
+try {
+  const cfg = await loadConfig(process.cwd());
+  resolvedOutputDir ??= cfg.outputDir;
+  chrome = cfg.chrome as typeof chrome;
+  configBaseUrl = cfg.baseUrl ?? '';
+  configColorScheme = cfg.colorScheme;
+  darkMode = cfg.darkMode;
+} catch {
+  resolvedOutputDir ??= 'src/assets/screenshots';
 }
 
 const servePath = resolvedOutputDir
@@ -102,6 +110,13 @@ const imgPath = `/${servePath}/${name}.png`;
 const absolutePath = path.resolve(process.cwd(), resolvedOutputDir, `${name}.png`);
 const fileExists = existsSync(absolutePath);
 
+// a 'both' screenshot shows its dark image when the page is dark, and falls back to light until the dark one exists
+const darkVariant = colorSchemeVariants(name, colorScheme ?? configColorScheme as 'light' | 'dark' | 'both')[1]?.name;
+const darkImgPath = darkVariant && existsSync(path.resolve(process.cwd(), resolvedOutputDir, `${darkVariant}.png`))
+  ? `/${servePath}/${darkVariant}.png`
+  : undefined;
+const imgAlt = alt ?? name.replace(/-/g, ' ');
+
 const strict = process.env.SCREENSHOTS_STRICT === 'true';
 if (!fileExists && strict) {
   throw new Error(
@@ -110,7 +125,7 @@ if (!fileExists && strict) {
   );
 }
 
-const specData = JSON.stringify({ url, highlights, width, height, fullPage, crop, cropPadding, chrome: showChrome, clearBrowserBeforeCapture });
+const specData = JSON.stringify({ url, highlights, width, height, fullPage, maxHeight, colorScheme, crop, cropPadding, chrome: showChrome, clearBrowserBeforeCapture });
 
 const cssChrome = showChrome && chrome.renderIn === 'css' && chrome.style !== 'none';
 let displayUrl = url;
@@ -127,9 +142,10 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
   class="screenshot-figure"
   data-screenshot-name={name}
   data-screenshot-spec={specData}
+  data-sc-media={darkMode === 'media' ? '' : undefined}
 >
   {cssChrome ? (
-    <div class="sc-window" data-chrome={chrome.style} data-theme={chrome.theme}>
+    <div class="sc-window" data-chrome={chrome.style} data-theme={darkVariant ? undefined : chrome.theme}>
       <div class="sc-bar">
         <div class="sc-lights">
           <span class="sc-tl sc-close"></span>
@@ -144,12 +160,18 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
       </div>
       <div class="sc-content">
         {fileExists ? (
-          <img
-            src={imgPath}
-            alt={alt ?? name.replace(/-/g, ' ')}
-            loading="lazy"
-            decoding="async"
-          />
+          <>
+            <img
+              src={imgPath}
+              alt={imgAlt}
+              loading="lazy"
+              decoding="async"
+              class:list={[{ 'sc-img-light': darkImgPath }]}
+            />
+            {darkImgPath && (
+              <img src={darkImgPath} alt={imgAlt} loading="lazy" decoding="async" class="sc-img-dark" data-markdown-ignore />
+            )}
+          </>
         ) : (
           <div
             class="sc-placeholder"
@@ -164,13 +186,18 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
     </div>
   ) : (
     fileExists ? (
-      <img
-        src={imgPath}
-        alt={alt ?? name.replace(/-/g, ' ')}
-        loading="lazy"
-        decoding="async"
-        class="screenshot-img"
-      />
+      <>
+        <img
+          src={imgPath}
+          alt={imgAlt}
+          loading="lazy"
+          decoding="async"
+          class:list={['screenshot-img', { 'sc-img-light': darkImgPath }]}
+        />
+        {darkImgPath && (
+          <img src={darkImgPath} alt={imgAlt} loading="lazy" decoding="async" class="screenshot-img sc-img-dark" data-markdown-ignore />
+        )}
+      </>
     ) : (
       <div
         class="screenshot-placeholder"
@@ -261,6 +288,20 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
     margin: 0;
   }
 
+  /* ── light/dark image pair: display:none also keeps the lazy hidden image from loading.
+     media rules apply only with darkMode: 'media'; a 'class' site marks dark on <html> itself ── */
+  .screenshot-figure img.sc-img-dark { display: none; }
+
+  :root[data-theme="dark"] .screenshot-figure img.sc-img-light,
+  :root.dark .screenshot-figure img.sc-img-light { display: none; }
+  :root[data-theme="dark"] .screenshot-figure img.sc-img-dark,
+  :root.dark .screenshot-figure img.sc-img-dark { display: block; }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not(.light) .screenshot-figure[data-sc-media] img.sc-img-light { display: none; }
+    :root:not([data-theme="light"]):not(.light) .screenshot-figure[data-sc-media] img.sc-img-dark { display: block; }
+  }
+
   .sc-placeholder {
     background: #f0f0f0;
     padding: 2rem;
@@ -300,7 +341,7 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
   }
 
   @media (prefers-color-scheme: dark) {
-    .sc-window[data-chrome="safari-macos"]:not([data-theme="light"]) {
+    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="safari-macos"]:not([data-theme="light"]) {
       --sc-bar-bg: linear-gradient(to bottom, #323232, #2c2c2c);
       --sc-bar-sep: #1a1a1a;
       --sc-url-bg: #454547;
@@ -340,7 +381,7 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
   }
 
   @media (prefers-color-scheme: dark) {
-    .sc-window[data-chrome="linux"]:not([data-theme="light"]) {
+    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="linux"]:not([data-theme="light"]) {
       --sc-bar-bg: #1a2d40;
       --sc-bar-sep: #0f1c2c;
       --sc-url-bg: #0f1c2c;
@@ -413,14 +454,14 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
   :root.dark .sc-window[data-chrome="windows"] .sc-tl { color: #c0c0c0; }
 
   @media (prefers-color-scheme: dark) {
-    .sc-window[data-chrome="windows"]:not([data-theme="light"]) {
+    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="windows"]:not([data-theme="light"]) {
       --sc-bar-bg: #202020;
       --sc-bar-sep: rgba(255, 255, 255, 0.06);
       --sc-url-bg: #2d2d2d;
       --sc-url-border: rgba(255, 255, 255, 0.10);
       --sc-url-text: #c0c0c0;
     }
-    .sc-window[data-chrome="windows"]:not([data-theme="light"]) .sc-tl { color: #c0c0c0; }
+    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="windows"]:not([data-theme="light"]) .sc-tl { color: #c0c0c0; }
   }
 
   /* ── golden-gate light ── */
@@ -455,7 +496,7 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
   }
 
   @media (prefers-color-scheme: dark) {
-    .sc-window[data-chrome="golden-gate"]:not([data-theme="light"]) {
+    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="golden-gate"]:not([data-theme="light"]) {
       --sc-bar-bg: linear-gradient(to bottom, #2d2d2d, #272727);
       --sc-bar-sep: rgba(255, 255, 255, 0.08);
       --sc-url-bg: rgba(56, 56, 58, 0.9);
