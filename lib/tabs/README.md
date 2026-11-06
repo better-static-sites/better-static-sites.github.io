@@ -96,9 +96,11 @@ The direct-child combinators (`>`) prevent an outer group's rules from accidenta
 
 The component requires Tailwind CSS in the consuming project (`@reference "tailwindcss"` is used in the style block).
 
-Light mode: inactive tab labels use a gray tab bar (`#e5e7eb`) with slightly lighter text (`#4b5563`). The active tab label has a white background that is flush with the white panel below it, creating a seamless appearance. Inactive labels have a 1px outline in the panel color, which sets them apart from each other and from the bar.
+The tab bar has no background, so the page shows in the gaps between tabs and around inactive tabs. The border runs around the panel and the active tab, with no line between the two, so the active tab joins the panel. Inactive tabs have no border.
 
-Dark mode: the active tab and panel share the site's dark background (`#0f172a`). The tab bar is slightly lighter (`#1e293b`) to distinguish inactive tabs, which use muted text (`#94a3b8`). The active label text color defaults to `#e2e8f0`.
+Light mode: inactive tab labels are gray (`#f3f4f6`) with slightly lighter text (`#4b5563`). The active tab label has a white background that is flush with the white panel below it, creating a seamless appearance.
+
+Dark mode: the active tab and panel share the site's dark background (`#0f172a`). Inactive tabs are slightly lighter (`#1e293b`) and use muted text (`#94a3b8`). The active label text color defaults to `#e2e8f0`.
 
 Because Tailwind Typography's `prose` styles set explicit colors on `<span>` elements that beat CSS inheritance, the component uses targeted `!important` rules to control inactive and active label text colors.
 
@@ -108,11 +110,10 @@ Override these on `.tabs-group` to customize colors:
 
 | Variable | Default (light) | Default (dark) | Controls |
 |---|---|---|---|
-| `--tabs-border` | `#e5e7eb` | `#334155` | container border |
-| `--tabs-bg` | `#e5e7eb` | `#1e293b` | container background (visible at rounded corners) |
+| `--tabs-border` | `#e5e7eb` | `#334155` | border around the panel and the active tab |
+| `--tabs-bg` | `#f3f4f6` | `#1e293b` | inactive label background |
 | `--tabs-panel-bg` | `#ffffff` | `#0f172a` | panel background |
 | `--tabs-active-bg` | `#ffffff` | `#0f172a` | active label background |
 | `--tabs-active-color` | `#111827` | `#e2e8f0` | active label text color |
 | `--tabs-hover-bg` | `#d9d9de` | `#666677` | inactive label background on hover |
 | `--tabs-hover-color` | `#445599` | `#ffffff` | inactive label text color on hover |
-| `--tabs-inactive-outline` | `--tabs-panel-bg` | `--tabs-panel-bg` | 1px outline around inactive labels, so their edges blend into the panel |

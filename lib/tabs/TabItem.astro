@@ -36,14 +36,12 @@ const markdownifiedLabel = remark.parseInline(label);
 <style is:global>
   @reference "tailwindcss";
 
-  /* container */
+  /* container; the panel and the active tab draw the border, so none shows around inactive tabs */
   .tabs-group {
-    @apply my-8 border rounded-md overflow-hidden;
-    border-color: var(--tabs-border, #e5e7eb);
-    background-color: var(--tabs-bg, #e5e7eb);
+    @apply my-8;
   }
 
-  /* scrollable tab bar */
+  /* scrollable tab bar; no background, so the page shows between and around inactive tabs */
   .tab-bar {
     display: flex;
     flex-wrap: nowrap;
@@ -51,7 +49,8 @@ const markdownifiedLabel = remark.parseInline(label);
     scrollbar-width: thin;
     align-items: stretch;
     gap: 0.25rem;
-    background-color: var(--tabs-bg, #e5e7eb);
+    /* the panel's top edge; the active tab's background covers it, joining the tab to the panel */
+    box-shadow: inset 0 -1px 0 var(--tabs-border, #e5e7eb);
   }
 
   /* styles for text and bg color set with high specificity to beat CSS inheritance */
@@ -60,9 +59,12 @@ const markdownifiedLabel = remark.parseInline(label);
     color: #4b5563 !important;
   }
 
-  /* inactive tabs get an outline in the panel color, so their edges blend into the panel */
   .tab-bar .tab-input:not(:checked) + .tab-label {
-    box-shadow: inset 0 0 0 1px var(--tabs-inactive-outline, var(--tabs-panel-bg, #ffffff));
+    background-color: var(--tabs-bg, #f3f4f6);
+  }
+
+  html.dark .tab-bar .tab-input:not(:checked) + .tab-label {
+    background-color: var(--tabs-bg, #1e293b);
   }
 
   .tab-bar .tab-input:not(:checked) + .tab-label:hover,
@@ -98,6 +100,9 @@ const markdownifiedLabel = remark.parseInline(label);
     width: 100%;
     padding: 5px 5px 2px;
     background-color: var(--tabs-panel-bg, #ffffff);
+    border: 1px solid var(--tabs-border, #e5e7eb);
+    border-top: 0;
+    border-radius: 0 0 0.375rem 0.375rem;
   }
 
   /* panel switching via :has(), direct-child combinators prevent outer rules from firing on nested groups */
@@ -114,7 +119,6 @@ const markdownifiedLabel = remark.parseInline(label);
   .tabs-group:has(> .tab-bar > .tab-input:nth-of-type(11):checked) > .tab-panel:nth-of-type(11) { display: block; }
   .tabs-group:has(> .tab-bar > .tab-input:nth-of-type(12):checked) > .tab-panel:nth-of-type(12) { display: block; }
 
-  /* 0.25rem < container's rounded-md (0.375rem): label bg covers the container's clip area */
   /* flex-grow: 1 fills remaining bar space, no separate spacer needed */
   .tab-label {
     border-radius: 0.25rem 0.25rem 0 0;
@@ -128,6 +132,8 @@ const markdownifiedLabel = remark.parseInline(label);
     @apply font-bold;
     background-color: var(--tabs-active-bg, #ffffff);
     color: var(--tabs-active-color, #111827);
+    /* top and side border without a bottom one; inset, so the tab doesn't change width when selected */
+    box-shadow: inset 1px 0 0 var(--tabs-border, #e5e7eb), inset -1px 0 0 var(--tabs-border, #e5e7eb), inset 0 1px 0 var(--tabs-border, #e5e7eb);
     margin-top: 0;
     margin-bottom: 0;
   }

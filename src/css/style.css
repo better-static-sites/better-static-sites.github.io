@@ -638,10 +638,6 @@ html.dark .tabs-group {
   --tabs-active-bg:    var(--bg);
   --tabs-active-color: var(--accent);
 }
-/* tab-bar bg is hardcoded in the component and bypasses the CSS variable — override directly */
-html.dark .tab-bar {
-  background-color: var(--bg-alt);
-}
 
 /* steps theme override -- purple light, orange dark */
 .steps-container {
