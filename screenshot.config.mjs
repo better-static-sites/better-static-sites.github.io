@@ -9,7 +9,7 @@ export default {
   darkMode: 'class',
 
   chrome: {
-    style:    'golden-gate',
+    style:    'macos',
     renderIn: 'css',
     showUrl:  true,
     theme:    'light',

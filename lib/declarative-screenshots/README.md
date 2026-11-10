@@ -30,7 +30,7 @@ npm install astro-better-declarative-screenshots
 
 ### Screenshot generation
 
-Install in a `screenshots/` subdirectory of your Astro project (keeps Playwright out of your main `node_modules`):
+The generator requires Node.js 20.9 or later. Install in a `screenshots/` subdirectory of your Astro project (keeps Playwright out of your main `node_modules`):
 
 ```sh
 mkdir screenshots && cd screenshots

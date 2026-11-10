@@ -8,6 +8,8 @@ CLI that generates the screenshot PNGs consumed by astro-better-declarative-scre
 npm install astro-better-generate-screenshots
 ```
 
+Requires Node.js 20.9 or later.
+
 ## What it does
 
 - Starts Docker and captures pages with Playwright WebKit
