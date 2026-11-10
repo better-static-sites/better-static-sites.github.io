@@ -1,6 +1,6 @@
 {
   "name": "astro-better-generate-screenshots",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "CLI that generates screenshot PNGs for astro-better-declarative-screenshots",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "pngjs": "^7.0.0",
     "glob": "^14.0.0",
     "zod": "^3.23.0",
-    "astro-better-declarative-screenshots": "^0.5.0"
+    "astro-better-declarative-screenshots": "^0.6.0"
   },
   "peerDependencies": {
     "astro": ">=4.0.0"

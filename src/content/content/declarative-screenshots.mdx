@@ -3,8 +3,8 @@ title: Declarative Screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
 versions:
-  astro-better-declarative-screenshots: "0.5.0"
-  astro-better-generate-screenshots: "0.6.0"
+  astro-better-declarative-screenshots: "0.6.0"
+  astro-better-generate-screenshots: "0.7.0"
 badges: ["component", "tool"]
 ---
 
@@ -134,7 +134,7 @@ export default {
   darkMode: 'class',
 
   chrome: {
-    style:    'golden-gate',
+    style:    'macos',
     renderIn: 'css',
     showUrl:  true,
     theme:    'light',
@@ -157,6 +157,25 @@ export default {
 The `chrome.baseUrl` substitution makes the URL bar show `better-static-sites.github.io/docs/...`
 instead of `localhost:4000/docs/...` in the rendered screenshot. To show the same text for
 every screenshot, such as a host name, set `chrome.url` instead.
+
+### Address bar text
+
+By default, the address bar shows the screenshot's `url` as written, after the `chrome.baseUrl` substitution. Four `chrome` settings trim the text:
+
+| Setting | Default | Effect |
+|---------|---------|--------|
+| `showHost` | `true` | `false` shows only the path. The host leaves full URLs, and `chrome.baseUrl` no longer applies to the address bar. |
+| `showQuery` | `true` | `false` drops the query string. |
+| `showHash` | `true` | `false` drops the hash. |
+| `shortenIds` | `false` | `true` shortens each UUID to the first 8 characters, followed by `...`. |
+
+With `showHost`, `showQuery`, and `shortenIds` set, `http://localhost:9011/admin/tenant/edit/30663132-6464-6665-3032-326466613934?tenantId=1#email` shows as `/admin/tenant/edit/30663132...#email`. Set `showHash: false` as well to show `/admin/tenant/edit/30663132...`. Text longer than 72 characters ends in `...`. `chrome.url` replaces the text on every screenshot, so these settings don't apply when `chrome.url` is set.
+
+A screenshot can override each of the four settings with a prop of the same name, for example in a tutorial where the reader needs the full query string:
+
+````mdx escape
+<Screenshot url="/oauth2/authorize?client_id=abc&response_type=code" showQuery />
+````
 
 ### Consistent rendering across operating systems
 
@@ -439,6 +458,10 @@ jobs:
 | `crop` | `string` | — | CSS selector for the part of the page to crop the image to; covers every matching element and overrides `fullPage` |
 | `cropPadding` | `number` | `16` | Pixels of space kept around the cropped area |
 | `chrome` | `boolean` | `true`, `false` when cropped | Draw the window chrome around the image |
+| `showHost` | `boolean` | `chrome.showHost` from config | Show the host in the address bar |
+| `showQuery` | `boolean` | `chrome.showQuery` from config | Show the query string in the address bar |
+| `showHash` | `boolean` | `chrome.showHash` from config | Show the hash in the address bar |
+| `shortenIds` | `boolean` | `chrome.shortenIds` from config | Shorten UUIDs in the address bar |
 
 Filenames are derived from the URL path and highlight selectors. `/docs/ui/tables` with a
 `.abt-grid-table` highlight becomes `docs-ui-tables-abt-grid-table.png`. Pass an explicit
@@ -462,11 +485,12 @@ The `chrome.style` option in `screenshot.config.mjs` controls the window frame r
 
 | Style | Description |
 |-------|-------------|
-| `golden-gate` | macOS 26 Liquid Glass-inspired style |
-| `safari-macos` | Classic macOS Safari toolbar |
+| `macos` | macOS Safari toolbar with traffic lights. The default |
 | `linux` | GNOME-style titlebar |
 | `windows` | Windows 11 flat titlebar with rectangular controls |
 | `none` | No chrome; image rendered directly |
+
+On screens 640 px wide or narrower, every style shows a compact address bar in place of the full window frame, which leaves more room for the image. The compact bar drops the window controls, and drops the whole bar when `showUrl` is `false`. Only `renderIn: 'css'` adapts this way, because `renderIn: 'png'` draws the frame into the image.
 
 <Admonition type="tip" title="renderIn: css vs png">
   `renderIn: 'css'` renders the window chrome as HTML/CSS in the `Screenshot` component -- no

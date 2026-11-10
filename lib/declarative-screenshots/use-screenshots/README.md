@@ -13,6 +13,8 @@ npm install astro-better-declarative-screenshots
 - Declare screenshots and highlights inline in MDX
 - Reads committed PNG files and renders them at build time
 - Shows the light or dark image that matches your site's theme
+- Trims the address bar to the path, without the query string, hash, or full UUIDs, for every screenshot or one at a time
+- Shows a compact address bar in place of the window frame on narrow screens
 - Pairs with `astro-better-generate-screenshots`, which produces the PNGs
 
 ## Documentation

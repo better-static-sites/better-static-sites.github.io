@@ -63,7 +63,7 @@ export default {
   browser: 'webkit',
 
   chrome: {
-    style:    'golden-gate', // macOS-style window chrome rendered in CSS
+    style:    'macos', // macOS-style window chrome rendered in CSS
     renderIn: 'css',
     showUrl:  true,
     theme:    'light',
@@ -193,6 +193,10 @@ Commit the generated PNG files alongside your source. The `<Screenshot>` compone
 | `crop` | `string` | — | CSS selector for the part of the page to crop the image to; covers every matching element and overrides `fullPage` |
 | `cropPadding` | `number` | `16` | Pixels of space kept around the cropped area |
 | `chrome` | `boolean` | `true`, `false` when cropped | Draw the window chrome around the image |
+| `showHost` | `boolean` | `chrome.showHost` from config | Show the host in the address bar |
+| `showQuery` | `boolean` | `chrome.showQuery` from config | Show the query string in the address bar |
+| `showHash` | `boolean` | `chrome.showHash` from config | Show the hash in the address bar |
+| `shortenIds` | `boolean` | `chrome.shortenIds` from config | Shorten UUIDs in the address bar to their first 8 characters |
 
 Filenames are derived from the URL path and highlight selectors:
 
@@ -283,9 +287,8 @@ export default {
   darkMode: 'media',
 
   chrome: {
-    // window frame style: 'safari-macos' | 'golden-gate' | 'linux' | 'windows' | 'none'
-    // 'golden-gate' is the macOS 26 Liquid Glass-inspired style
-    style: 'golden-gate',
+    // window frame style: 'macos' | 'linux' | 'windows' | 'none'
+    style: 'macos',
 
     // 'css' renders the chrome as HTML/CSS in the Screenshot component (recommended)
     // 'png' composites the chrome into the PNG at capture time (legacy)
@@ -304,6 +307,18 @@ export default {
 
     // fixed text for the address bar, such as a host name, in place of each page's URL
     url: 'app.example.com',
+
+    // false shows only the path, without the host or chrome.baseUrl; a screenshot's showHost prop overrides
+    showHost: true,
+
+    // false drops the query string; a screenshot's showQuery prop overrides
+    showQuery: true,
+
+    // false drops the hash; a screenshot's showHash prop overrides
+    showHash: true,
+
+    // true shortens UUIDs to their first 8 characters; a screenshot's shortenIds prop overrides
+    shortenIds: false,
 
     // png-only: drop shadow blur radius in pixels (0 to disable)
     shadowBlur: 40,

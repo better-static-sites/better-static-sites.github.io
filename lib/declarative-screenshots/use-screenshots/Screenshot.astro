@@ -1,6 +1,7 @@
 ---
 import { deriveName, colorSchemeVariants } from './src/naming.mjs';
 import { loadConfig } from './src/config.mjs';
+import { displayUrl } from './src/display-url.mjs';
 import { existsSync } from 'fs';
 import path from 'path';
 
@@ -36,6 +37,14 @@ interface Props {
   clearBrowserBeforeCapture?: boolean;
   /** draw the window chrome around the image (default true, false when cropped) */
   chrome?: boolean;
+  /** show the host in the address bar (default: config chrome.showHost) */
+  showHost?: boolean;
+  /** show the query string in the address bar (default: config chrome.showQuery) */
+  showQuery?: boolean;
+  /** show the hash in the address bar (default: config chrome.showHash) */
+  showHash?: boolean;
+  /** shorten UUIDs in the address bar (default: config chrome.shortenIds) */
+  shortenIds?: boolean;
   /** outputDir relative to project root; falls back to env SCREENSHOTS_DIR or 'src/assets/screenshots' */
   outputDir?: string;
 }
@@ -53,6 +62,10 @@ const {
   cropPadding,
   clearBrowserBeforeCapture = false,
   chrome: showChrome = !crop,
+  showHost,
+  showQuery,
+  showHash,
+  shortenIds,
   outputDir,
 } = Astro.props;
 
@@ -85,7 +98,7 @@ const highlights = parseHighlights(slotHtml);
 const name = id ?? deriveName(url, highlights);
 
 let resolvedOutputDir = outputDir ?? process.env.SCREENSHOTS_DIR;
-let chrome = { style: 'safari-macos', renderIn: 'png', showUrl: true, theme: 'light',
+let chrome = { style: 'macos', renderIn: 'png', showUrl: true, theme: 'light',
                shadowBlur: 40, shadowPadding: 48, baseUrl: undefined as string | undefined,
                url: undefined as string | undefined };
 let configBaseUrl = '';
@@ -128,14 +141,7 @@ if (!fileExists && strict) {
 const specData = JSON.stringify({ url, highlights, width, height, fullPage, maxHeight, colorScheme, crop, cropPadding, chrome: showChrome, clearBrowserBeforeCapture });
 
 const cssChrome = showChrome && chrome.renderIn === 'css' && chrome.style !== 'none';
-let displayUrl = url;
-if (chrome.baseUrl && displayUrl.startsWith('/')) {
-  displayUrl = chrome.baseUrl.replace(/\/$/, '') + displayUrl;
-} else if (chrome.baseUrl && configBaseUrl && displayUrl.startsWith(configBaseUrl)) {
-  displayUrl = chrome.baseUrl.replace(/\/$/, '') + displayUrl.slice(configBaseUrl.length);
-}
-if (chrome.url) displayUrl = chrome.url;
-if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
+const shownUrl = displayUrl(url, chrome, configBaseUrl, { showHost, showQuery, showHash, shortenIds });
 ---
 
 <figure
@@ -154,7 +160,7 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
         </div>
         {chrome.showUrl && (
           <div class="sc-urlbar" aria-hidden="true">
-            <span class="sc-url">{displayUrl}</span>
+            <span class="sc-url">{shownUrl}</span>
           </div>
         )}
       </div>
@@ -312,8 +318,8 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
     line-height: 1.5;
   }
 
-  /* ── safari-macos light ── */
-  .sc-window[data-chrome="safari-macos"] {
+  /* ── macos light ── */
+  .sc-window[data-chrome="macos"] {
     --sc-r: 10px;
     --sc-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08),
                  0 6px 8px rgba(0, 0, 0, 0.05),
@@ -329,10 +335,10 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
     --sc-tl-zoom: #28c840;
   }
 
-  /* ── safari-macos dark ── */
-  .sc-window[data-chrome="safari-macos"][data-theme="dark"],
-  :root[data-theme="dark"] .sc-window[data-chrome="safari-macos"],
-  :root.dark .sc-window[data-chrome="safari-macos"] {
+  /* ── macos dark ── */
+  .sc-window[data-chrome="macos"][data-theme="dark"],
+  :root[data-theme="dark"] .sc-window[data-chrome="macos"],
+  :root.dark .sc-window[data-chrome="macos"] {
     --sc-bar-bg: linear-gradient(to bottom, #323232, #2c2c2c);
     --sc-bar-sep: #1a1a1a;
     --sc-url-bg: #454547;
@@ -341,7 +347,7 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="safari-macos"]:not([data-theme="light"]) {
+    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="macos"]:not([data-theme="light"]) {
       --sc-bar-bg: linear-gradient(to bottom, #323232, #2c2c2c);
       --sc-bar-sep: #1a1a1a;
       --sc-url-bg: #454547;
@@ -464,47 +470,13 @@ if (displayUrl.length > 72) displayUrl = displayUrl.slice(0, 69) + '...';
     :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="windows"]:not([data-theme="light"]) .sc-tl { color: #c0c0c0; }
   }
 
-  /* ── golden-gate light ── */
-  .sc-window[data-chrome="golden-gate"] {
-    --sc-r: 14px;
-    --sc-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.10),
-                 0 8px 10px rgba(0, 0, 0, 0.06),
-                 0 22px 22px rgba(0, 0, 0, 0.08),
-                 0 48px 36px rgba(0, 0, 0, 0.06);
-    --sc-bar-bg: linear-gradient(to bottom, #efefef, #e8e8e8);
-    --sc-bar-sep: rgba(0, 0, 0, 0.12);
-    --sc-url-bg: rgba(255, 255, 255, 0.88);
-    --sc-url-border: rgba(0, 0, 0, 0.14);
-    --sc-url-text: #666666;
-    --sc-tl-close: #e8524a;
-    --sc-tl-min: #e6be46;
-    --sc-tl-zoom: #5cc84e;
-  }
-
-  /* ── golden-gate dark ── */
-  .sc-window[data-chrome="golden-gate"][data-theme="dark"],
-  :root[data-theme="dark"] .sc-window[data-chrome="golden-gate"],
-  :root.dark .sc-window[data-chrome="golden-gate"] {
-    --sc-bar-bg: linear-gradient(to bottom, #2d2d2d, #272727);
-    --sc-bar-sep: rgba(255, 255, 255, 0.08);
-    --sc-url-bg: rgba(56, 56, 58, 0.9);
-    --sc-url-border: rgba(255, 255, 255, 0.1);
-    --sc-url-text: #e0e0e0;
-    --sc-tl-close: #c94847;
-    --sc-tl-min: #b89b38;
-    --sc-tl-zoom: #4ba043;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]):not(.light) [data-sc-media] .sc-window[data-chrome="golden-gate"]:not([data-theme="light"]) {
-      --sc-bar-bg: linear-gradient(to bottom, #2d2d2d, #272727);
-      --sc-bar-sep: rgba(255, 255, 255, 0.08);
-      --sc-url-bg: rgba(56, 56, 58, 0.9);
-      --sc-url-border: rgba(255, 255, 255, 0.1);
-      --sc-url-text: #e0e0e0;
-      --sc-tl-close: #c94847;
-      --sc-tl-min: #b89b38;
-      --sc-tl-zoom: #4ba043;
-    }
+  /* ── narrow screens: just a compact url pill, for every style ── */
+  @media (max-width: 640px) {
+    .sc-window[data-chrome] { --sc-r: 8px; }
+    .sc-window[data-chrome] .sc-bar { height: 30px; padding: 0 6px; }
+    .sc-window[data-chrome] .sc-bar:not(:has(.sc-urlbar)) { display: none; }
+    .sc-window[data-chrome] .sc-lights { display: none; }
+    .sc-window[data-chrome] .sc-urlbar { margin: 0; height: 20px; border-radius: 10px; padding: 0 8px; }
+    .sc-window[data-chrome] .sc-url { font-size: 11px; }
   }
 </style>

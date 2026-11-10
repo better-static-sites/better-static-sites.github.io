@@ -112,9 +112,13 @@ Window chrome composited over each screenshot.
 
 ```js
 chrome: {
-  style:         'safari-macos',  // or 'none'
+  style:         'macos',
   showUrl:       true,
-  dark:          false,
+  showHost:      true,
+  showQuery:     true,
+  showHash:      true,
+  shortenIds:    false,
+  theme:         'light',
   shadowBlur:    40,
   shadowPadding: 48,
 }
@@ -122,16 +126,33 @@ chrome: {
 
 ### `chrome.style`
 
-`'safari-macos'` renders a macOS Safari-style title bar with traffic lights and a URL bar.
+`'macos'` renders a macOS Safari-style title bar with traffic lights and a URL bar.
+`'linux'` renders a GNOME-style title bar, and `'windows'` renders a Windows 11 title bar.
 `'none'` skips chrome entirely.
 
 ### `chrome.showUrl`
 
 Whether to render the URL bar inside the chrome.
 
-### `chrome.dark`
+### `chrome.showHost`
 
-Use dark chrome regardless of page color scheme.
+Set to `false` to show only the path in the URL bar. The host leaves full URLs, and `chrome.baseUrl` no longer applies to the URL bar. A screenshot's `showHost` prop overrides this setting.
+
+### `chrome.showQuery`
+
+Set to `false` to drop the query string from the URL bar. A screenshot's `showQuery` prop overrides this setting.
+
+### `chrome.showHash`
+
+Set to `false` to drop the hash from the URL bar. A screenshot's `showHash` prop overrides this setting.
+
+### `chrome.shortenIds`
+
+Set to `true` to shorten each UUID in the URL bar to its first 8 characters, followed by `...`. A screenshot's `shortenIds` prop overrides this setting.
+
+### `chrome.theme`
+
+Light or dark chrome: `'light'` or `'dark'`. A screenshot with a dark image, from `colorScheme: 'both'`, ignores this setting and matches the frame to the image shown.
 
 ### `chrome.shadowBlur`
 
