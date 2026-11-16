@@ -20,11 +20,12 @@ Make sure the runtime is running before generating screenshots.
 cd screenshots
 npm install
 npx playwright install webkit --with-deps
+cd ..
 ```
 
 ## Generating screenshots
 
-From the repo root:
+Run from the repo root, not from `screenshots/`. Only the root `package.json` defines the script:
 
 ```sh
 npm run screenshots
