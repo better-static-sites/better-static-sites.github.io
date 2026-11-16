@@ -172,6 +172,14 @@ To regenerate a single screenshot by name or URL substring:
 npm run screenshots -- --filter groups
 ```
 
+To capture faster, split the run into shards that run in parallel. Each shard runs its own Docker Compose project and browser container:
+
+```sh
+npm run screenshots -- --shards 4
+```
+
+Each shard needs its own host ports. For the config that sets them, see [Run Shards in Parallel](https://better-static-sites.github.io/content/declarative-screenshots#run-shards-in-parallel).
+
 ### 4. Commit the PNGs
 
 Commit the generated PNG files alongside your source. The `<Screenshot>` component renders them as `<img>` tags at build time — no Playwright or Docker involved.
@@ -227,13 +235,15 @@ Both commands are provided by `astro-better-generate-screenshots`.
 ### `take-screenshots`
 
 ```sh
-npx take-screenshots [--filter <string>] [--strict]
+npx take-screenshots [--filter <string>] [--strict] [--shards <count> | --shard <index>/<count>]
 ```
 
 Captures all screenshots and writes PNGs to `outputDir`.
 
-- `--filter <string>` — only capture screenshots whose name or URL contains this string
-- `--strict` — exit non-zero if any screenshot fails to capture
+- `--filter <string>`: only capture screenshots whose name or URL contains this string
+- `--strict`: exit non-zero if any screenshot fails to capture
+- `--shards <count>`: run `<count>` shards in parallel, each with its own Docker Compose project, and exit non-zero if any shard fails
+- `--shard <index>/<count>`: run one shard, such as `2/4`, for example one CI job per shard
 
 ### `check-screenshots`
 
@@ -394,8 +404,10 @@ export default {
 
 ## Environment variables
 
-- `SCREENSHOTS_STRICT=true` — `<Screenshot>` throws at build time when the PNG is missing, instead of rendering a placeholder
-- `SCREENSHOTS_DIR` — override `outputDir` without changing the config file
+- `SCREENSHOTS_STRICT=true`: `<Screenshot>` throws at build time when the PNG is missing, instead of rendering a placeholder
+- `SCREENSHOTS_DIR`: override `outputDir` without changing the config file
+- `SCREENSHOT_SHARD_INDEX`, `SCREENSHOT_SHARD_COUNT`: set by the CLI in a sharded run before the config loads, with an index that starts at `0`
+- `COMPOSE_PROJECT_NAME`: in a sharded run, the CLI appends `-shard-<index>` to this name, or to the compose file's folder name when unset
 
 ## License
 

@@ -4,7 +4,7 @@ description: Declarative, Docker-backed screenshots for Astro docs. Define scree
 order: 9
 versions:
   astro-better-declarative-screenshots: "0.6.0"
-  astro-better-generate-screenshots: "0.7.1"
+  astro-better-generate-screenshots: "0.8.0"
 badges: ["component", "tool"]
 ---
 
@@ -358,6 +358,54 @@ npm run screenshots -- --filter tables
 
 Commit the generated PNGs alongside your source. Subsequent docs builds read them
 from disk -- no Playwright or Docker involved.
+
+### Run Shards in Parallel
+
+A run captures one screenshot at a time. To use more of your machine, split the run into shards that run in parallel:
+
+```shell-session
+npm run screenshots -- --shards 4
+```
+
+The CLI starts one copy of itself for each shard. Each shard takes whole source files, so the screenshots on one page run in one shard, in the same order as a run without shards. The CLI gives the largest files out first, each to the shard with the fewest captures so far.
+
+Each shard starts its own browser container and its own Docker Compose project. The project name is the compose file's folder plus `-shard-1`, `-shard-2`, and so on. Every output line starts with the shard, such as `[shard 2/4]`. The command exits with code `1` when any shard fails.
+
+Two shards can't publish the same host port. Before the config loads, the CLI sets `SCREENSHOT_SHARD_INDEX` to the shard's zero-based index and `SCREENSHOT_SHARD_COUNT` to the number of shards. Use the index to give each shard its own port:
+
+```js title="screenshot.config.mjs"
+const port = 9011 + 10 * Number(process.env.SCREENSHOT_SHARD_INDEX ?? 0);
+
+export default {
+  baseUrl: `http://localhost:${port}`,
+  docker: {
+    compose: 'screenshots/docker-compose.yml',
+    healthcheck: { url: `http://localhost:${port}/api/status` },
+    env: { APP_PORT: String(port) },
+  },
+};
+```
+
+Then read the port in the compose file:
+
+```yaml title="screenshots/docker-compose.yml"
+services:
+  app:
+    ports:
+      - "${APP_PORT:-9011}:9011"
+```
+
+When a `Screenshot` `url` includes a host and port, such as `http://localhost:9012/setup`, every shard opens that port. Use a path such as `/setup` instead, so the URL resolves against the shard's `baseUrl`.
+
+To run one shard on its own, such as one CI job for each shard, pass `--shard <index>/<count>`. The index starts at `1`:
+
+```shell-session
+npm run screenshots -- --shard 2/4
+```
+
+<Admonition type="caution" title="Each shard runs a full Docker stack">
+  Four shards start four copies of every service in your compose file. Check that Docker has enough memory for every shard before you raise the count.
+</Admonition>
 
 ## CI: checking for drift
 

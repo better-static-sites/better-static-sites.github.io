@@ -17,6 +17,7 @@ Requires Node.js 20.9 or later.
 - Captures light and dark versions of each page with `colorScheme: 'both'`
 - Grows full-page captures to the page height, up to a cap you set
 - Diffs against committed PNGs to detect drift
+- Splits a run into parallel shards with `--shards <count>`, each with its own Docker Compose project
 - Optionally renders in a pinned Linux browser container, so macOS, Linux, and CI produce identical images
 
 ## Consistent rendering

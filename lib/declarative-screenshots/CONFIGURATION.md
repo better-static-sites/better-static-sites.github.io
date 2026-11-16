@@ -89,7 +89,7 @@ Per-screenshot overrides are available via the `<Screenshot width height />` pro
 
 ### `minWindow` / `maxWindow`
 
-Viewport size guardrails. Any per-screenshot `width`/`height` values are clamped to these bounds. A full-page capture can grow past `maxWindow.height`, up to `maxFullPage.height`.
+Viewport size guardrails. Any per-screenshot `width`/`height` values are clamped to these bounds. A full-page capture can grow past `maxWindow.height`, up to `maxFullPage.height`. When a screenshot sets `height` above `1600`, raise `maxWindow.height`, or the capture comes out shorter than the prop asks for.
 
 ```js
 minWindow: { width: 640, height: 400 },
@@ -245,6 +245,23 @@ Polling interval in milliseconds. Default: `2000`.
 ### `docker.env`
 
 Extra environment variables merged into the container environment when running `docker compose up`.
+
+In a sharded run, every shard starts its own copy of the compose project, so two shards can't publish the same host port. Compute the port from `SCREENSHOT_SHARD_INDEX`, which the CLI sets before the config loads, and pass the port to compose:
+
+```js
+const port = 9011 + 10 * Number(process.env.SCREENSHOT_SHARD_INDEX ?? 0);
+
+export default {
+  baseUrl: `http://localhost:${port}`,
+  docker: {
+    compose: 'docker-compose.yml',
+    healthcheck: { url: `http://localhost:${port}/api/status` },
+    env: { APP_PORT: String(port) },
+  },
+};
+```
+
+The compose file then publishes `"${APP_PORT:-9011}:9011"`.
 
 ---
 
