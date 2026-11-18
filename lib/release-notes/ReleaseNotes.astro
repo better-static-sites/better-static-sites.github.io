@@ -56,11 +56,12 @@ const {
 
 const mergedComponents = { ReleaseNotesItem, ...extraComponents };
 
-// generate filter CSS from the configured categories
+// generate filter CSS from the configured categories; a chip matches an item's category or one of its tags
+// the show rules carry an id, so they outrank the hide rule without !important
 const filterCSS = [
-  '.release-container:has(.filter-input:checked) .issue-row { display: none !important; }',
+  '.release-container:has(.filter-input:checked) .issue-row { display: none; }',
   ...categories.map(cat =>
-    `.release-container:has(#toggle-${cat.id}:checked) [data-category="${cat.id}"] { display: flex !important; }`
+    `.release-container:has(#toggle-${cat.id}:checked) .issue-row:is([data-category="${cat.id}"], [data-tags~="${cat.id}"]) { display: flex; }`
   ),
 ].join('\n');
 ---

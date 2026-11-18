@@ -1,0 +1,62 @@
+{
+  "name": "astro-better-glossary",
+  "version": "0.1.0",
+  "description": "JSON glossary for Astro: [[term]] links in MDX with accessible definition tooltips, a glossary page component, and build errors for unknown terms",
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "astro-component",
+    "glossary",
+    "tooltip",
+    "remark",
+    "satteri"
+  ],
+  "license": "MIT",
+  "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/better-static-sites/better-static-sites.github.io.git",
+    "directory": "lib/glossary"
+  },
+  "homepage": "https://better-static-sites.github.io",
+  "bugs": {
+    "url": "https://github.com/better-static-sites/better-static-sites.github.io/issues"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs",
+    "./remark": "./src/remark.mjs",
+    "./satteri": "./src/satteri.mjs",
+    "./data": "./src/data.mjs",
+    "./GlossaryTerm.astro": "./GlossaryTerm.astro",
+    "./Glossary.astro": "./Glossary.astro",
+    "./styles.css": "./src/styles.css"
+  },
+  "files": [
+    "index.mjs",
+    "GlossaryTerm.astro",
+    "Glossary.astro",
+    "src/"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "github-slugger": "^2.0.0",
+    "marked": "^17.0.0 || ^18.0.0",
+    "unist-util-visit-parents": "^6.0.1"
+  },
+  "peerDependencies": {
+    "astro": ">=5.0.0",
+    "satteri": ">=0.10.0 <0.11.0"
+  },
+  "peerDependenciesMeta": {
+    "satteri": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "satteri": "^0.10.5"
+  }
+}

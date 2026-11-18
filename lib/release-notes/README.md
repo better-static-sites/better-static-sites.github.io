@@ -171,6 +171,43 @@ const MY_CATEGORIES = [
 
 Category IDs must match the `category` prop values used in your MDX files.
 
+## Filter by tag
+
+A chip also matches items that list its id in `tags`, so one item can appear under more than one filter. Use tags for a filter that cuts across categories, such as breaking changes:
+
+```js
+const categories = [
+  ...MY_CATEGORIES,
+  { id: 'breaking', label: 'Breaking Change', color: '#dc2626' },
+];
+```
+
+```mdx
+<ReleaseNotesItem category="fix" tags={['breaking']}>
+  Removed the legacy login endpoint.
+</ReleaseNotesItem>
+```
+
+Checking **Breaking Change** shows every item tagged `breaking`, whatever its category. Checking several chips shows the items that match any of them.
+
+## Content under the badge
+
+Content in the item's `badge` slot stacks under the category badge, centered in the badge column. Use the slot for a short marker, such as a "Breaking change" label. In a wrapper component, combine the slot with `tags`, so a filter chip finds the same items:
+
+```astro
+---
+// src/components/MyReleaseNotesItem.astro
+import { ReleaseNotesItem } from 'astro-better-release-notes';
+const { breaking, ...rest } = Astro.props;
+---
+<ReleaseNotesItem {...rest} tags={breaking ? ['breaking'] : undefined}>
+  {breaking && <p slot="badge" class="breaking-label">Breaking change</p>}
+  <slot />
+</ReleaseNotesItem>
+```
+
+The badge column removes the outer margin from slotted elements, so a `<p>` doesn't pick up paragraph spacing from your prose styles. The row id includes the slot's content, so adding a marker to an item changes that item's deep link.
+
 ## Custom ReleaseNotesItem
 
 To inject project-specific behavior (e.g. a fixed issue base URL), pass a wrapper component via the `components` prop:
@@ -221,6 +258,7 @@ import { getCategoryColor, getCategoryLabel, DEFAULT_CATEGORIES } from 'astro-be
 | `issueBaseUrl` | `string` | Base URL for issue links (no default) |
 | `categoryColor` | `string` | CSS color for the badge (default `#71717a`) |
 | `categoryLabel` | `string` | Human label for the badge (default: generated from id) |
+| `tags` | `string[]` | Extra filter ids the item matches, besides its category. See [Filter by tag](#filter-by-tag). |
 
 ## Injecting category color and label automatically
 
@@ -247,6 +285,13 @@ import { ReleaseNotesSelector } from 'astro-better-release-notes';
 - Each version's description is a native `<details>`, so it opens with Enter or Space and announces its state without JavaScript, and its text stays in the HTML for search, find-in-page, and LLM tools. A visually hidden version number gives every summary a unique accessible name, such as "Summary of version 1.2.3".
 - Transitions, the summary chevron rotation, and the badge hover scale are disabled under `prefers-reduced-motion: reduce`.
 - The package ships its own `.rn-sr-only` class, so it doesn't depend on a host `sr-only` utility.
+
+## Upgrading to 0.4.0
+
+- The badge now sits in a `<div class="issue-aside">` column, with the new `badge` slot under it. Update CSS that targets `.issue-row > .issue-badge`.
+- Items take a `tags` prop, and filter chips match an item's category or any of its tags.
+- The filter rules and the selected-chip styles no longer use `!important`. The show rules still outrank the hide rule, because they select by id. A site rule that sets `display` on `.issue-row` with an id, or with four or more classes, can now affect filtering.
+- Row ids include the `badge` slot's content, followed by the default slot's content. A wrapper that used to put a marker at the start of the default slot keeps its ids after it moves the marker to the `badge` slot.
 
 ## Upgrading to 0.3.2
 

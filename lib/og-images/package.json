@@ -1,0 +1,47 @@
+{
+  "name": "astro-better-og-images",
+  "version": "0.1.0",
+  "description": "Astro integration that generates Open Graph title cards and resized social preview images at build time, with sharp and no browser",
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "open-graph",
+    "og-image",
+    "social-preview",
+    "sharp"
+  ],
+  "license": "MIT",
+  "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/better-static-sites/better-static-sites.github.io.git",
+    "directory": "lib/og-images"
+  },
+  "homepage": "https://better-static-sites.github.io",
+  "bugs": {
+    "url": "https://github.com/better-static-sites/better-static-sites.github.io/issues"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs",
+    "./runtime": "./src/runtime.mjs",
+    "./render": "./src/render.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "src/"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "opentype.js": "^2.0.0"
+  },
+  "peerDependencies": {
+    "astro": ">=4.0.0",
+    "sharp": ">=0.33.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "JSON Web Token": { "definition": "A signed token. See [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519).", "link": "/tokens", "abbreviations": ["JWT"] },
+  "Tenant": { "definition": "An isolated set of users.", "link": "/tenants", "aliases": ["tenants"], "tier": "paid" }
+}

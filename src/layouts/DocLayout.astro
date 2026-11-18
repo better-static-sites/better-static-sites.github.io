@@ -6,6 +6,7 @@ import InlineTOC from 'astro-better-toc/InlineTOC.astro';
 import CopyCodeButton from 'astro-better-code-blocks/CopyCodeButton.astro';
 import 'src/css/style.css';
 import { getCollection } from 'astro:content';
+import { getOgImage } from 'astro-better-og-images/runtime';
 
 interface Props {
   title: string;
@@ -24,6 +25,12 @@ const editUrl = entryId ? `${GITHUB_REPO}/blob/main/src/content/${entryId}.mdx` 
 const mdUrl = slug ? `/${slug}.md` : null;
 
 const docsCollection = await getCollection('docs');
+
+// the card label is the section's title, such as "Build Tools"
+const folder = slug?.includes('/') ? slug.split('/')[0] : undefined;
+const section = folder && docsCollection.find(e => e.id === folder || e.id === `${folder}/index`)?.data.title;
+const og = await getOgImage({ title, label: section || '' });
+const ogUrl = new URL(og.url, Astro.site ?? Astro.url);
 ---
 <!doctype html>
 <html lang="en">
@@ -34,6 +41,16 @@ const docsCollection = await getCollection('docs');
     <meta name="color-scheme" content="light dark" />
     <title>{title} | Better Static Sites</title>
     {description && <meta name="description" content={description} />}
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={ogUrl} />
+    {og.type && <meta property="og:image:type" content={og.type} />}
+    {og.width && <meta property="og:image:width" content={String(og.width)} />}
+    {og.height && <meta property="og:image:height" content={String(og.height)} />}
+    <meta property="og:image:alt" content={og.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={og.alt} />
     <link rel="apple-touch-icon" sizes="180x180" href={`/apple-touch-icon.png`}>
     <link rel="icon" type="image/png" sizes="32x32" href={`/favicon-32x32.png`}>
     <link rel="icon" type="image/png" sizes="16x16" href={`/favicon-16x16.png`}>

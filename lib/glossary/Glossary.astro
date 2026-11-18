@@ -1,0 +1,45 @@
+---
+/**
+ * Every glossary entry, grouped by first letter. Pass a function as the child to
+ * render extra entry fields at the bottom of each card:
+ *
+ *   <Glossary>{(entry) => entry.status && <StatusBadge status={entry.status} />}</Glossary>
+ */
+import { entries } from './src/data.mjs';
+import './src/styles.css';
+
+interface Props {
+  /** extra class for each letter's list, such as `not-prose` under Tailwind Typography */
+  listClass?: string;
+}
+
+const { listClass } = Astro.props;
+const groups = Object.entries(Object.groupBy(entries, e => e.id.replace(/[^a-z0-9]/gi, '').charAt(0).toUpperCase()));
+const hasExtra = Astro.slots.has('default');
+const extras = new Map();
+for (const entry of entries) {
+  const html = hasExtra ? (await Astro.slots.render('default', [entry])).trim() : '';
+  if (html) extras.set(entry.id, html);
+}
+---
+{groups.map(([letter, group]) => (
+  <section class="glossary-letter">
+    <h2 id={`letter-${letter.toLowerCase()}`}>{letter}</h2>
+    <dl class:list={['glossary-list', listClass]}>
+      {group!.map(({ id, anchor, definitionHtml, link, abbreviations, aliases, standards }) => (
+        <div id={anchor} class="glossary-entry">
+          <dt class="glossary-entry-term"><a href={link}>{id}</a></dt>
+          <dd class="glossary-entry-definition" set:html={definitionHtml} />
+          {!!abbreviations?.length && <dd class="glossary-entry-meta">Abbreviation: {abbreviations.join(', ')}</dd>}
+          {!!aliases?.length && <dd class="glossary-entry-meta">Also called: {aliases.join(', ')}</dd>}
+          {!!standards?.length && (
+            <dd class="glossary-entry-meta">
+              Defined in: {standards.map((s, i) => <>{i > 0 && ', '}<a href={s.url}>{s.name}</a></>)}
+            </dd>
+          )}
+          {extras.has(id) && <dd class="glossary-entry-extra" set:html={extras.get(id)} />}
+        </div>
+      ))}
+    </dl>
+  </section>
+))}

@@ -214,14 +214,14 @@
 
 /* selected: tint + border + check so state isn't color-only; text mixes keep 4.5:1 */
 .filter-chip:has(input:checked) {
-  background-color: color-mix(in srgb, var(--cat-color) 18%, white) !important;
-  border-color: var(--cat-color) !important;
-  color: color-mix(in srgb, var(--cat-color) 45%, black) !important;
+  background-color: color-mix(in srgb, var(--cat-color) 18%, white);
+  border-color: var(--cat-color);
+  color: color-mix(in srgb, var(--cat-color) 45%, black);
 }
 
 .dark .filter-chip:has(input:checked) {
-  background-color: color-mix(in srgb, var(--cat-color) 18%, #1e293b) !important;
-  color: color-mix(in srgb, var(--cat-color) 60%, white) !important;
+  background-color: color-mix(in srgb, var(--cat-color) 18%, #1e293b);
+  color: color-mix(in srgb, var(--cat-color) 60%, white);
 }
 
 .filter-chip:has(input:checked)::before {
@@ -271,10 +271,22 @@
   border-color: rgba(148, 163, 184, 0.5);
 }
 
+/* the badge column: the badge, then anything in the item's badge slot */
+.issue-aside {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.issue-aside > :not(.issue-badge) {
+  margin: 0;
+}
+
 .issue-badge {
   width: 7rem;
   padding: 4px 8px;
-  flex-shrink: 0;
   text-align: center;
   font-size: 0.75rem;
   font-weight: 700;

@@ -9,11 +9,16 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { unified } from '@astrojs/markdown-remark';
 import { remarkMermaidSSR, mermaidTitleFix } from 'astro-better-mermaid';
+import glossary from 'astro-better-glossary';
+import { remarkGlossaryTerms } from 'astro-better-glossary/remark';
+import ogImages from 'astro-better-og-images';
+
+const glossaryTerms = { file: 'src/data/glossary.json', path: '/glossary' };
 
 const refsState = { refMap: null as any, brokenRefs: [] as string[], duplicates: [] as any[] };
 
 const markdownProcessor = unified({
-  remarkPlugins: [mermaidTitleFix, remarkMermaidSSR, remarkShellSession, [remarkAstroRef, { state: refsState }]],
+  remarkPlugins: [mermaidTitleFix, remarkMermaidSSR, remarkShellSession, [remarkAstroRef, { state: refsState }], [remarkGlossaryTerms, glossaryTerms]],
   rehypePlugins: [
     rehypeSlug,
     [rehypeAutolinkHeadings, { behavior: 'append', properties: { className: ['anchor-link'], ariaHidden: 'true', tabIndex: -1 }, content: [] }],
@@ -36,6 +41,12 @@ export default defineConfig({
     astroRefs({
       collections: [{ src: 'src/content/', base: '/' }],
       state: refsState,
+    }),
+    glossary(glossaryTerms),
+    ogImages({
+      siteName: 'Better Static Sites',
+      footer: 'better-static-sites.github.io',
+      colors: { background: '#0f0f0f', label: '#fb923c', bar: '#7c3aed' },
     }),
     genMarkdownPages({
       llmsTxtTitle: 'Better Static Sites docs',

@@ -1,0 +1,42 @@
+{
+  "Admonition": {
+    "definition": "A callout box that sets a note, tip, or warning apart from the surrounding text.",
+    "link": "/content/admonitions",
+    "aliases": ["callout", "aside"]
+  },
+  "Astro Integration": {
+    "definition": "A package that hooks into the Astro build to add pages, transform content, or change configuration.",
+    "link": "https://docs.astro.build/en/reference/integrations-reference/",
+    "aliases": ["integration", "integrations"]
+  },
+  "Glossary Term": {
+    "definition": "A term written as `[[term]]` in MDX that links to its page and shows its definition in a tooltip.",
+    "link": "/content/glossary",
+    "aliases": ["glossary terms"]
+  },
+  "llms.txt": {
+    "definition": "A plain-text index of a site's pages, written for language models and agents.",
+    "link": "/build-tools/gen-markdown-pages",
+    "standards": [{ "name": "llms.txt proposal", "url": "https://llmstxt.org/" }]
+  },
+  "MDX": {
+    "definition": "Markdown that can import and render components.",
+    "link": "https://mdxjs.com/",
+    "standards": [{ "name": "MDX", "url": "https://mdxjs.com/" }]
+  },
+  "Mermaid": {
+    "definition": "A text syntax for diagrams, such as flowcharts and sequence diagrams.",
+    "link": "/build-tools/mermaid"
+  },
+  "Open Graph": {
+    "definition": "Meta tags that tell social platforms and chat apps which title, description, and image to show in a link preview.",
+    "link": "/build-tools/og-images",
+    "abbreviations": ["OG"],
+    "standards": [{ "name": "The Open Graph protocol", "url": "https://ogp.me/" }]
+  },
+  "Sätteri": {
+    "definition": "A markdown processor for Astro, written in Rust, that runs plugins over the syntax tree.",
+    "link": "https://www.npmjs.com/package/satteri",
+    "aliases": ["Satteri"]
+  }
+}

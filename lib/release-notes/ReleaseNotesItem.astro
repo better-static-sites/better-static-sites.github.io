@@ -15,6 +15,8 @@ export interface Props {
   categoryColor?: string;
   // human-readable category label; if omitted, generated from id
   categoryLabel?: string;
+  // extra filter ids this item matches, besides its category
+  tags?: string[];
 }
 
 const {
@@ -29,6 +31,7 @@ const {
   issueBaseUrl = '',
   categoryColor,
   categoryLabel,
+  tags = [],
 } = Astro.props as Props;
 
 const label = categoryLabel
@@ -49,7 +52,9 @@ const thanksPart = thanks
 const baseId = [versionPart, category, issuePart, thanksPart].filter(Boolean).join('--');
 
 // deterministic content hash for unique deep-link IDs across builds
-const slotContent = await Astro.slots.render('default');
+// badge first, so ids match markup that used to sit at the start of the default slot
+const badgeContent = Astro.slots.has('badge') ? await Astro.slots.render('badge') : '';
+const slotContent = badgeContent + await Astro.slots.render('default');
 let hash = 0;
 for (let i = 0; i < slotContent.length; i++) {
   hash = (hash << 5) - hash + slotContent.charCodeAt(i);
@@ -63,15 +68,20 @@ const rowId = baseId ? `${baseId}--${contentSlug}` : contentSlug;
   id={rowId}
   class="issue-row"
   data-category={category}
+  data-tags={tags.length ? tags.join(' ') : undefined}
   style={categoryColor ? `--cat-color: ${categoryColor}` : undefined}
 >
-  <a
-    href={`#${rowId}`}
-    class="issue-badge not-prose"
-    aria-label={`${label} - permalink to this release note`}
-  >
-    {label}
-  </a>
+  <div class="issue-aside">
+    <a
+      href={`#${rowId}`}
+      class="issue-badge not-prose"
+      aria-label={`${label} - permalink to this release note`}
+    >
+      {label}
+    </a>
+    {/* the badge slot stacks under the badge, such as a "breaking change" marker */}
+    {badgeContent && <Fragment set:html={badgeContent} />}
+  </div>
 
   <div class="issue-content">
     <div class="rni-body">

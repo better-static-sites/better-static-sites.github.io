@@ -1,0 +1,169 @@
+---
+title: Glossary Terms
+description: Link terms to their definitions with [[term]] syntax, accessible tooltips, and a generated glossary page.
+order: 8
+version: "0.1.0"
+badges: ["integration", "component"]
+---
+
+import { Steps } from 'astro-better-steps';
+import PkgMeta from 'src/components/PkgMeta.astro';
+
+A JSON glossary for Astro sites. Write `[[term]]` in [[MDX]], and the term renders as a link to its page, with the definition in a tooltip. The tooltip opens on hover and on keyboard focus, and Esc closes it. The `<Glossary>` component renders every entry on one page. An unknown term fails the build and suggests the closest matches.
+
+<PkgMeta pkg="astro-better-glossary" />
+
+## Installation
+
+```shell-session
+npm install astro-better-glossary
+```
+
+## Setup
+
+<Steps>
+
+### Create the Glossary File
+
+Each key is the full name of a term:
+
+```json title="src/data/glossary.json"
+{
+  "Open Graph": {
+    "definition": "Meta tags that tell social platforms which image to show in a link preview.",
+    "link": "/build-tools/og-images",
+    "abbreviations": ["OG"],
+    "standards": [{ "name": "The Open Graph protocol", "url": "https://ogp.me/" }]
+  }
+}
+```
+
+### Register the Integration and the Plugin
+
+The integration gives the components the glossary data. The plugin turns `[[term]]` into links. Add the plugin to every markdown processor that renders MDX. Use the remark plugin with the unified processor:
+
+```ts title="astro.config.ts"
+import mdx from '@astrojs/mdx';
+import { unified } from '@astrojs/markdown-remark';
+import glossary from 'astro-better-glossary';
+import { remarkGlossaryTerms } from 'astro-better-glossary/remark';
+
+const terms = { file: 'src/data/glossary.json', path: '/glossary' };
+const processor = unified({ remarkPlugins: [[remarkGlossaryTerms, terms]] });
+
+export default defineConfig({
+  markdown: { processor },
+  integrations: [mdx({ processor }), glossary(terms)],
+});
+```
+
+With [[Sätteri]], use the Sätteri plugin instead:
+
+```ts title="astro.config.ts"
+import { satteri } from '@astrojs/markdown-satteri';
+import { glossaryTerms } from 'astro-better-glossary/satteri';
+
+const processor = satteri({ mdastPlugins: [glossaryTerms(terms)] });
+```
+
+The plugin imports the term component into each document that uses a term, so pages need no imports.
+
+### Create the Glossary Page
+
+Create a page at the `path` you configured:
+
+```mdx escape title="src/content/glossary.mdx"
+import Glossary from 'astro-better-glossary/Glossary.astro';
+
+<Glossary />
+```
+
+</Steps>
+
+## Write Terms
+
+```md
+Each page sets [[Open Graph]] tags.
+Set the [[OG]] image to a PNG.
+Check the [[Open Graph::preview tags]] before you publish.
+```
+
+The name can be the term, an alias, or an abbreviation, in any case. Add `::` and a label to show different text. A term inside a heading or a link fails the build, and so does a term that isn't in the glossary:
+
+```plaintext
+[astro-better-glossary] src/content/guide.mdx:12: [[Open Grahp]]
+
+"Open Grahp" isn't in the glossary.
+
+If you misspelled the term, use one of these instead:
+  [[Open Graph]]
+```
+
+Terms work in MDX only. In an `.astro` file, use the component:
+
+```astro
+---
+import GlossaryTerm from 'astro-better-glossary/GlossaryTerm.astro';
+---
+<GlossaryTerm term="OG" />
+```
+
+## Live Example
+
+This page renders [[Open Graph]] tags through the [[OG::og-images]] integration, and every [[Glossary Term::term]] on this page comes from the [site glossary](/glossary). Hover over a term, or tab to it, to see the tooltip.
+
+## Entry Fields
+
+| Field | Description |
+|---|---|
+| `definition` | Required. One or two sentences. Inline markdown works: links, code, bold, and italics. Tooltips show link text without the link, because keyboard focus can't reach a tooltip. |
+| `link` | Required. The page that explains the term. A term links to its glossary entry instead when `link` is external or points to the current page. |
+| `abbreviations` | Optional array of abbreviations that also resolve to the term. |
+| `aliases` | Optional array of other names that resolve to the term. |
+| `standards` | Optional array of `{ name, url }` for the specifications that define the term. |
+
+## Extra Fields
+
+To store more data on each entry, allow the fields and check their values:
+
+```ts
+const terms = {
+  file: 'src/data/glossary.json',
+  path: '/glossary',
+  fields: ['status'],
+  validateEntry: (id, entry) => entry.status && !['beta', 'deprecated'].includes(entry.status) && 'status must be beta or deprecated',
+};
+```
+
+To show the fields on the glossary page, pass a function as the child of `<Glossary>`. The function's output appears at the bottom of each entry:
+
+```mdx escape
+<Glossary>{(entry) => entry.status && <StatusBadge status={entry.status} />}</Glossary>
+```
+
+## Options
+
+The integration and both plugins take the same options object.
+
+| Option | Description |
+|---|---|
+| `file` | Required. Path to the glossary JSON, relative to the project root. |
+| `path` | Required. URL of the glossary page. |
+| `fields` | Extra entry fields to allow. Any other unknown field fails the build. |
+| `linkPattern` | A RegExp every `link` must match. The default allows root-relative paths and `https://` URLs. |
+| `validateEntry` | `(id, entry) => message` to check extra fields. Return an error message to fail the build. |
+| `help` | A line appended to every build error, such as where your docs explain glossary terms. |
+
+## Styling
+
+The components import `astro-better-glossary/styles.css`. Override the custom properties to match your site. The defaults use `light-dark()`, which follows the page's `color-scheme`:
+
+```css
+:root {
+  --glossary-accent: light-dark(#4338ca, #818cf8);
+  --glossary-tooltip-bg: light-dark(#0f172a, #334155);
+  --glossary-entry-border: light-dark(#cbd5e1, #475569);
+}
+```
+
+Under Tailwind Typography, pass `listClass="not-prose"` to `<Glossary>`.

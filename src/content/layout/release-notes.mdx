@@ -2,7 +2,7 @@
 title: Release Notes
 description: Versioned changelogs with category filtering and version dropdown navigation.
 order: 4
-version: "0.3.2"
+version: "0.4.0"
 badges: ["component"]
 ---
 
@@ -36,7 +36,7 @@ Renders the whole changelog in one call: a sticky header with the version select
 
 ### ReleaseNotesItem
 
-One categorized release note row, used inside each version's MDX content. Renders a category badge that links to the row itself, the note, optional "since" and "resolved in" metadata, credits, and issue links.
+One categorized release note row, used inside each version's MDX content. Renders a category badge that links to the row itself, the note, optional "since" and "resolved in" metadata, credits, and issue links. A `badge` slot holds extra content under the badge.
 
 ### ReleaseNotesSelector
 
@@ -130,6 +130,7 @@ const updates = await Promise.all(
 | `viaIssue` | `string` | Issue that resolved a known issue |
 | `categoryColor` | `string` | Badge color; defaults to the `--rn-color-{category}` CSS variable |
 | `categoryLabel` | `string` | Badge label; defaults to a title-cased category id |
+| `tags` | `string[]` | Extra filter ids the item matches, besides its category. See [Filter by tag](#filter-by-tag). |
 
 ## Category filtering
 
@@ -144,6 +145,43 @@ const categories = [
   { id: 'security',    label: 'Security',    color: '#566f98' },
 ];
 ```
+
+### Filter by tag
+
+A chip also matches items that list its id in `tags`, so one item can appear under more than one filter. Use tags for a filter that cuts across categories, such as breaking changes:
+
+```js
+const categories = [
+  ...MY_CATEGORIES,
+  { id: 'breaking', label: 'Breaking Change', color: '#dc2626' },
+];
+```
+
+```mdx
+<ReleaseNotesItem category="fix" tags={['breaking']}>
+  Removed the legacy login endpoint.
+</ReleaseNotesItem>
+```
+
+Checking **Breaking Change** shows every item tagged `breaking`, whatever its category. Checking several chips shows the items that match any of them.
+
+## Content under the badge
+
+Content in the item's `badge` slot stacks under the category badge, centered in the badge column. Use the slot for a short marker, such as a "Breaking change" label. In a wrapper component, combine the slot with `tags`, so a filter chip finds the same items:
+
+```astro
+---
+// src/components/MyReleaseNotesItem.astro
+import { ReleaseNotesItem } from 'astro-better-release-notes';
+const { breaking, ...rest } = Astro.props;
+---
+<ReleaseNotesItem {...rest} tags={breaking ? ['breaking'] : undefined}>
+  {breaking && <p slot="badge" class="breaking-label">Breaking change</p>}
+  <slot />
+</ReleaseNotesItem>
+```
+
+The badge column removes the outer margin from slotted elements, so a `<p>` doesn't pick up paragraph spacing from your prose styles. The row id includes the slot's content, so adding a marker to an item changes that item's deep link.
 
 ## Sticky offset and scroll margins
 
@@ -197,6 +235,13 @@ When you map these to your own palette, keep `--rn-chip-color` and `--rn-text-mu
 - The version selector is labelled, and its options are bare version numbers, so typing `1.56` jumps to 1.56.0. Each jump is announced through a polite live region. Focus stays on the selector so type-ahead and arrow keys keep working: it scrolls with `scrollIntoView` and updates the URL with `history.replaceState`, because assigning `location.hash` would blur it. Jumps don't add browser history entries.
 - Each version's summary is a native `<details>`. It opens with Enter or Space and announces its state without JavaScript, and its text stays in the HTML for search, find-in-page, and LLM tools. A visually hidden version number gives each summary a unique accessible name, such as "Summary of version 2.1.0".
 - Transitions, the summary chevron rotation, and the badge hover scale are turned off under `prefers-reduced-motion: reduce`.
+
+## Upgrading to 0.4.0
+
+- The badge now sits in a `<div class="issue-aside">` column, with the new `badge` slot under it. Update CSS that targets `.issue-row > .issue-badge`.
+- Items take a `tags` prop, and filter chips match an item's category or any of its tags.
+- The filter rules and the selected-chip styles no longer use `!important`. The show rules still outrank the hide rule, because they select by id. A site rule that sets `display` on `.issue-row` with an id, or with four or more classes, can now affect filtering.
+- Row ids include the `badge` slot's content, followed by the default slot's content. A wrapper that used to put a marker at the start of the default slot keeps its ids after it moves the marker to the `badge` slot.
 
 ## Upgrading to 0.3.2
 
