@@ -2,7 +2,7 @@
 title: Glossary Terms
 description: Link terms to their definitions with [[term]] syntax, accessible tooltips, and a generated glossary page.
 order: 8
-version: "0.1.0"
+version: "0.1.1"
 badges: ["integration", "component"]
 ---
 
@@ -140,6 +140,8 @@ To show the fields on the glossary page, pass a function as the child of `<Gloss
 ```mdx escape
 <Glossary>{(entry) => entry.status && <StatusBadge status={entry.status} />}</Glossary>
 ```
+
+The glossary's link styles don't reach the function's output, so a badge or other component keeps its own styles.
 
 ## Options
 

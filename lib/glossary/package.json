@@ -1,6 +1,6 @@
 {
   "name": "astro-better-glossary",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JSON glossary for Astro: [[term]] links in MDX with accessible definition tooltips, a glossary page component, and build errors for unknown terms",
   "keywords": [
     "astro",

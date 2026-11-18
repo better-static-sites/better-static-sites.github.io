@@ -79,6 +79,8 @@ To render extra entry fields, allow the fields with the `fields` option and pass
 <Glossary>{(entry) => entry.status && <StatusBadge status={entry.status} />}</Glossary>
 ```
 
+The glossary's link styles don't reach the function's output, so a badge or other component keeps its own styles.
+
 Pass `listClass="not-prose"` when the page uses Tailwind Typography.
 
 ## Entry Fields

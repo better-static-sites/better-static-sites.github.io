@@ -87,7 +87,12 @@
 }
 
 .glossary-entry dd { margin: 0; }
-.glossary-entry a { color: var(--glossary-accent); text-decoration: underline; text-underline-offset: 2px; }
+/* only the package's own links; content in the extra-fields slot keeps the site's styles */
+:is(.glossary-entry-term, .glossary-entry-definition, .glossary-entry-meta) a {
+  color: var(--glossary-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .glossary-entry-term { font-size: 1rem; font-weight: 600; }
 .glossary-entry-definition { flex: 1; color: var(--glossary-entry-text); }
 .glossary-entry-meta { font-size: 0.875rem; color: var(--glossary-entry-muted); }
