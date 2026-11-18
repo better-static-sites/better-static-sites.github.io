@@ -86,6 +86,7 @@ Write `description` as one full sentence that ends with a period. Name what the 
 * Use an ordered list only when order matters, such as steps. Use an unordered list for options, prerequisites, and features.
 * Number every ordered item `1.`, and the renderer fills in the real numbers. Start unordered items with `*`.
 * Introduce a list with a sentence that ends in a colon.
+* Don't count the items in a list introduction. Write "the following options", not "three options", because the count drifts when someone edits the list.
 * Keep items parallel: all full sentences or all fragments, starting the same way.
 * End an item with a period when the item is a sentence.
 
