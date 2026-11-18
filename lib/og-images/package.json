@@ -1,6 +1,6 @@
 {
   "name": "astro-better-og-images",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Astro integration that generates Open Graph title cards and resized social preview images at build time, with sharp and no browser",
   "keywords": [
     "astro",
@@ -23,12 +23,22 @@
   },
   "type": "module",
   "exports": {
-    ".": "./index.mjs",
-    "./runtime": "./src/runtime.mjs",
-    "./render": "./src/render.mjs"
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.mjs"
+    },
+    "./runtime": {
+      "types": "./src/runtime.d.ts",
+      "default": "./src/runtime.mjs"
+    },
+    "./render": {
+      "types": "./src/render.d.ts",
+      "default": "./src/render.mjs"
+    }
   },
   "files": [
     "index.mjs",
+    "index.d.ts",
     "src/"
   ],
   "scripts": {
@@ -43,5 +53,6 @@
   },
   "devDependencies": {
     "sharp": "^0.35.4"
-  }
+  },
+  "types": "./index.d.ts"
 }

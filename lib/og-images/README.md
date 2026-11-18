@@ -12,6 +12,8 @@ npm install astro-better-og-images
 
 `sharp` is a peer dependency. Astro already installs `sharp` for image optimization.
 
+The package includes TypeScript declarations for the integration options, `getOgImage`, and the renderer.
+
 ## Setup
 
 Add the integration:
