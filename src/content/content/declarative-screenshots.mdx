@@ -3,8 +3,8 @@ title: Declarative Screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
 versions:
-  astro-better-declarative-screenshots: "0.6.0"
-  astro-better-generate-screenshots: "0.8.0"
+  astro-better-declarative-screenshots: "0.6.1"
+  astro-better-generate-screenshots: "0.8.2"
 badges: ["component", "tool"]
 ---
 
@@ -404,7 +404,7 @@ npm run screenshots -- --shard 2/4
 ```
 
 <Admonition type="caution" title="Each shard runs a full Docker stack">
-  Four shards start four copies of every service in your compose file. Check that Docker has enough memory for every shard before you raise the count.
+  Four shards start four copies of the services you start. Check that Docker has enough memory for every shard before you raise the count. To keep a heavy service out of shards that don't need it, pass a function as `docker.service`.
 </Admonition>
 
 ## CI: checking for drift

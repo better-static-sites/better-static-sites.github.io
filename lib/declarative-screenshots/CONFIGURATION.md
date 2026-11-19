@@ -190,7 +190,18 @@ Path to a `docker-compose.yml` file, relative to the project root. The CLI runs 
 
 ### `docker.service`
 
-The specific Docker Compose service to start. If omitted, all services in the file are started.
+The Docker Compose services to start, separated by spaces. If omitted, all services in the file are started.
+
+To start a service only when a run needs it, pass a function. The function receives the specs this run captures, after `--filter` and sharding, and returns the services to start:
+
+```js
+docker: {
+  compose: 'docker-compose.yml',
+  // only the setup wizard screenshots use the second instance
+  service: specs => specs.some(s => s.name.startsWith('setup-wizard')) ? 'app app-fresh' : 'app',
+  healthcheck: { url: 'http://localhost:3000/health' },
+},
+```
 
 ### `docker.bootstrap`
 
@@ -271,7 +282,7 @@ Hooks are async functions that let you run code at key points in the capture lif
 
 ### `beforeAll`
 
-Called once before any screenshots are taken. Receives a Playwright `BrowserContext`. Use this for login flows or global app state setup.
+Called once before any screenshots are taken. Receives a Playwright `BrowserContext` and `{ specs }`, the specs this run captures. Use this for login flows or global app state setup, and use `specs` to skip setup that no screenshot in the run needs.
 
 ```js
 beforeAll: async (context) => {
