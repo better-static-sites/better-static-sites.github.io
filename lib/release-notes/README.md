@@ -254,7 +254,7 @@ import { getCategoryColor, getCategoryLabel, DEFAULT_CATEGORIES } from 'astro-be
 | `bonusThanks` | `string` | Secondary GitHub username |
 | `since` | `string` | Version this was introduced |
 | `resolvedIn` | `string` | Version a known issue was resolved in |
-| `viaIssue` | `string` | Issue that resolved a known issue |
+| `viaIssue` | `string` | Issue that resolved a known issue. Optional: without it, `resolvedIn` renders as "Resolved in version X." |
 | `issueBaseUrl` | `string` | Base URL for issue links (no default) |
 | `categoryColor` | `string` | CSS color for the badge (default `#71717a`) |
 | `categoryLabel` | `string` | Human label for the badge (default: generated from id) |

@@ -86,15 +86,19 @@ const rowId = baseId ? `${baseId}--${contentSlug}` : contentSlug;
   <div class="issue-content">
     <div class="rni-body">
       <slot />
-      {resolvedIn && viaIssue && (
+      {resolvedIn && (
         <p class="rni-meta">
           Resolved in version{' '}
           <a href={`#version-${resolvedIn.replaceAll('.', '-')}`}><code>{resolvedIn}</code></a>
-          {' '}via{' '}
-          {issueBaseUrl
-            ? <a target="_blank" rel="noopener noreferrer" href={`${issueBaseUrl}${viaIssue}`}>#{viaIssue}</a>
-            : <span>#{viaIssue}</span>
-          }.
+          {viaIssue && (
+            <>
+              {' '}via{' '}
+              {issueBaseUrl
+                ? <a target="_blank" rel="noopener noreferrer" href={`${issueBaseUrl}${viaIssue}`}>#{viaIssue}</a>
+                : <span>#{viaIssue}</span>
+              }
+            </>
+          )}.
         </p>
       )}
       {since && (

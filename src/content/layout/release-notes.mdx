@@ -2,7 +2,7 @@
 title: Release Notes
 description: Versioned changelogs with category filtering and version dropdown navigation.
 order: 4
-version: "0.4.0"
+version: "0.4.1"
 badges: ["component"]
 ---
 
@@ -127,7 +127,7 @@ const updates = await Promise.all(
 | `bonusThanks` | `string` | Second GitHub username |
 | `since` | `string` | Version the change applies from, linked to that version |
 | `resolvedIn` | `string` | Version a known issue was resolved in |
-| `viaIssue` | `string` | Issue that resolved a known issue |
+| `viaIssue` | `string` | Issue that resolved a known issue. Optional: without it, `resolvedIn` renders as "Resolved in version X." |
 | `categoryColor` | `string` | Badge color; defaults to the `--rn-color-{category}` CSS variable |
 | `categoryLabel` | `string` | Badge label; defaults to a title-cased category id |
 | `tags` | `string[]` | Extra filter ids the item matches, besides its category. See [Filter by tag](#filter-by-tag). |
