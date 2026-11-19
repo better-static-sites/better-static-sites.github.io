@@ -7,10 +7,12 @@ Rendering happens via [svgdom](https://github.com/svgdotjs/svgdom), a headless D
 ## Installation
 
 ```
-npm install astro-better-mermaid mermaid
+npm install astro-better-mermaid mermaid@11
 ```
 
 `mermaid` is a peer dependency, so install it alongside this package. `svgdom` comes with this package.
+
+The package requires Mermaid `11`. Mermaid `12` flowcharts don't render under svgdom, so the peer dependency allows only `11.x`.
 
 ## Usage
 
@@ -25,6 +27,27 @@ export default defineConfig({
 ```
 
 Mermaid code blocks in your Markdown and MDX files will be replaced with pre-rendered SVG wrapped in a `<div class="mermaid">` at build time. Blocks that fail to render are left as fenced code blocks.
+
+### Line breaks in labels
+
+In flowcharts, state diagrams, and class diagrams, a label with an HTML tag such as `<br/>` or `<span>` renders with no text. Sequence diagrams render HTML in labels. When a diagram other than a sequence diagram contains a common formatting tag, such as `<br/>` or `<b>`, the build prints a warning that names the page. For a line break, use a Mermaid markdown string with a real newline in the label:
+
+````md
+```mermaid
+flowchart LR
+  A["`Application session
+  for app A`"] --> B["`Refresh token
+  (centralized session)`"]
+```
+````
+
+Text that only looks like a tag, such as the placeholder `<id>`, also renders with no text, and the build doesn't warn about it. Write the angle brackets as Mermaid entity codes instead: `ent:#lt;id#gt;`.
+
+### Supported diagrams
+
+Every Mermaid `11` diagram type renders except mindmap and architecture diagrams. Mermaid lays out both types with cytoscape, which needs a canvas that svgdom doesn't provide. The plugin skips both types, prints a warning, and leaves the source as a code block.
+
+When a diagram fails to render, the warning names the page, the diagram type, and the diagram's position on the page, followed by the first lines of Mermaid's error. The page shows the diagram source instead.
 
 ## Options
 
@@ -73,6 +96,14 @@ Mermaid's `style X fill:#color` directive injects `!important` inline styles tha
 .cluster > rect[data-fill-color="#abc"] { fill: your-color !important; }
 .dark .cluster > rect[data-fill-color="#abc"] { fill: your-dark-color !important; }
 ```
+
+## Upgrading to 0.4.0
+
+The package now requires Mermaid `11`. Earlier releases accepted Mermaid `10` and later.
+
+Gantt, C4, sankey, block, and treemap diagrams now render. Earlier releases left these diagrams as code blocks. Mindmap and architecture diagrams are skipped with a warning instead of failing to render.
+
+Warnings now name the page and the diagram type, and count diagrams on a page from 1 instead of 0. The build also warns when a diagram contains HTML that renders with no text. For more information, see [Line breaks in labels](#line-breaks-in-labels).
 
 ## Upgrading to 0.3.0
 

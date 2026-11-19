@@ -2,7 +2,7 @@
 title: Mermaid Diagram Renderer
 description: Server-side Mermaid diagram rendering to inline SVG at build time.
 order: 3
-version: "0.3.0"
+version: "0.4.0"
 badges: ["integration"]
 ---
 
@@ -17,8 +17,10 @@ No heavyweight browser CLI required, either, because this uses `svgdom` (just a 
 ## Installation
 
 ```shell-session
-npm install astro-better-mermaid mermaid
+npm install astro-better-mermaid mermaid@11
 ```
+
+The package requires Mermaid `11`. Mermaid `12` flowcharts don't render under svgdom, so the peer dependency allows only `11.x`.
 
 ## Setup
 
@@ -62,6 +64,27 @@ graph TD
 ```
 ````
 
+### Line breaks in labels
+
+In flowcharts, state diagrams, and class diagrams, a label with an HTML tag such as `<br/>` or `<span>` renders with no text. Sequence diagrams render HTML in labels. When a diagram other than a sequence diagram contains a common formatting tag, such as `<br/>` or `<b>`, the build prints a warning that names the page. For a line break, use a Mermaid markdown string with a real newline in the label:
+
+````md
+```mermaid
+flowchart LR
+  A["`Application session
+  for app A`"] --> B["`Refresh token
+  (centralized session)`"]
+```
+````
+
+Text that only looks like a tag, such as the placeholder `<id>`, also renders with no text, and the build doesn't warn about it. Write the angle brackets as Mermaid entity codes instead: `ent:#lt;id#gt;`.
+
+### Supported diagrams
+
+Every Mermaid `11` diagram type renders except mindmap and architecture diagrams. Mermaid lays out both types with cytoscape, which needs a canvas that svgdom doesn't provide. The plugin skips both types, prints a warning, and leaves the source as a code block.
+
+When a diagram fails to render, the warning names the page, the diagram type, and the diagram's position on the page, followed by the first lines of Mermaid's error. The page shows the diagram source instead.
+
 ## Live example
 
 ```mermaid
@@ -98,6 +121,14 @@ Rendering a diagram is the slow part, so the plugin caches each rendered diagram
 Each diagram's SVG id comes from its position on the page and a hash of its source, so the same page builds to the same HTML every time. Earlier versions used a random id.
 
 Set `cache: false` to turn the disk cache off, or point `cacheDir` somewhere that persists between CI runs to share it.
+
+## Upgrading to 0.4.0
+
+The package now requires Mermaid `11`. Earlier releases accepted Mermaid `10` and later.
+
+Gantt, C4, sankey, block, and treemap diagrams now render. Earlier releases left these diagrams as code blocks. Mindmap and architecture diagrams are skipped with a warning instead of failing to render.
+
+Warnings now name the page and the diagram type, and count diagrams on a page from 1 instead of 0. The build also warns when a diagram contains HTML that renders with no text. For more information, see [Line breaks in labels](#line-breaks-in-labels).
 
 ## Upgrading to 0.3.0
 
