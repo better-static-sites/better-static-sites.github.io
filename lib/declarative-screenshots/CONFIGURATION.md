@@ -298,7 +298,7 @@ beforeAll: async (context) => {
 
 ### `beforeScreenshot`
 
-Called before each individual screenshot. Receives the Playwright `Page` (already navigated to the target URL) and a spec object `{ url, name, highlights, colorScheme }`. With `colorScheme: 'both'`, the hook runs once per scheme. Use `colorScheme` to set app state that `prefers-color-scheme` doesn't control, such as a theme cookie. Use this to dismiss notifications, close modals, or set up per-page state.
+Called before each individual screenshot. Receives the Playwright `Page` (already navigated to the target URL) and a spec object `{ url, name, highlights, colorScheme, timings }`. `timings` is an object only when `SCREENSHOT_TIMING=1` is set. Add `<stage>: <milliseconds>` entries to it, and the progress line prints them after the capture phases. With `colorScheme: 'both'`, the hook runs once per scheme. Use `colorScheme` to set app state that `prefers-color-scheme` doesn't control, such as a theme cookie. Use this to dismiss notifications, close modals, or set up per-page state.
 
 ```js
 beforeScreenshot: async (page, { url, name }) => {
