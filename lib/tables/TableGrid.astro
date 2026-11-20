@@ -60,4 +60,18 @@ const hasHead = Astro.slots.has('head');
     margin: 0;
     padding: 0;
   }
+  /* multi-block cells: no extra space above the first block or below the last */
+  .abt-grid-table td > :first-child,
+  .abt-grid-table th > :first-child {
+    margin-top: 0;
+  }
+  .abt-grid-table td > :last-child,
+  .abt-grid-table th > :last-child {
+    margin-bottom: 0;
+  }
+  .abt-grid-table caption {
+    caption-side: top;
+    text-align: left;
+    font-weight: 600;
+  }
 </style>

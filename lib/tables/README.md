@@ -147,6 +147,26 @@ Mark a `<Cell>` in a body row with `header` and `scope="row"` to make it a row h
 
 ---
 
+## Styling
+
+Both components ship global styles with the following defaults:
+
+* A caption sits above the table, aligned left, in semibold text. Set the caption with the **`caption`** prop.
+* A cell with a single paragraph has no paragraph margin.
+* A cell with several blocks, such as paragraphs, lists, or code blocks, has no space above the first block or below the last block.
+
+Available in `0.2.0` and later. To change a default, override the `.abt-table` or `.abt-grid-table` selectors in your own stylesheet:
+
+```css
+.abt-table caption,
+.abt-grid-table caption {
+  font-weight: 400;
+  font-style: italic;
+}
+```
+
+---
+
 ## Works with astro-better-refs
 
 Links inside table cells support the `ref:` URL scheme from `astro-better-refs`:
