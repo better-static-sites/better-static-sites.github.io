@@ -1,6 +1,6 @@
 ---
 title: Link Checker
-description: Fast intra-site broken link and image checker that deduplicates destinations.
+description: Learn how to find broken internal links, images, and anchors in your Astro build output.
 order: 6
 version: "1.0.1"
 badges: ["integration"]
@@ -9,9 +9,7 @@ badges: ["integration"]
 import { Admonition } from 'astro-better-admonitions';
 import PkgMeta from 'src/components/PkgMeta.astro';
 
-A post-build integration that checks every internal link and image reference in your
-Astro site for broken destinations. De-duplicates check targets so each unique
-destination is verified exactly once, even if it is linked from hundreds of pages.
+`astro-better-link-checker` checks every internal link, image, and anchor in your Astro build output after the build finishes. The checker deduplicates destinations first, so a page linked from hundreds of pages gets one check.
 
 <PkgMeta pkg="astro-better-link-checker" />
 
@@ -23,9 +21,9 @@ npm install astro-better-link-checker
 
 ## Setup
 
-In `astro.config.ts`:
+Add the integration to `astro.config.ts`:
 
-```ts
+```ts title="astro.config.ts"
 import linkChecker from 'astro-better-link-checker';
 
 export default defineConfig({
@@ -39,30 +37,17 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `failOnBrokenLinks` | `boolean` | `true` | Throw a build error when broken links are found |
-| `excludeSourcePages` | `(string\|RegExp)[]` | `[]` | Skip pages whose URL path matches |
-| `excludeDestinations` | `(string\|RegExp)[]` | `[]` | Skip destinations whose path matches |
+| `excludeSourcePages` | `(string\|RegExp)[]` | `[]` | Pages to skip crawling. The checker ignores every link on a matching page. |
+| `excludeDestinations` | `(string\|RegExp)[]` | `[]` | Destinations to skip checking, including anchors on those destinations. |
+| `failOnBrokenLinks` | `boolean` | `true` | Exit the build with code `1` when the checker finds a broken link, image, or anchor. |
+| `checkAnchors` | `boolean` | `true` | Check each `#fragment` against the `id` and `<a name>` attributes on the target page. |
+| `checkImages` | `boolean` | `true` | Check `src` on `<img>`, `<source>`, `<video>`, and `<audio>`, and `srcset` on any element. |
+| `verbose` | `boolean` | `false` | Log every checked link, image, and anchor, not only broken ones. |
 
-## What it checks
+A string in **`excludeSourcePages`** or **`excludeDestinations`** matches by prefix. A `RegExp` tests the full path.
 
-- `href` attributes on `<a>` elements
-- `src` attributes on `<img>` elements
-- `srcset` attributes on `<source>` and `<img>` elements
-- Anchor fragments (`/page#section`) against `id` attributes on the target page
-
-External links (http:// and https://) are not checked.
-
-## Algorithm
-
-1. Walk the build output directory and collect all `.html` files
-2. Read all files concurrently; extract links, images, and `id` attributes
-3. Build a deduplicated set of unique destinations
-4. Check all unique paths with `fs.access`
-5. Validate anchor fragments against the `id` cache
-6. Report broken links grouped by destination
-
-<Admonition type="tip" title="Excluding redirects">
-  Use `excludeDestinations` to skip known redirect targets that do not exist as files:
+<Admonition type="tip" title="Exclude redirects">
+  When your host serves redirects that don't exist as files, add the redirect sources to **`excludeDestinations`**:
   ```ts
   linkChecker({
     excludeDestinations: ['/old-path', /\/legacy\//],
@@ -70,12 +55,68 @@ External links (http:// and https://) are not checked.
   ```
 </Admonition>
 
+## What the Checker Checks
+
+The checker reads the following attributes in every HTML file:
+
+* `href` on `<a>` elements.
+* `src` on `<img>`, `<source>`, `<video>`, and `<audio>` elements.
+* `srcset` on any element.
+* The `#fragment` in each link, against the `id` and `<a name>` attributes on the target page.
+
+The checker skips external `http://` and `https://` links. A fragment-only link, such as `#options`, resolves against the current page.
+
+## How the Checker Works
+
+```mermaid title="The checker reads every HTML file once, then checks each unique destination once."
+graph LR
+    Walk[Collect HTML files] --> Read[Extract links, images, and ids]
+    Read --> Dedupe[Deduplicate destinations]
+    Dedupe --> Paths[Check paths with fs.access]
+    Dedupe --> Anchors[Check fragments against ids]
+    Paths --> Report[Report by destination]
+    Anchors --> Report
+```
+
+The checker collects every `.html` file in the build output and reads the files in parallel. The checker extracts links, images, and `id` attributes, then deduplicates the destinations. The checker runs one `fs.access` check per unique path. The checker then compares each fragment with the `id` attributes of the target page. The report groups broken entries by destination.
+
 ## Output
 
-On a clean build, the checker prints a summary count. If broken links are found,
-it prints each one with the source pages that reference it:
+A clean build prints a summary count. On failure, the checker lists each broken destination with up to five source pages. Broken anchors include the fragment, and broken images start with `img`:
 
 ```
-[link-checker] /docs/missing-page
-  referenced by: /docs/index.html, /docs/other.html
+[link-checker] 2 broken links, 1 broken image:
+  /docs/get-started#missing-section
+    /docs/overview
+  /docs/missing-page
+    /docs/index
+    /docs/other
+  img /img/missing.png
+    /docs/overview
 ```
+
+## Check Markdown Link Syntax
+
+A malformed markdown link renders as plain text, so the HTML link checker never sees the link. The package also exports `markdownLinkSyntaxChecker`, which scans the `.md` and `.mdx` files in `srcDir` for the following mistakes:
+
+* `missing-close-bracket`: a missing `]` before the URL, as in `[text(/docs/page)`.
+* `space-before-href`: whitespace between `]` and `(`, as in `[text] (/docs/page)`.
+
+The syntax checker skips front matter, code blocks, inline code, comments, import and export lines, and JSX string attributes. Add the syntax checker next to the link checker:
+
+```ts title="astro.config.ts"
+import linkChecker, { markdownLinkSyntaxChecker } from 'astro-better-link-checker';
+
+export default defineConfig({
+  integrations: [
+    markdownLinkSyntaxChecker(),
+    linkChecker(),
+  ],
+});
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `excludePaths` | `(string\|RegExp)[]` | `[]` | Files to skip, matched against the path relative to `srcDir`. |
+| `extensions` | `string[]` | `['.md', '.mdx']` | File extensions to scan. |
+| `failOnIssues` | `boolean` | `true` | Exit the build with code `1` when the syntax checker finds an issue. |
