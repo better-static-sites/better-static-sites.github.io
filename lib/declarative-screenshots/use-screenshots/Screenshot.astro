@@ -2,6 +2,7 @@
 import { deriveName, colorSchemeVariants } from './src/naming.mjs';
 import { loadConfig } from './src/config.mjs';
 import { displayUrl } from './src/display-url.mjs';
+import Placeholder from './src/Placeholder.astro';
 import { existsSync } from 'fs';
 import path from 'path';
 
@@ -104,6 +105,7 @@ let chrome = { style: 'macos', renderIn: 'png', showUrl: true, theme: 'light',
 let configBaseUrl = '';
 let configColorScheme = 'light';
 let darkMode = 'media';
+let configWindow = { width: 1280, height: 800 };
 // no config means defaults; an invalid config throws, since defaults would point every image at the wrong path
 if (['screenshot.config.mjs', 'screenshot.config.js'].some(f => existsSync(path.join(process.cwd(), f)))) {
   const cfg = await loadConfig(process.cwd());
@@ -112,6 +114,7 @@ if (['screenshot.config.mjs', 'screenshot.config.js'].some(f => existsSync(path.
   configBaseUrl = cfg.baseUrl ?? '';
   configColorScheme = cfg.colorScheme;
   darkMode = cfg.darkMode;
+  configWindow = cfg.window;
 } else {
   resolvedOutputDir ??= 'src/assets/screenshots';
 }
@@ -142,6 +145,9 @@ if (!fileExists && strict) {
 const specData = JSON.stringify({ url, highlights, width, height, fullPage, maxHeight, colorScheme, crop, cropPadding, chrome: showChrome, clearBrowserBeforeCapture });
 
 const cssChrome = showChrome && chrome.renderIn === 'css' && chrome.style !== 'none';
+const placeholderLabel = alt ?? `Placeholder for ${name}`;
+const placeholderWidth = width ?? configWindow.width;
+const placeholderHeight = height ?? configWindow.height;
 const shownUrl = displayUrl(url, chrome, configBaseUrl, { showHost, showQuery, showHash, shortenIds });
 ---
 
@@ -180,14 +186,7 @@ const shownUrl = displayUrl(url, chrome, configBaseUrl, { showHost, showQuery, s
             )}
           </>
         ) : (
-          <div
-            class="sc-placeholder"
-            role="img"
-            aria-label={alt ?? `Placeholder for ${name}`}
-          >
-            Screenshot not yet generated: {name}.png &mdash;
-            run <code>take-screenshots</code> to generate it.
-          </div>
+          <Placeholder name={name} label={placeholderLabel} width={placeholderWidth} height={placeholderHeight} cropped={!!crop} />
         )}
       </div>
     </div>
@@ -206,15 +205,7 @@ const shownUrl = displayUrl(url, chrome, configBaseUrl, { showHost, showQuery, s
         )}
       </>
     ) : (
-      <div
-        class="screenshot-placeholder"
-        role="img"
-        aria-label={alt ?? `Placeholder for ${name}`}
-        style={`width:${width ?? 1280}px;max-width:100%;aspect-ratio:${(width ?? 1280) / (height ?? 800)};background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#999;font-size:14px;border:1px dashed #ccc;`}
-      >
-        Screenshot not yet generated: {name}.png<br />
-        Run <code>take-screenshots</code> to generate it.
-      </div>
+      <Placeholder name={name} label={placeholderLabel} width={placeholderWidth} height={placeholderHeight} cropped={!!crop} framed />
     )
   )}
 </figure>
@@ -307,16 +298,6 @@ const shownUrl = displayUrl(url, chrome, configBaseUrl, { showHost, showQuery, s
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]):not(.light) .screenshot-figure[data-sc-media] img.sc-img-light { display: none; }
     :root:not([data-theme="light"]):not(.light) .screenshot-figure[data-sc-media] img.sc-img-dark { display: block; }
-  }
-
-  .sc-placeholder {
-    background: #f0f0f0;
-    padding: 2rem;
-    font-family: sans-serif;
-    font-size: 14px;
-    color: #999;
-    text-align: center;
-    line-height: 1.5;
   }
 
   /* ── macos light ── */

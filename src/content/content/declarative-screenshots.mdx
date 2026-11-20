@@ -3,7 +3,7 @@ title: Declarative Screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
 versions:
-  astro-better-declarative-screenshots: "0.6.2"
+  astro-better-declarative-screenshots: "0.6.3"
   astro-better-generate-screenshots: "0.8.4"
 badges: ["component", "tool"]
 ---
@@ -563,7 +563,8 @@ On screens 640 px wide or narrower, every style shows a compact address bar in p
 
 ## Strict mode
 
-By default, `<Screenshot>` renders a placeholder when the PNG is missing.
+By default, `<Screenshot>` renders a placeholder when the PNG is missing. The placeholder shows the expected filename and matches the window size, and the window chrome still draws around the placeholder. A cropped screenshot gets a shorter placeholder, because the crop size isn't known until capture. The placeholder follows the page's light or dark theme.
+
 Set `strict: true` in `screenshot.config.mjs` or `SCREENSHOTS_STRICT=true` in your
 environment to throw at build time instead. This is useful in CI to catch references
 to PNGs that were never generated.
