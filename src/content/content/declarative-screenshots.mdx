@@ -3,8 +3,8 @@ title: Declarative Screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
 versions:
-  astro-better-declarative-screenshots: "0.6.1"
-  astro-better-generate-screenshots: "0.8.3"
+  astro-better-declarative-screenshots: "0.6.2"
+  astro-better-generate-screenshots: "0.8.4"
 badges: ["component", "tool"]
 ---
 
@@ -54,6 +54,10 @@ mkdir screenshots && cd screenshots
 npm init -y
 npm install astro-better-generate-screenshots
 ```
+
+<Admonition type="caution" title="Keep both packages on matching versions">
+  The Astro components read `screenshot.config.mjs` at build time, and so does the generator. When you update the generator, update `astro-better-declarative-screenshots` in your Astro project to the version that the generator depends on. Otherwise, the docs build fails on a config option that the older component doesn't accept. To find the version, run `npm ls astro-better-declarative-screenshots` in `screenshots/`.
+</Admonition>
 
 If you set [`browserContainer`](#consistent-rendering-across-operating-systems), the browser runs in Docker and you can skip this. Otherwise, install WebKit locally:
 

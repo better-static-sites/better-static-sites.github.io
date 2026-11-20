@@ -104,14 +104,15 @@ let chrome = { style: 'macos', renderIn: 'png', showUrl: true, theme: 'light',
 let configBaseUrl = '';
 let configColorScheme = 'light';
 let darkMode = 'media';
-try {
+// no config means defaults; an invalid config throws, since defaults would point every image at the wrong path
+if (['screenshot.config.mjs', 'screenshot.config.js'].some(f => existsSync(path.join(process.cwd(), f)))) {
   const cfg = await loadConfig(process.cwd());
   resolvedOutputDir ??= cfg.outputDir;
   chrome = cfg.chrome as typeof chrome;
   configBaseUrl = cfg.baseUrl ?? '';
   configColorScheme = cfg.colorScheme;
   darkMode = cfg.darkMode;
-} catch {
+} else {
   resolvedOutputDir ??= 'src/assets/screenshots';
 }
 

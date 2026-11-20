@@ -39,6 +39,8 @@ npm install astro-better-generate-screenshots
 npx playwright install --with-deps webkit
 ```
 
+The Astro components read `screenshot.config.mjs` at build time, and so does the generator. When you update the generator, update `astro-better-declarative-screenshots` in your Astro project to the version that the generator depends on. Otherwise, the docs build fails on a config option that the older component doesn't accept. To find the version, run `npm ls astro-better-declarative-screenshots` in `screenshots/`.
+
 Add a convenience script to your main `package.json`:
 
 ```json

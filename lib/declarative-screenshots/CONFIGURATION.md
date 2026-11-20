@@ -2,6 +2,8 @@
 
 All configuration lives in `screenshot.config.mjs` at your Astro project root.
 
+The `<Screenshot>` component and the generator both validate `screenshot.config.mjs`. When the file is invalid, the docs build fails. When the file is missing, the component uses the defaults. Keep `astro-better-declarative-screenshots` in your Astro project at the version that `astro-better-generate-screenshots` depends on, so both packages accept the same options.
+
 ```js
 export default {
   // ...
@@ -192,7 +194,7 @@ Path to a `docker-compose.yml` file, relative to the project root. The CLI runs 
 
 The Docker Compose services to start, separated by spaces. If omitted, all services in the file are started.
 
-To start a service only when a run needs it, pass a function. The function receives the specs this run captures, after `--filter` and sharding, and returns the services to start:
+To start a service only when a run needs it, pass a function. The function receives the specs that the run captures or checks, after `--filter` and sharding, and returns the services to start. A function requires `astro-better-declarative-screenshots` `0.6.1` or later in your Astro project:
 
 ```js
 docker: {
@@ -282,7 +284,7 @@ Hooks are async functions that let you run code at key points in the capture lif
 
 ### `beforeAll`
 
-Called once before any screenshots are taken. Receives a Playwright `BrowserContext` and `{ specs }`, the specs this run captures. Use this for login flows or global app state setup, and use `specs` to skip setup that no screenshot in the run needs.
+Called once before any screenshots are taken. Receives a Playwright `BrowserContext` and `{ specs }`, the specs that the run captures or checks. `check-screenshots` passes `specs` in `0.8.4` and later. Use this for login flows or global app state setup, and use `specs` to skip setup that no screenshot in the run needs.
 
 ```js
 beforeAll: async (context) => {
