@@ -105,6 +105,7 @@ let chrome = { style: 'macos', renderIn: 'png', showUrl: true, theme: 'light',
 let configBaseUrl = '';
 let configColorScheme = 'light';
 let darkMode = 'media';
+let strict = process.env.SCREENSHOTS_STRICT === 'true';
 let configWindow = { width: 1280, height: 800 };
 // no config means defaults; an invalid config throws, since defaults would point every image at the wrong path
 if (['screenshot.config.mjs', 'screenshot.config.js'].some(f => existsSync(path.join(process.cwd(), f)))) {
@@ -114,6 +115,7 @@ if (['screenshot.config.mjs', 'screenshot.config.js'].some(f => existsSync(path.
   configBaseUrl = cfg.baseUrl ?? '';
   configColorScheme = cfg.colorScheme;
   darkMode = cfg.darkMode;
+  strict = cfg.strict;
   configWindow = cfg.window;
 } else {
   resolvedOutputDir ??= 'src/assets/screenshots';
@@ -134,11 +136,10 @@ const darkImgPath = darkVariant && existsSync(path.resolve(process.cwd(), resolv
   : undefined;
 const imgAlt = alt ?? name.replace(/-/g, ' ');
 
-const strict = process.env.SCREENSHOTS_STRICT === 'true';
 if (!fileExists && strict) {
   throw new Error(
     `[astro-better-declarative-screenshots] Missing screenshot: ${name}.png\n` +
-    `Run \`take-screenshots\` to generate it, or set SCREENSHOTS_STRICT=false to use placeholders.`
+    `Run \`take-screenshots\` to generate it, or turn off strict mode to use placeholders.`
   );
 }
 
