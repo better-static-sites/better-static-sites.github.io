@@ -36,6 +36,19 @@ import { Steps } from 'astro-better-steps';
 
 Each `<li>` can contain any content including headings, code blocks, and nested lists.
 
+### Steps from Several Lists
+
+`<Steps>` numbers consecutive top-level lists as one sequence. When shared partials each render part of the steps, put the partials inside one `<Steps>`, and the numbering continues from one list to the next:
+
+```mdx
+<Steps>
+  <InstallSteps />
+  <ConfigureSteps />
+</Steps>
+```
+
+When `InstallSteps` renders three items, the first item of `ConfigureSteps` shows `4`. The connector line also continues between the lists. Nested lists inside a step keep their own numbering. Available in `0.2.0` and later.
+
 ## Props
 
 | Prop | Type | Default | Description |

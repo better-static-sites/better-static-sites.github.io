@@ -2,7 +2,7 @@
 title: Linked Steps
 description: Numbered step sequences with CSS counters and a connecting vertical line.
 order: 2
-version: "0.1.2"
+version: "0.2.0"
 badges: ["component"]
 ---
 
@@ -68,6 +68,36 @@ import { Steps } from 'astro-better-steps';
 
    Import `Steps` in your MDX file and wrap a numbered list with it.
 
+</Steps>
+
+## Steps from Several Lists
+
+`<Steps>` numbers consecutive top-level lists as one sequence. When shared partials each render part of the steps, put the partials inside one `<Steps>`, and the numbering continues from one list to the next. The connector line also continues between the lists. Nested lists inside a step keep their own numbering. Available in `0.2.0` and later.
+
+````mdx escape
+<Steps>
+  <InstallSteps />
+  <ConfigureSteps />
+</Steps>
+````
+
+The following example puts two separate lists inside one `<Steps>`. The second list starts at `3`:
+
+<Steps>
+<>
+
+1. **Install the package**
+
+1. **Import the CSS**
+
+</>
+<>
+
+1. **Use the component**
+
+1. **Check the numbering**
+
+</>
 </Steps>
 
 ## Props

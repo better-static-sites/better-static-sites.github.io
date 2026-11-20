@@ -37,11 +37,20 @@
   color: inherit;
 }
 
+.steps-container {
+  counter-reset: step;
+}
+
 .steps-container ol {
   list-style: none;
   padding-left: 0;
   margin: 0;
   counter-reset: step;
+}
+
+/* consecutive top-level lists, such as lists from separate partials, share one count */
+.steps-container > ol {
+  counter-reset: none;
 }
 
 .steps-container ol > li {
@@ -85,4 +94,9 @@
 
 .steps-container ol > li:last-child::after {
   display: none;
+}
+
+/* keep the connector between consecutive top-level lists */
+.steps-container > ol:has(~ ol) > li:last-child::after {
+  display: block;
 }
