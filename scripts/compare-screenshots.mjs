@@ -28,8 +28,8 @@
  *   --json                      Emit machine-readable results.
  *
  * Exit codes:
- *   0  every image is within tolerance (and no images were added or removed)
- *   1  at least one image changed beyond the threshold, or was added or removed
+ *   0  every image is within tolerance (and no images were added, removed, or resized)
+ *   1  at least one image changed beyond the threshold, or was added, removed, or resized
  *   2  bad usage
  */
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from 'fs';
@@ -129,7 +129,7 @@ async function compare(name) {
   const ratio = pixels / (width * height);
 
   const resized = aMeta.width !== bMeta.width || aMeta.height !== bMeta.height;
-  if (OUT && ratio > THRESHOLD) writeFileSync(join(OUT, name), PNG.sync.write(diff));
+  if (OUT && (resized || ratio > THRESHOLD)) writeFileSync(join(OUT, name), PNG.sync.write(diff));
 
   return { name, ratio, pixels, identical: false, resized,
            baselineSize: `${aMeta.width}x${aMeta.height}`, candidateSize: `${bMeta.width}x${bMeta.height}` };
@@ -143,8 +143,10 @@ const results = [];
 for (const name of common) results.push(await compare(name));
 
 const identical = results.filter(r => r.identical);
-const withinTolerance = results.filter(r => !r.identical && r.ratio <= THRESHOLD);
-const changed = results.filter(r => !r.identical && r.ratio > THRESHOLD);
+// padding blends to white in pixelmatch, so a light page that grew can score near 0%
+const isChanged = r => !r.identical && (r.resized || r.ratio > THRESHOLD);
+const withinTolerance = results.filter(r => !r.identical && !isChanged(r));
+const changed = results.filter(isChanged);
 
 if (REVERT) {
   for (const r of withinTolerance) copyFileSync(join(BASELINE, r.name), join(CANDIDATE, r.name));

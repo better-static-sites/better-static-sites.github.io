@@ -72,8 +72,8 @@ or Docker involved.
 
 `scripts/refresh-screenshots.sh` regenerates every screenshot and compares it to the
 committed version pixel by pixel, so PNG encoding noise or a stray antialiased pixel does
-not read as a real change. Anything at least 98% identical is reverted to the committed
-file, leaving only meaningful changes in the working tree.
+not read as a real change. Anything at least 98% identical and the same size is reverted to
+the committed file, leaving only meaningful changes in the working tree.
 
 ```shell-session
 scripts/refresh-screenshots.sh                   # regenerate and compare
