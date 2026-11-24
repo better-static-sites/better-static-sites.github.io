@@ -111,14 +111,11 @@ const ogUrl = new URL(og.url, Astro.site ?? Astro.url);
     <label class="sidebar-backdrop" for="nav-sidebar-open" aria-hidden="true"></label>
     <div class="doc-layout">
       <aside class="doc-sidebar">
-        {/* docs-sidebar 1.x scopes its styles to #side-nav nav */}
-        <div id="side-nav">
-          <Sidebar
-            frontmatter={Astro.props}
-            collection={docsCollection}
-            basePath="/"
-          />
-        </div>
+        <Sidebar
+          frontmatter={Astro.props}
+          collection={docsCollection}
+          basePath="/"
+        />
         <nav class="sidebar-extra-nav">
           <a
             href={`/release-notes`}
