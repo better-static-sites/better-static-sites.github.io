@@ -217,6 +217,10 @@ All colors and the max-width are overridable. Set these on `:root` or any ancest
 | `--nav-dropdown-text` | `#374151` | Dropdown item text |
 | `--nav-dropdown-hover-bg` | `#f1f5f9` | Dropdown item hover background |
 | `--nav-dropdown-hover-text` | `#4338ca` | Dropdown item hover text |
+| `--nav-dropdown-border-dark` | `#1e293b` | Dropdown panel border in dark mode |
+| `--nav-dropdown-text-dark` | `#cbd5e1` | Dropdown item text in dark mode |
+| `--nav-dropdown-hover-bg-dark` | `#1e293b` | Dropdown item hover background in dark mode |
+| `--nav-dropdown-hover-text-dark` | `#818cf8` | Dropdown item hover text in dark mode |
 | `--nav-cta-bg` | `#f97316` | CTA button background |
 | `--nav-cta-hover-bg` | `#ea580c` | CTA button hover background |
 | `--nav-cta-text` | `#ffffff` | CTA button text |

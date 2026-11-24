@@ -169,7 +169,7 @@ order: 1
 
 The component uses Tailwind CSS `@apply` directives and expects Tailwind to be configured in the consuming project. All styles are injected with `<style is:global>` so they apply regardless of where the component is placed.
 
-The sidebar renders a `<nav class="nav">` element. Wrap it in `<aside class="aside">` to get the default width, border, and background:
+The sidebar renders a `<nav class="abt-sidebar">` element, and every style is scoped to that class, so the sidebar works in any wrapper. To override a style, target `nav.abt-sidebar`, such as `nav.abt-sidebar a[aria-current="page"]`. Wrap the sidebar in `<aside class="aside">` to get the default width, border, and background:
 
 ```astro
 <aside class="aside">
@@ -178,6 +178,10 @@ The sidebar renders a `<nav class="nav">` element. Wrap it in `<aside class="asi
 ```
 
 Dark mode is supported via the `.dark` class on a parent element.
+
+## Upgrading to 1.2.0
+
+Styles are scoped to `nav.abt-sidebar` instead of `#side-nav nav`, so the sidebar no longer needs a `#side-nav` ancestor. The new selectors are less specific than the old ones. If your site overrides sidebar styles with selectors weaker than `#side-nav nav ...`, check that the overrides still apply.
 
 ## SidebarItem
 

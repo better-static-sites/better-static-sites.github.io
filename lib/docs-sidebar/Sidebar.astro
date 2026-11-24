@@ -24,7 +24,7 @@ const treeArray = sidebarFor(collection, { basePath, folderBehavior, overviewLab
 ---
 
 
-<nav>
+<nav class="abt-sidebar">
   {treeArray.map(node => <SidebarItem node={node} />)}
 </nav>
 
@@ -32,58 +32,58 @@ const treeArray = sidebarFor(collection, { basePath, folderBehavior, overviewLab
   @reference "tailwindcss";
 
   aside.aside { @apply w-64 shrink-0 border-r border-gray-200 bg-white pt-2 pr-2; }
-  #side-nav nav { @apply flex flex-col gap-1; }
+  nav.abt-sidebar { @apply flex flex-col gap-1; }
 
   /* depth line */
-  #side-nav nav details > div { @apply flex flex-col gap-0.5 pl-3 ml-3 border-l border-slate-200; }
+  nav.abt-sidebar details > div { @apply flex flex-col gap-0.5 pl-3 ml-3 border-l border-slate-200; }
 
   /* folder header row */
-  #side-nav nav summary { @apply flex items-center justify-between cursor-pointer select-none rounded gap-1 transition-colors text-slate-700; list-style: none; }
-  #side-nav nav summary::-webkit-details-marker { display: none; }
+  nav.abt-sidebar summary { @apply flex items-center justify-between cursor-pointer select-none rounded gap-1 transition-colors text-slate-700; list-style: none; }
+  nav.abt-sidebar summary::-webkit-details-marker { display: none; }
 
   /* leaf links and folder labels */
-  #side-nav nav :is(a, span) { @apply flex-1 text-sm py-1 px-2 rounded transition-colors no-underline block text-slate-700; }
-  #side-nav nav a { @apply cursor-pointer; }
-  #side-nav nav span { @apply cursor-default; }
+  nav.abt-sidebar :is(a, span) { @apply flex-1 text-sm py-1 px-2 rounded transition-colors no-underline block text-slate-700; }
+  nav.abt-sidebar a { @apply cursor-pointer; }
+  nav.abt-sidebar span { @apply cursor-default; }
 
   /* chevron */
-  #side-nav nav i { @apply flex items-center justify-center w-7 h-7 rounded text-gray-400 shrink-0 transition-transform; }
-  #side-nav nav i::after { content: ''; @apply w-[0.4rem] h-[0.4rem] border-r-2 border-b-2 border-current block -rotate-45 transition-transform box-border; }
-  #side-nav nav details[open] > summary i::after { @apply rotate-45; }
+  nav.abt-sidebar i { @apply flex items-center justify-center w-7 h-7 rounded text-gray-400 shrink-0 transition-transform; }
+  nav.abt-sidebar i::after { content: ''; @apply w-[0.4rem] h-[0.4rem] border-r-2 border-b-2 border-current block -rotate-45 transition-transform box-border; }
+  nav.abt-sidebar details[open] > summary i::after { @apply rotate-45; }
 
   /* clicking a closed folder opens it; disables the link's own navigation */
-  #side-nav nav details:not([open]) > summary a { pointer-events: none; }
+  nav.abt-sidebar details:not([open]) > summary a { pointer-events: none; }
 
   /* HOVERS */
-  #side-nav nav a:not(summary a):hover { @apply bg-slate-100 text-indigo-600; }
-  #side-nav nav details:not([open]) > summary:hover,
-  #side-nav nav summary:not(:has(a)):hover { @apply bg-slate-100; }
-  #side-nav nav details:not([open]) > summary:hover :is(a, span),
-  #side-nav nav summary:not(:has(a)):hover span { @apply text-indigo-600; }
-  #side-nav nav details[open] > summary:has(a) a:hover { @apply bg-slate-100 text-indigo-600; }
-  #side-nav nav details[open] > summary:has(a) i:hover { @apply bg-slate-100 text-slate-700; }
+  nav.abt-sidebar a:not(summary a):hover { @apply bg-slate-100 text-indigo-600; }
+  nav.abt-sidebar details:not([open]) > summary:hover,
+  nav.abt-sidebar summary:not(:has(a)):hover { @apply bg-slate-100; }
+  nav.abt-sidebar details:not([open]) > summary:hover :is(a, span),
+  nav.abt-sidebar summary:not(:has(a)):hover span { @apply text-indigo-600; }
+  nav.abt-sidebar details[open] > summary:has(a) a:hover { @apply bg-slate-100 text-indigo-600; }
+  nav.abt-sidebar details[open] > summary:has(a) i:hover { @apply bg-slate-100 text-slate-700; }
 
   /* ACTIVE & ANCESTOR STATES */
-  #side-nav nav a[aria-current="page"],
-  #side-nav nav summary:has(> a[aria-current="page"]) :is(a, span) { @apply font-semibold text-indigo-600 bg-indigo-50; }
-  #side-nav nav a[data-a],
-  #side-nav nav summary[data-a] :is(a, span) { @apply font-semibold text-slate-900; }
-  #side-nav nav summary:has(> [aria-current="page"]) i,
-  #side-nav nav details:has([aria-current="page"]) > summary i { @apply text-indigo-500; }
+  nav.abt-sidebar a[aria-current="page"],
+  nav.abt-sidebar summary:has(> a[aria-current="page"]) :is(a, span) { @apply font-semibold text-indigo-600 bg-indigo-50; }
+  nav.abt-sidebar a[data-a],
+  nav.abt-sidebar summary[data-a] :is(a, span) { @apply font-semibold text-slate-900; }
+  nav.abt-sidebar summary:has(> [aria-current="page"]) i,
+  nav.abt-sidebar details:has([aria-current="page"]) > summary i { @apply text-indigo-500; }
 
   /* DARK MODE */
   .dark aside.aside { @apply border-gray-800 bg-gray-900; }
-  .dark #side-nav nav :is(a, span) { @apply text-slate-400; }
-  .dark #side-nav nav details > div { @apply border-slate-700; }
-  .dark #side-nav nav a:not(summary a):hover { @apply bg-slate-800 text-indigo-400; }
-  .dark #side-nav nav details:not([open]) > summary:hover,
-  .dark #side-nav nav summary:not(:has(a)):hover { @apply bg-slate-800; }
-  .dark #side-nav nav details:not([open]) > summary:hover :is(a, span),
-  .dark #side-nav nav summary:not(:has(a)):hover span { @apply text-indigo-400; }
-  .dark #side-nav nav details[open] > summary:has(a) a:hover { @apply bg-slate-800 text-indigo-400; }
-  .dark #side-nav nav details[open] > summary:has(a) i:hover { @apply bg-slate-800 text-slate-200; }
-  .dark #side-nav nav a[aria-current="page"],
-  .dark #side-nav nav summary:has(> a[aria-current="page"]) :is(a, span) { @apply text-indigo-400 bg-indigo-950/40; }
-  .dark #side-nav nav a[data-a],
-  .dark #side-nav nav summary[data-a] :is(a, span) { @apply text-white; }
+  .dark nav.abt-sidebar :is(a, span) { @apply text-slate-400; }
+  .dark nav.abt-sidebar details > div { @apply border-slate-700; }
+  .dark nav.abt-sidebar a:not(summary a):hover { @apply bg-slate-800 text-indigo-400; }
+  .dark nav.abt-sidebar details:not([open]) > summary:hover,
+  .dark nav.abt-sidebar summary:not(:has(a)):hover { @apply bg-slate-800; }
+  .dark nav.abt-sidebar details:not([open]) > summary:hover :is(a, span),
+  .dark nav.abt-sidebar summary:not(:has(a)):hover span { @apply text-indigo-400; }
+  .dark nav.abt-sidebar details[open] > summary:has(a) a:hover { @apply bg-slate-800 text-indigo-400; }
+  .dark nav.abt-sidebar details[open] > summary:has(a) i:hover { @apply bg-slate-800 text-slate-200; }
+  .dark nav.abt-sidebar a[aria-current="page"],
+  .dark nav.abt-sidebar summary:has(> a[aria-current="page"]) :is(a, span) { @apply text-indigo-400 bg-indigo-950/40; }
+  .dark nav.abt-sidebar a[data-a],
+  .dark nav.abt-sidebar summary[data-a] :is(a, span) { @apply text-white; }
 </style>

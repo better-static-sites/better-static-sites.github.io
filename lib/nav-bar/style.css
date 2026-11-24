@@ -18,6 +18,10 @@
     --nav-dropdown-text   dropdown item text               default: #374151 (gray-700)
     --nav-dropdown-hover-bg hover bg in dropdown           default: #f1f5f9 (slate-100)
     --nav-dropdown-hover-text hover text in dropdown       default: #4338ca (indigo-600)
+    --nav-dropdown-border-dark dropdown border dark mode   default: #1e293b (slate-800)
+    --nav-dropdown-text-dark dropdown item text dark mode  default: #cbd5e1 (slate-300)
+    --nav-dropdown-hover-bg-dark hover bg dark mode        default: #1e293b (slate-800)
+    --nav-dropdown-hover-text-dark hover text dark mode    default: #818cf8 (indigo-400)
     --nav-cta-bg          CTA button background            default: #f97316 (orange-500)
     --nav-cta-hover-bg    CTA button hover background      default: #ea580c (orange-600)
     --nav-cta-text        CTA button text                  default: #ffffff
@@ -191,7 +195,7 @@ details[open] > .nav-dropdown-summary {
 
 .dark .nav-dropdown-panel {
   background-color: var(--nav-dropdown-bg-dark, #0f172a);
-  border-color: #1e293b;
+  border-color: var(--nav-dropdown-border-dark, #1e293b);
 }
 
 /* left-aligned variant for mobile dropdowns */
@@ -233,7 +237,7 @@ details[open] > .nav-dropdown-summary {
 }
 
 .dark .nav-dropdown-link {
-  color: #cbd5e1;
+  color: var(--nav-dropdown-text-dark, #cbd5e1);
 }
 
 .nav-dropdown-link:hover {
@@ -243,8 +247,8 @@ details[open] > .nav-dropdown-summary {
 }
 
 .dark .nav-dropdown-link:hover {
-  background-color: #1e293b;
-  color: #818cf8;
+  background-color: var(--nav-dropdown-hover-bg-dark, #1e293b);
+  color: var(--nav-dropdown-hover-text-dark, #818cf8);
 }
 
 /* ---------------------------------------------------------------

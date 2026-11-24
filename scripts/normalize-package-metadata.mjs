@@ -35,23 +35,24 @@ const CHECK = process.argv.includes('--check');
 const FILES = {
   'astro-better-admonitions': ['*.js', '*.astro', '*.css'],
   'astro-better-cards': ['*.astro'],
-  'astro-better-code-blocks': ['*.js', '*.astro', '*.css'],
+  'astro-better-code-blocks': ['*.js', '*.mjs', '*.astro', '*.css'],
   'astro-better-code-snippet-extractor': ['*.js', '*.astro'],
   'astro-better-declarative-screenshots': ['index.mjs', '*.astro', 'src/'],
   'astro-better-details': ['Details.astro'],
-  'astro-better-docs-sidebar': ['*.astro'],
+  'astro-better-docs-sidebar': ['*.astro', 'tree.js'],
   'astro-better-generate-screenshots': ['index.mjs', 'src/', 'scripts/'],
   'astro-better-gen-markdown-pages': ['index.mjs', 'src/'],
+  'astro-better-lightbox': ['index.mjs', '*.astro', 'styles.css'],
   'astro-better-link-checker': ['index.mjs'],
   'astro-better-mermaid': ['index.mjs', 'src/'],
   'astro-better-nav-bar': ['*.js', '*.astro', '*.css'],
-  'astro-better-refs': ['index.mjs', 'Ref.astro'],
+  'astro-better-refs': ['index.mjs', 'core.mjs', 'satteri.mjs', 'Ref.astro'],
   'astro-better-release-notes': ['*.js', '*.astro', '*.css'],
   'astro-better-steps': ['*.js', '*.astro', '*.css'],
   'astro-better-tables': ['Table.astro', 'TableGrid.astro', 'Row.astro', 'Cell.astro'],
   'astro-better-tabs': ['*.astro', 'style.css'],
   // index.test.js lives in src/, so the list is per-extension rather than 'src/'
-  'astro-better-toc': ['src/index.js', 'src/TOC.astro', 'src/InlineTOC.astro'],
+  'astro-better-toc': ['src/index.js', 'src/process.js', 'src/TOC.astro', 'src/InlineTOC.astro'],
 };
 
 const changes = [];

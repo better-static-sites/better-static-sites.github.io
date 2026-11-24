@@ -2,7 +2,7 @@
 title: Navigation Sidebar
 description: Auto-building docs sidebar from a content collection, with tree expansion and active-page tracking.
 order: 1
-version: "1.1.1"
+version: "1.2.0"
 badges: ["component"]
 ---
 
@@ -34,7 +34,9 @@ npm install astro-better-docs-sidebar
 ### Style the sidebar container
 
 The sidebar requires Tailwind for its internal `<style>` block.
-Wrap it in an `<aside>` with the `aside` class, or let it render inline.
+The component renders `<nav class="abt-sidebar">`, and every style is scoped to that class, so the sidebar works in any wrapper.
+Wrap it in an `<aside>` with the `aside` class for the default width, border, and background, or let it render inline.
+To override a style, target `nav.abt-sidebar`, such as `nav.abt-sidebar a[aria-current="page"]`.
 
 ## Setup
 

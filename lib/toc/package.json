@@ -36,6 +36,7 @@
   },
   "files": [
     "src/index.js",
+    "src/process.js",
     "src/TOC.astro",
     "src/InlineTOC.astro"
   ],

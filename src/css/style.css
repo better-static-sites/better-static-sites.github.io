@@ -61,6 +61,16 @@
   --nav-cta-bg: #16a34a;
   --nav-cta-hover-bg: #15803d;
   --nav-max-width: 1400px;
+  --nav-dropdown-bg: var(--bg);
+  --nav-dropdown-border: var(--border);
+  --nav-dropdown-text: var(--text);
+  --nav-dropdown-hover-bg: var(--bg-alt);
+  --nav-dropdown-hover-text: var(--accent);
+  --nav-dropdown-bg-dark: var(--bg);
+  --nav-dropdown-border-dark: var(--border);
+  --nav-dropdown-text-dark: var(--text);
+  --nav-dropdown-hover-bg-dark: var(--bg-alt);
+  --nav-dropdown-hover-text-dark: var(--accent);
 }
 
 .dark {

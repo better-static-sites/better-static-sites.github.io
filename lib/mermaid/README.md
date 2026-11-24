@@ -94,7 +94,7 @@ Mermaid v13 renders without a DOM and has no third-party runtime dependencies. W
 
 ### Rendering Speed
 
-v13 renders about 25 times faster than mermaid 11 under svgdom once the renderer warms up, and about 11 times faster on the first render. The following table compares the renderers on 40 diagrams from the FusionAuth docs, with the disk cache off, on an Apple Silicon laptop with Node.js `26`:
+v13 renders about 25 times faster than mermaid 11 under svgdom once the renderer warms up, and about 11 times faster on the first render. The following table compares the renderers on 40 diagrams, with the disk cache off, on an Apple Silicon laptop with Node.js `26`:
 
 | Renderer | Startup | First render, per diagram | Warm render, per diagram |
 |---|---|---|---|

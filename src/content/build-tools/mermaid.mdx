@@ -20,7 +20,7 @@ No heavyweight browser CLI required, either, because this uses `svgdom` (just a 
 npm install astro-better-mermaid mermaid@11
 ```
 
-The package requires Mermaid `11`. Mermaid `12` flowcharts don't render under svgdom, so the peer dependency allows only `11.x`.
+The package requires Mermaid `11`. Mermaid `12` flowcharts don't render under svgdom, so the peer dependency allows only `11.x`, plus the Mermaid `13` alpha. For more information, see [Mermaid v13 (Experimental)](#mermaid-v13-experimental).
 
 ## Setup
 
@@ -124,7 +124,7 @@ Mermaid v13 renders without a DOM and has no third-party runtime dependencies. W
 
 ### Rendering Speed
 
-v13 renders about 25 times faster than mermaid 11 under svgdom once the renderer warms up, and about 11 times faster on the first render. The following table compares the renderers on 40 diagrams from the FusionAuth docs, with the disk cache off, on an Apple Silicon laptop with Node.js `26`:
+v13 renders about 25 times faster than mermaid 11 under svgdom once the renderer warms up, and about 11 times faster on the first render. The following table compares the renderers on 40 diagrams, with the disk cache off, on an Apple Silicon laptop with Node.js `26`:
 
 | Renderer | Startup | First render, per diagram | Warm render, per diagram |
 |---|---|---|---|
