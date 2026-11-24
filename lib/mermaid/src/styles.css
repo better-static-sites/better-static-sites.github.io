@@ -145,3 +145,67 @@ foreignObject { overflow: visible; }
   .cluster > rect[data-fill-color="#999"] { fill: rgba(139, 92, 246, 0.18) !important; }
   .cluster > rect[data-fill-color="#944"] { fill: rgba(239, 68, 68, 0.2) !important; }
 }
+
+/* --- Mermaid v13 (experimentalV13) ---
+ * v13 output has no id and themes through --mermaid-* custom properties instead of
+ * classes, so these rules set the variables to the palette above. */
+svg[data-mermaid-version^="13"] {
+  --mermaid-dropShadow: none;
+  --mermaid-strokeWidth: 1px;
+  --mermaid-mainBkg: #e2e8f0;
+  --mermaid-nodeBorder: #1e293b;
+  --mermaid-primaryBorderColor: #1e293b;
+  --mermaid-nodeTextColor: #1e293b;
+  --mermaid-primaryTextColor: #1e293b;
+  --mermaid-textColor: #1e293b;
+  --mermaid-titleColor: #1e293b;
+  --mermaid-lineColor: #64748b;
+  --mermaid-arrowheadColor: #64748b;
+  --mermaid-edgeLabelBackground: rgba(226, 232, 240, 0.8);
+  --mermaid-erEdgeLabelBackground: rgba(226, 232, 240, 0.8);
+  --mermaid-erMarkerFill: #64748b;
+  --mermaid-clusterBkg: transparent;
+  --mermaid-clusterBorder: #94a3b8;
+  --mermaid-actorBkg: #e2e8f0;
+  --mermaid-actorBorder: #1e293b;
+  --mermaid-actorTextColor: #1e293b;
+  --mermaid-actorLineColor: #1e293b;
+  --mermaid-signalColor: #64748b;
+  --mermaid-signalTextColor: #1e293b;
+  --mermaid-noteBkgColor: #c7d2fe;
+  --mermaid-noteBorderColor: #818cf8;
+  --mermaid-noteTextColor: #1e293b;
+  --mermaid-labelBoxBkgColor: #c7d2fe;
+  --mermaid-labelBoxBorderColor: #818cf8;
+  --mermaid-labelTextColor: #1e293b;
+  --mermaid-loopTextColor: #1e293b;
+}
+
+.dark svg[data-mermaid-version^="13"] {
+  --mermaid-mainBkg: #1e293b;
+  --mermaid-nodeBorder: #94a3b8;
+  --mermaid-primaryBorderColor: #94a3b8;
+  --mermaid-nodeTextColor: #f8fafc;
+  --mermaid-primaryTextColor: #f8fafc;
+  --mermaid-textColor: #f8fafc;
+  --mermaid-titleColor: #f8fafc;
+  --mermaid-lineColor: #e2e8f0;
+  --mermaid-arrowheadColor: #e2e8f0;
+  --mermaid-edgeLabelBackground: rgba(30, 41, 59, 0.85);
+  --mermaid-erEdgeLabelBackground: rgba(30, 41, 59, 0.85);
+  --mermaid-erMarkerFill: #e2e8f0;
+  --mermaid-clusterBorder: #475569;
+  --mermaid-actorBkg: #1e293b;
+  --mermaid-actorBorder: #94a3b8;
+  --mermaid-actorTextColor: #f8fafc;
+  --mermaid-actorLineColor: #94a3b8;
+  --mermaid-signalColor: #e2e8f0;
+  --mermaid-signalTextColor: #f8fafc;
+  --mermaid-noteBkgColor: #3730a3;
+  --mermaid-noteBorderColor: #818cf8;
+  --mermaid-noteTextColor: #f1f5f9;
+  --mermaid-labelBoxBkgColor: #3730a3;
+  --mermaid-labelBoxBorderColor: #818cf8;
+  --mermaid-labelTextColor: #f8fafc;
+  --mermaid-loopTextColor: #f8fafc;
+}

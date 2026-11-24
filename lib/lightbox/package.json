@@ -1,6 +1,6 @@
 {
   "name": "astro-better-lightbox",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Accessible, JavaScript-free lightbox for images, screenshots, and diagrams in Astro",
   "keywords": [
     "astro",

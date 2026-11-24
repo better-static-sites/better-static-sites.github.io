@@ -12,7 +12,7 @@ npm install astro-better-mermaid mermaid@11
 
 `mermaid` is a peer dependency, so install it alongside this package. `svgdom` comes with this package.
 
-The package requires Mermaid `11`. Mermaid `12` flowcharts don't render under svgdom, so the peer dependency allows only `11.x`.
+The package requires Mermaid `11`. Mermaid `12` flowcharts don't render under svgdom, so the peer dependency allows only `11.x`, plus the Mermaid `13` alpha. For more information, see [Mermaid v13 (Experimental)](#mermaid-v13-experimental).
 
 ## Usage
 
@@ -60,6 +60,7 @@ mermaidSSR({
   cache: true,            // cache rendered diagrams on disk between builds
   cacheDir: 'node_modules/.cache/astro-better-mermaid', // where the cache lives
   lightbox: false,        // open each diagram in an enlarged dialog on click
+  experimentalV13: false, // allow rendering with an installed mermaid 13 alpha
 })
 ```
 
@@ -84,6 +85,31 @@ When `lightbox` is `true`, a reader can click a diagram, or tab to its **Enlarge
 The dialog holds a second copy of the SVG, with every id suffixed by `-zoom`, so the copy never collides with the original. The copy adds about 30 KB of uncompressed HTML for a typical diagram. The copy can grow up to 2.5 times the diagram's natural width. To change the limit, set `--abl-lightbox-max-zoom` on `.abl-lightbox`.
 
 When `injectCSS` is `true`, the integration also injects the lightbox styles. Otherwise, import `astro-better-lightbox/styles.css` yourself.
+
+## Mermaid v13 (Experimental)
+
+Mermaid v13 is an alpha. Don't use it in production. Output, theming, and APIs change between alpha builds.
+
+Mermaid v13 renders without a DOM, so the package skips svgdom and its browser shims when v13 is installed. v13 has no third-party runtime dependencies. To try v13, install an exact alpha build and pass **`experimentalV13`**:
+
+```shell-session
+npm install mermaid@13.0.0-alpha.3 --save-exact
+```
+
+```ts
+mermaidSSR({ experimentalV13: true })
+```
+
+The installed `mermaid` version picks the renderer, because the package must import mermaid before Astro reads plugin options. When mermaid `13` is installed without **`experimentalV13`**, the build fails with a message that names the installed version. With **`experimentalV13`**, the build logs one warning that the output comes from an alpha.
+
+v13 output differs from v11 output in the following ways:
+
+* The SVG has no `id`, and the root carries `data-mermaid-version`. The bundled stylesheet themes v13 diagrams through `--mermaid-*` custom properties on `svg[data-mermaid-version^="13"]`, with the same light and dark palette as v11. When you maintain your own copy of the styles, copy the v13 block too.
+* v13 ignores **`securityLevel`**, so the package doesn't pass the option to v13.
+* Labels can contain HTML such as `<br/>`, so the package doesn't warn about HTML in labels.
+* Mindmap and architecture diagrams render.
+
+To switch over when v13 is stable, install the stable release and remove **`experimentalV13`** once the package drops the flag.
 
 ## Styles
 
