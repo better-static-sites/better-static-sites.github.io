@@ -5,6 +5,7 @@
 @import "astro-better-tabs/style.css";
 @import "astro-better-nav-bar/style.css";
 @import "astro-better-mermaid/styles.css";
+@import "astro-better-lightbox/styles.css";
 @import "astro-better-code-blocks/style.css";
 
 @plugin "@tailwindcss/typography";

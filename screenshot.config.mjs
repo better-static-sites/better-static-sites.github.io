@@ -7,6 +7,7 @@ export default {
   // capture light and dark images; the site sets html.dark whenever it shows dark
   colorScheme: 'both',
   darkMode: 'class',
+  lightbox: true,
 
   chrome: {
     style:    'macos',

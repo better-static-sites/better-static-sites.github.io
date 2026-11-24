@@ -18,7 +18,7 @@ const glossaryTerms = { file: 'src/data/glossary.json', path: '/glossary' };
 const refsState = { refMap: null as any, brokenRefs: [] as string[], duplicates: [] as any[] };
 
 const markdownProcessor = unified({
-  remarkPlugins: [mermaidTitleFix, remarkMermaidSSR, remarkShellSession, [remarkAstroRef, { state: refsState }], [remarkGlossaryTerms, glossaryTerms]],
+  remarkPlugins: [mermaidTitleFix, [remarkMermaidSSR, { lightbox: true, experimentalV13: true }], remarkShellSession, [remarkAstroRef, { state: refsState }], [remarkGlossaryTerms, glossaryTerms]],
   rehypePlugins: [
     rehypeSlug,
     [rehypeAutolinkHeadings, { behavior: 'append', properties: { className: ['anchor-link'], ariaHidden: 'true', tabIndex: -1 }, content: [] }],

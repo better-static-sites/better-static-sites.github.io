@@ -15,6 +15,7 @@ npm install astro-better-declarative-screenshots
 - Shows the light or dark image that matches your site's theme
 - Trims the address bar to the path, without the query string, hash, or full UUIDs, for every screenshot or one at a time
 - Shows a compact address bar in place of the window frame on narrow screens
+- Opens screenshots in an accessible, JavaScript-free lightbox, with the `lightbox` option
 - Pairs with `astro-better-generate-screenshots`, which produces the PNGs
 
 ## Documentation

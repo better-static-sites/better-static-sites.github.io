@@ -1,4 +1,5 @@
 ---
+import LightboxImage from 'astro-better-lightbox/LightboxImage.astro';
 import { getCollection, render } from 'astro:content';
 import DocLayout from 'src/layouts/DocLayout.astro';
 
@@ -21,5 +22,5 @@ const { Content } = await render(entry);
 const entryId = entry.data.route === false ? undefined : entry.id;
 ---
 <DocLayout title={entry.data.title} description={entry.data.description} entryId={entryId}>
-  <Content />
+  <Content components={{ img: LightboxImage }} />
 </DocLayout>
