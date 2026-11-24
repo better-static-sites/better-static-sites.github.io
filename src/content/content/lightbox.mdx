@@ -6,7 +6,7 @@ version: "0.1.1"
 badges: ["component"]
 ---
 
-import Lightbox from 'astro-better-lightbox/Lightbox.astro';
+import Screenshot from 'astro-better-declarative-screenshots/Screenshot.astro';
 import PkgMeta from 'src/components/PkgMeta.astro';
 
 A lightbox that opens content enlarged in a native modal `<dialog>`. The browser handles focus, the Escape key, and focus return through [invoker commands](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API), so the page ships no JavaScript.
@@ -62,11 +62,13 @@ When your site uses the Mermaid Diagram Renderer, pass `lightbox: true` to the i
 
 ## Live Example
 
-Click the image, or tab to the **Enlarge** button and press Enter:
+The following example is a `<Screenshot>` with `lightbox` set, so the image follows the site's light or dark theme. Click the image, or tab to the **Enlarge** button and press Enter:
 
-<Lightbox label="The Details component, expanded.">
-  <img src="/img/screenshots/content-details.png" alt="The Details component, expanded." />
-</Lightbox>
+<Screenshot
+  url="/content/details"
+  alt="The Details component documentation page."
+  lightbox
+/>
 
 ## Props
 
