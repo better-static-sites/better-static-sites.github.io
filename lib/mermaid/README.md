@@ -59,6 +59,7 @@ mermaidSSR({
   injectCSS: true,        // inject the bundled stylesheet automatically
   cache: true,            // cache rendered diagrams on disk between builds
   cacheDir: 'node_modules/.cache/astro-better-mermaid', // where the cache lives
+  lightbox: false,        // open each diagram in an enlarged dialog on click
 })
 ```
 
@@ -75,6 +76,14 @@ With `titleFix` enabled, you can add a caption to any code block via its meta st
 ````
 
 Captions on mermaid blocks appear below the diagram; captions on other code blocks appear above.
+
+### Lightbox
+
+When `lightbox` is `true`, a reader can click a diagram, or tab to its **Enlarge** button, to open the diagram in a full-screen dialog. The dialog comes from [`astro-better-lightbox`](https://better-static-sites.github.io/content/lightbox) and needs no client-side JavaScript. The diagram title names the dialog for screen readers.
+
+The dialog holds a second copy of the SVG, with every id suffixed by `-zoom`, so the copy never collides with the original. The copy adds about 30 KB of uncompressed HTML for a typical diagram. The copy can grow up to 2.5 times the diagram's natural width. To change the limit, set `--abl-lightbox-max-zoom` on `.abl-lightbox`.
+
+When `injectCSS` is `true`, the integration also injects the lightbox styles. Otherwise, import `astro-better-lightbox/styles.css` yourself.
 
 ## Styles
 

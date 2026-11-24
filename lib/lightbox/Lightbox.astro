@@ -1,0 +1,21 @@
+---
+import { lightboxHtml } from './index.mjs';
+import './styles.css';
+
+interface Props {
+  /** accessible name for the dialog and the open button */
+  label?: string;
+  /** dialog id (default: a hash of the content) */
+  id?: string;
+  /** extra class(es) on the wrapper */
+  class?: string;
+  /** render the content alone, for callers that turn the lightbox on and off */
+  disabled?: boolean;
+}
+
+const { label = '', id, class: className, disabled = false } = Astro.props;
+const content = await Astro.slots.render('default');
+// the zoom slot shows different markup in the dialog, such as a larger image
+const zoom = !disabled && Astro.slots.has('zoom') ? await Astro.slots.render('zoom') : content;
+---
+<Fragment set:html={disabled ? content : lightboxHtml(content, { label, zoom, id, class: className })} />

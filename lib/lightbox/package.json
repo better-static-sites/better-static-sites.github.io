@@ -1,0 +1,41 @@
+{
+  "name": "astro-better-lightbox",
+  "version": "0.1.0",
+  "description": "Accessible, JavaScript-free lightbox for images, screenshots, and diagrams in Astro",
+  "keywords": [
+    "astro",
+    "astro-component",
+    "lightbox",
+    "dialog",
+    "zoom"
+  ],
+  "license": "MIT",
+  "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/better-static-sites/better-static-sites.github.io.git",
+    "directory": "lib/lightbox"
+  },
+  "homepage": "https://better-static-sites.github.io",
+  "bugs": {
+    "url": "https://github.com/better-static-sites/better-static-sites.github.io/issues"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs",
+    "./Lightbox.astro": "./Lightbox.astro",
+    "./LightboxImage.astro": "./LightboxImage.astro",
+    "./styles.css": "./styles.css"
+  },
+  "files": [
+    "index.mjs",
+    "*.astro",
+    "styles.css"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "peerDependencies": {
+    "astro": ">=4.0.0"
+  }
+}

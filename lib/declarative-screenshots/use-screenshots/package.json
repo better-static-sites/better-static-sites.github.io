@@ -1,6 +1,6 @@
 {
   "name": "astro-better-declarative-screenshots",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "Astro components that render committed screenshot PNGs in your docs site",
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "src/"
   ],
   "dependencies": {
+    "astro-better-lightbox": "^0.1.0",
     "zod": "^3.23.0"
   },
   "peerDependencies": {

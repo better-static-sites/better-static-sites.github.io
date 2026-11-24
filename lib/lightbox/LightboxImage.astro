@@ -1,0 +1,11 @@
+---
+// drop-in `img` for MDX's components map, so every markdown image opens in a lightbox
+import Lightbox from './Lightbox.astro';
+
+type Props = astroHTML.JSX.ImgHTMLAttributes;
+
+const { alt = '', ...rest } = Astro.props;
+---
+<Lightbox label={alt as string}>
+  <img alt={alt} loading="lazy" decoding="async" {...rest} />
+</Lightbox>

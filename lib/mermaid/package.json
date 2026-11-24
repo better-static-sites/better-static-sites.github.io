@@ -1,6 +1,6 @@
 {
   "name": "astro-better-mermaid",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Astro integration plus remark and Sätteri plugins for server-side mermaid diagram rendering via svgdom — no client-side JavaScript required",
   "keywords": [
     "astro",
@@ -37,6 +37,7 @@
     "test": "node --test test/"
   },
   "dependencies": {
+    "astro-better-lightbox": "^0.1.0",
     "svgdom": "^0.1.28",
     "unist-util-visit": "^5.0.0"
   },

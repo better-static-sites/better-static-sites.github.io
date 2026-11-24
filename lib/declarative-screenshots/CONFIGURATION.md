@@ -71,6 +71,12 @@ Capture every screenshot at full page height. A screenshot that sets `height` or
 
 Default: `false`
 
+### `lightbox`
+
+When `true`, every screenshot opens in an enlarged dialog when the reader clicks the image or presses the **Enlarge** button. A screenshot's `lightbox` prop overrides the setting. The dialog comes from [`astro-better-lightbox`](https://better-static-sites.github.io/content/lightbox) and needs no JavaScript.
+
+Default: `false`
+
 ### `strict`
 
 When `true`, `<Screenshot>` throws at build time if the PNG file is missing. Defaults to the value of the `SCREENSHOTS_STRICT` environment variable.

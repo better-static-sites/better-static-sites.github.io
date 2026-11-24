@@ -3,7 +3,7 @@ title: Declarative Screenshots
 description: Declarative, Docker-backed screenshots for Astro docs. Define screenshots in MDX; generate PNGs on demand and commit them.
 order: 9
 versions:
-  astro-better-declarative-screenshots: "0.6.4"
+  astro-better-declarative-screenshots: "0.7.0"
   astro-better-generate-screenshots: "0.8.4"
 badges: ["component", "tool"]
 ---
@@ -259,6 +259,10 @@ Set `darkMode` so the component reads your site's theme the same way the site do
 - `'class'` reads only `<html>`: the page is dark when `<html>` has `class="dark"` or `data-theme="dark"`. Use `'class'` when your theme script adds `.dark` for the system setting too, as Tailwind's class strategy does. This site uses `'class'`.
 
 The generator switches the scheme with Playwright's color scheme emulation, so the page sees `prefers-color-scheme: dark`. If your app stores the theme somewhere else, such as a cookie, set it in `beforeScreenshot`, which receives `colorScheme`. Until a dark image exists, the light image shows in both themes.
+
+### Open Screenshots in a Lightbox
+
+When readers need to see screenshot detail, set `lightbox: true` in `screenshot.config.mjs`, or set `lightbox` on one screenshot. A click on the image, or the **Enlarge** button, opens the image in a full-screen dialog without the window chrome. The dialog comes from `astro-better-lightbox` and needs no JavaScript. For more information, see [Lightbox](/content/lightbox).
 
 ### Highlight an element
 
@@ -524,6 +528,7 @@ jobs:
 | `showQuery` | `boolean` | `chrome.showQuery` from config | Show the query string in the address bar |
 | `showHash` | `boolean` | `chrome.showHash` from config | Show the hash in the address bar |
 | `shortenIds` | `boolean` | `chrome.shortenIds` from config | Shorten UUIDs in the address bar |
+| `lightbox` | `boolean` | `lightbox` from config | Open the image in an enlarged dialog on click. For more information, see [Lightbox](/content/lightbox) |
 
 Filenames are derived from the URL path and highlight selectors. `/docs/ui/tables` with a
 `.abt-grid-table` highlight becomes `docs-ui-tables-abt-grid-table.png`. Pass an explicit

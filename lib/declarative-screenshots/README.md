@@ -207,6 +207,7 @@ Commit the generated PNG files alongside your source. The `<Screenshot>` compone
 | `showQuery` | `boolean` | `chrome.showQuery` from config | Show the query string in the address bar |
 | `showHash` | `boolean` | `chrome.showHash` from config | Show the hash in the address bar |
 | `shortenIds` | `boolean` | `chrome.shortenIds` from config | Shorten UUIDs in the address bar to their first 8 characters |
+| `lightbox` | `boolean` | `lightbox` from config | Open the image in an enlarged dialog on click. For more information, see [Lightbox](https://better-static-sites.github.io/content/lightbox) |
 
 Filenames are derived from the URL path and highlight selectors:
 
@@ -297,6 +298,9 @@ export default {
   // 'media': follows prefers-color-scheme, unless <html> has data-theme="light" or class="light"
   // 'class': <html> has class="dark" or data-theme="dark" whenever the page is dark
   darkMode: 'media',
+
+  // open every screenshot in an enlarged dialog on click; a screenshot's lightbox prop overrides
+  lightbox: false,
 
   chrome: {
     // window frame style: 'macos' | 'linux' | 'windows' | 'none'

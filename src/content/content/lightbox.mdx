@@ -1,0 +1,113 @@
+---
+title: Lightbox
+description: Learn how to open images, screenshots, and diagrams in an accessible full-screen dialog with no JavaScript.
+order: 10
+version: "0.1.0"
+badges: ["component"]
+---
+
+import Lightbox from 'astro-better-lightbox/Lightbox.astro';
+import PkgMeta from 'src/components/PkgMeta.astro';
+
+A lightbox that opens content enlarged in a native modal `<dialog>`. The browser handles focus, the Escape key, and focus return through [invoker commands](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API), so the page ships no JavaScript.
+
+<PkgMeta pkg="astro-better-lightbox" />
+
+Invoker commands work in Chrome 135, Firefox 144, Safari 26.2, and later. In older browsers, the content shows inline and the **Enlarge** button does nothing.
+
+## Installation
+
+```shell-session
+npm install astro-better-lightbox
+```
+
+## Usage
+
+Wrap any content in `<Lightbox>`, and give the lightbox a `label` that names the content:
+
+````mdx escape
+import Lightbox from 'astro-better-lightbox/Lightbox.astro';
+
+<Lightbox label="The Details component, expanded.">
+  <img src="/img/screenshots/content-details.png" alt="The Details component, expanded." />
+</Lightbox>
+````
+
+To show different markup in the dialog, such as a larger image, put the markup in the `zoom` slot:
+
+````mdx escape
+<Lightbox label="The login page.">
+  <img src="/img/login-small.png" alt="The login page." />
+  <img slot="zoom" src="/img/login-large.png" alt="The login page." />
+</Lightbox>
+````
+
+### Lightbox Every Markdown Image
+
+To open every markdown image in a lightbox, map `img` to `LightboxImage` where you render the content:
+
+```astro
+---
+import LightboxImage from 'astro-better-lightbox/LightboxImage.astro';
+const { Content } = await entry.render();
+---
+<Content components={{ img: LightboxImage }} />
+```
+
+### Screenshots and Diagrams
+
+When your site uses Declarative Screenshots, set `lightbox: true` in `screenshot.config.mjs`, or set `lightbox` on one `<Screenshot>`. The dialog shows the image without the window chrome. For more information, see [Declarative Screenshots](/content/declarative-screenshots).
+
+When your site uses the Mermaid Diagram Renderer, pass `lightbox: true` to the integration. The dialog holds a copy of the SVG with renamed ids, so the copy never collides with the original. For more information, see the [Mermaid Diagram Renderer](/build-tools/mermaid).
+
+## Live Example
+
+Click the image, or tab to the **Enlarge** button and press Enter:
+
+<Lightbox label="The Details component, expanded.">
+  <img src="/img/screenshots/content-details.png" alt="The Details component, expanded." />
+</Lightbox>
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `label` | `string` | `''` | Accessible name for the dialog. The open button reads "Enlarge: " followed by the label |
+| `id` | `string` | hash of the content | Dialog id |
+| `class` | `string` | -- | Extra class(es) on the wrapper |
+| `disabled` | `boolean` | `false` | Render the content alone, without the button and dialog |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| (default) | Content shown inline, and in the dialog unless `zoom` is set |
+| `zoom` | Content shown in the dialog |
+
+## Accessibility
+
+The open button sits after the content in the HTML and stretches over the content with CSS. Screen readers read the content itself, and keyboard users tab to **Enlarge**. The dialog is modal, so the rest of the page becomes inert while the dialog is open. Focus moves to **Close** when the dialog opens, and returns to **Enlarge** when the dialog closes. Escape, a click anywhere in the dialog, or **Close** closes the dialog.
+
+The closed dialog carries `data-markdown-ignore` and `data-pagefind-ignore`, so the copy stays out of generated markdown and search indexes.
+
+## Theming
+
+Set these custom properties on `.abl-lightbox`:
+
+| Property | Controls |
+|----------|----------|
+| `--abl-lightbox-bg` | Dialog background. Defaults to 95% opaque white, or slate in dark mode |
+| `--abl-lightbox-button-bg` | Background of the **Enlarge** and **Close** icons |
+| `--abl-lightbox-button-fg` | Icon color |
+| `--abl-lightbox-focus` | Keyboard focus ring color |
+| `--abl-lightbox-padding` | Space between the dialog edge and the content |
+| `--abl-lightbox-max-zoom` | How far a Mermaid diagram grows past its natural width (default `2.5`) |
+
+Dark mode follows `class="dark"` or `data-theme="dark"` on `<html>`.
+
+```css
+.abl-lightbox {
+  --abl-lightbox-bg: rgb(245 243 255 / 0.95);
+  --abl-lightbox-focus: #7c3aed;
+}
+```

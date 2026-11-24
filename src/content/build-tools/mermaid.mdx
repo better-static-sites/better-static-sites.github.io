@@ -2,7 +2,7 @@
 title: Mermaid Diagram Renderer
 description: Server-side Mermaid diagram rendering to inline SVG at build time.
 order: 3
-version: "0.4.0"
+version: "0.5.0"
 badges: ["integration"]
 ---
 
@@ -48,6 +48,7 @@ export default defineConfig({
 | `securityLevel` | `string` | `'loose'` | Mermaid `securityLevel` setting |
 | `cache` | `boolean` | `true` | Cache rendered diagrams on disk between builds |
 | `cacheDir` | `string` | `'node_modules/.cache/astro-better-mermaid'` | Where cached diagrams live, relative to the working directory |
+| `lightbox` | `boolean` | `false` | Open each diagram in an enlarged dialog on click. For more information, see [Lightbox](/content/lightbox) |
 
 ## Usage in MDX
 

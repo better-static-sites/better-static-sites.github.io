@@ -1,0 +1,113 @@
+/* astro-better-lightbox
+ *
+ * The open button stretches over the content through ::after, so a click
+ * anywhere on the content opens the dialog while screen readers still read the
+ * content itself. The close button stretches over the whole dialog the same way.
+ * Dark mode follows .dark or [data-theme="dark"] on <html>.
+ */
+
+.abl-lightbox {
+  --abl-lightbox-bg: rgb(255 255 255 / 0.95);
+  --abl-lightbox-button-bg: rgb(15 23 42 / 0.75);
+  --abl-lightbox-button-fg: #fff;
+  --abl-lightbox-focus: #4f46e5;
+  --abl-lightbox-padding: 2rem;
+  position: relative;
+}
+
+:root.dark .abl-lightbox,
+:root[data-theme="dark"] .abl-lightbox {
+  --abl-lightbox-bg: rgb(15 23 42 / 0.95);
+  --abl-lightbox-button-bg: rgb(241 245 249 / 0.85);
+  --abl-lightbox-button-fg: #0f172a;
+  --abl-lightbox-focus: #a5b4fc;
+}
+
+.abl-lightbox-open,
+.abl-lightbox-close {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.abl-lightbox-open::after,
+.abl-lightbox-close::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.abl-lightbox-open::after { cursor: zoom-in; }
+.abl-lightbox-close::after { cursor: zoom-out; }
+
+.abl-lightbox-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  display: flex;
+  padding: 0.375rem;
+  border-radius: 0.375rem;
+  background: var(--abl-lightbox-button-bg);
+  color: var(--abl-lightbox-button-fg);
+  pointer-events: none;
+}
+
+/* the open icon shows on hover and focus, and always on touch screens */
+.abl-lightbox-open .abl-lightbox-icon { opacity: 0; transition: opacity 0.15s; }
+.abl-lightbox:hover .abl-lightbox-open .abl-lightbox-icon,
+.abl-lightbox-open:focus-visible .abl-lightbox-icon { opacity: 1; }
+@media (hover: none) {
+  .abl-lightbox-open .abl-lightbox-icon { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .abl-lightbox-open .abl-lightbox-icon { transition: none; }
+}
+
+.abl-lightbox-open:focus-visible,
+.abl-lightbox-close:focus-visible { outline: none; }
+.abl-lightbox-open:focus-visible::after { outline: 2px solid var(--abl-lightbox-focus); outline-offset: 2px; }
+.abl-lightbox-close:focus-visible .abl-lightbox-icon { outline: 2px solid var(--abl-lightbox-focus); outline-offset: 2px; }
+
+.abl-lightbox-dialog {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: var(--abl-lightbox-padding);
+  border: 0;
+  background: var(--abl-lightbox-bg);
+  color: inherit;
+  overscroll-behavior: contain;
+}
+.abl-lightbox-dialog::backdrop { background: transparent; }
+.abl-lightbox-dialog .abl-lightbox-icon { top: 1rem; right: 1rem; }
+
+html:has(.abl-lightbox-dialog[open]) { overflow: hidden; }
+
+.abl-lightbox-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.abl-lightbox-zoom > img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  margin: 0;
+  object-fit: contain;
+}
+/* inline SVG with a viewBox scales to fit the box and keeps the aspect ratio */
+.abl-lightbox-zoom > svg {
+  width: 100%;
+  height: 100%;
+}
