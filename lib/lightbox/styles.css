@@ -57,13 +57,10 @@
   pointer-events: none;
 }
 
-/* the open icon shows on hover and focus, and always on touch screens */
+/* the open icon shows on hover and focus only */
 .abl-lightbox-open .abl-lightbox-icon { opacity: 0; transition: opacity 0.15s; }
 .abl-lightbox:hover .abl-lightbox-open .abl-lightbox-icon,
 .abl-lightbox-open:focus-visible .abl-lightbox-icon { opacity: 1; }
-@media (hover: none) {
-  .abl-lightbox-open .abl-lightbox-icon { opacity: 1; }
-}
 @media (prefers-reduced-motion: reduce) {
   .abl-lightbox-open .abl-lightbox-icon { transition: none; }
 }
